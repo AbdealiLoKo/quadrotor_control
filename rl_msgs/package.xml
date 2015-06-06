@@ -1,0 +1,27 @@
+<package>
+  <name>rl_msgs</name>
+  <version>0.0.1</version>
+  <description>
+    Provides the set of ROS messages to be passed between reinforcement learning (RL) agent nodes and environment nodes.
+  </description>
+  <maintainer email="kunalgrover05@gmail.com">Kunal Grover</maintainer>
+
+  <license>BSD</license>
+  <author email="kunalgrover05@gmail.com">Kunal Grover</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>message_runtime</run_depend>
+
+</package>
+
+

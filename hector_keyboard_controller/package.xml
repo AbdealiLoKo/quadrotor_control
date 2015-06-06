@@ -1,0 +1,26 @@
+<package>
+  <name>quadrotor_controller</name>
+  <version>0.1.0</version>
+  <description>The quadrotor_controller package has various controllers for the hector_quadrotor</description>
+
+  <maintainer email="kunalgrover05@gmail.com">Kunal Grover</maintainer>
+
+  <license>MIT</license>
+
+  <url type="repository">https://github.com/Quadrotor-RL/quadrotor_controller</url>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>rospy</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>rospy</run_depend>
+  <run_depend>rospy</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+
+</package>

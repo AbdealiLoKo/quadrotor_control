@@ -1,0 +1,29 @@
+<package>
+  <name>rl_common</name>
+  <version>0.0.1</version>
+  <description>
+     Common files required for RL agents and environments. Including the interface defining agents and environments.
+  </description>
+  <maintainer email="kunalgrover05@gmail.com">Kunal Grover</maintainer>
+
+  <license>BSD</license>
+  <author email="kunalgrover05@gmail.com">Kunal Grover</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>roscpp</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>roscpp</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+
+  <export>
+    <cpp cflags="-I${prefix}/include"/>
+  </export>
+
+</package>
+
+

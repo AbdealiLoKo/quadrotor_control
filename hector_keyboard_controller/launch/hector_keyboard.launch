@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!-- Start Gazebo with wg world running in (max) realtime -->
+  <include file="$(find hector_gazebo_worlds)/launch/start.launch">
+
+    <arg name="world" value="$(find hector_gazebo_worlds)/worlds/rolling_landscape_120m.world"/>
+
+    <arg name="gui" default="true"/>
+
+  </include>
+
+  <!-- Spawn simulated quadrotor uav -->
+  <include file="$(find hector_quadrotor_gazebo)/launch/spawn_quadrotor.launch" >
+
+  </include>
+
+  <node name="controller" pkg="quadrotor_controller" type="keyboard.py" />
+</launch>
