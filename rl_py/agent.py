@@ -67,7 +67,7 @@ def process_state(state_in):
 
 
 # Process seeds for initializing model
-def processSeed(seed_in):
+def process_seed(seed_in):
     if agent == None:
         print("No agent yet")
         return
@@ -157,14 +157,12 @@ if __name__ == "__main__":
 
     # Subscribers
     rospy.loginfo("Making subscribers ...")
-    rl_description = rospy.Subscriber("rl_env/rl_env_description", queue_depth, process_env_description, tcp_nodelay=True)
-    rl_state = rospy.Subscriber("rl_env/rl_state_reward", queue_depth, process_state, tcp_nodelay=True)
-    rl_seed = rospy.Subscriber("rl_env/rl_seed", queue_depth, process_seed, tcp_nodelay=True)
+    rl_description = rospy.Subscriber("rl_env/rl_env_description", RLEnvDescription, process_env_description, queue_size=queue_depth, tcp_nodelay=True)
+    rl_state = rospy.Subscriber("rl_env/rl_state_reward", RLStateReward, process_state, queue_size=queue_depth, tcp_nodelay=True)
+    rl_seed = rospy.Subscriber("rl_env/rl_seed", RLEnvSeedExperience, process_seed, queue_size=queue_depth, tcp_nodelay=True)
 
     # Setup RL World
-    rospy.loginfo("Setting up RL Agent ...")
     rng.seed(1+args.seed)
-    init_environment(rng)
 
     rospy.loginfo(NODE + ": starting main loop")
     rospy.spin()
