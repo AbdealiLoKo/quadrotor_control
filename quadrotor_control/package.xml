@@ -1,8 +1,9 @@
 <package>
-  <name>rl_ros</name>
+  <name>quadrotor_control</name>
   <version>0.0.1</version>
   <description>
-    rl_ros gives a framework in ROS to do Reinforcement learning. It's an updated version of the original reinforcement_learning package made by Todd Hester
+    quadrotor_control is a general framewprk to control Quadrotors in ROS using
+    hector_quadrotor
   </description>
   <maintainer email="kunalgrover05@gmail.com">Kunal Grover</maintainer>
 
