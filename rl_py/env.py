@@ -9,6 +9,7 @@ import rospy
 from rl_env.Environment import Environment, Experience
 from rl_env.cli_args import parser
 from rl_py.msg import RLEnvDescription, RLStateReward, RLEnvSeedExperience
+from rl_env.Taxi import Taxi
 
 NODE = "RLEnvironment"
 
@@ -61,7 +62,7 @@ def init_environment(rng):
 
     if args.type == "taxi":
         desc.title = "Environment: Taxi\n"
-        env = Taxi(rng, stochastic)
+        env = Taxi(rng, stochastic=stochastic)
     elif args.type == "cartpole":
         desc.title = "Environment: Cart Pole\n"
         env = CartPole(rng, stochastic)
@@ -110,7 +111,7 @@ def init_environment(rng):
     desc.max_reward = _max
     desc.reward_range = _max - _min
 
-    print(desc.title)
+    rospy.loginfo(desc.title)
 
     # Publish environment description
     out_env_desc.publish(desc)
