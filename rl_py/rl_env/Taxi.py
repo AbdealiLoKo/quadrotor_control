@@ -4,7 +4,8 @@ Dietterich, "The MAXQ method for hierarchical reinforcement learning," ICML 1998
 """
 import random
 
-from rl_env.Environment import Environment, Experience
+from rl_env.Environment import Environment
+from rl_env.Experience import Experience
 from rl_env.Gridworld import Gridworld
 
 class Taxi(Environment):
@@ -32,8 +33,8 @@ class Taxi(Environment):
         self.reset()
 
     def sensation(self):
-        # return [self.s['ns'], self.s['ew'], self.s['pass'], self.s['dest']]
-        return self.s
+        return [self.s['ns'], self.s['ew'], self.s['pass'], self.s['dest']]
+        # return self.s
 
     def apply(self, action):
         if self.noisy:
@@ -41,34 +42,35 @@ class Taxi(Environment):
         else:
             effect = action
 
-        if effect == NORTH:
+        if effect == Taxi.NORTH:
             if not self.grid.wall(self.s['ns'], self.s['ew'], effect):
                 self.s['ns'] += 1
                 self.apply_fickle_passengers();
             return -1
-        elif effect == SOUTH:
+        elif effect == Taxi.SOUTH:
             if not self.grid.wall(self.s['ns'], self.s['ew'], effect):
                 self.s['ns'] -= 1
                 self.apply_fickle_passengers();
             return -1
-        elif effect == EAST:
+        elif effect == Taxi.EAST:
             if not self.grid.wall(self.s['ns'], self.s['ew'], effect):
                 self.s['ew'] += 1
                 self.apply_fickle_passengers();
             return -1
-        elif effect == WEST:
+        elif effect == Taxi.WEST:
             if not self.grid.wall(self.s['ns'], self.s['ew'], effect):
                 self.s['ew'] -= 1
                 self.apply_fickle_passengers();
-        elif effect == PICKUP:
-            if self.s['pass'] < len(landmarks) and \
+            return -1
+        elif effect == Taxi.PICKUP:
+            if self.s['pass'] < len(self.landmarks) and \
                 (self.s['ns'], self.s['ew']) == self.landmarks[self.s['pass']]:
                 self.s['pass'] = len(self.landmarks)
                 self.fickle = self.noisy
                 return -1
             else:
                 return -10
-        elif effect == PUTDOWN:
+        elif effect == Taxi.PUTDOWN:
             if self.s['pass'] < len(self.landmarks) and \
                 (self.s['ns'], self.s['ew']) == self.landmarks[self.s['dest']]:
                 self.s['pass'] = self.s['dest']
@@ -97,6 +99,10 @@ class Taxi(Environment):
     def get_min_max_features(self):
         min_feat = {"ns" : 0.0, "ew": 0.0, "pass": 0.0, "dest": 0.0}
         max_feat = {"ns" : 4.0, "ew": 4.0, "pass": 4.0, "dest": 4.0}
+
+        min_feat = [min_feat['ns'], min_feat['ew'], min_feat['pass'], min_feat['dest']]
+        max_feat = [max_feat['ns'], max_feat['ew'], max_feat['pass'], max_feat['dest']]
+
         return min_feat, max_feat
 
     def get_min_max_reward(self):
@@ -179,22 +185,22 @@ class Taxi(Environment):
         :param action: The intended action.
         :return:       The action actually executed.
         """
-        if action == NORTH or action == SOUTH:
+        if action == Taxi.NORTH or action == Taxi.SOUTH:
             if self.rng.random() > 0.8:
                 return action
             else:
                 if self.rng.random() > 0.5:
-                    return EAST
+                    return Taxi.EAST
                 else:
-                    return WEST
-        elif action == EAST or action == WEST:
+                    return Taxi.WEST
+        elif action == Taxi.EAST or action == Taxi.WEST:
             if self.rng.random() > 0.8:
                 return action
             else:
                 if self.rng.random() > 0.5:
-                    return NORTH
+                    return Taxi.NORTH
                 else:
-                    return SOUTH
+                    return Taxi.SOUTH
         else:
             return action
 
@@ -207,8 +213,8 @@ class Taxi(Environment):
         if self.fickle:
             self.fickle = False
             if self.rng.random() > 0.3:
-                self.s['dest'] += self.rng.randint(1, len(landmarks) - 1);
-                self.s['dest'] = dest % len(landmarks);
+                self.s['dest'] += self.rng.randint(1, len(self.landmarks) - 1)
+                self.s['dest'] = dest % len(self.landmarks)
 
     def randomize_landmarks(self):
         """

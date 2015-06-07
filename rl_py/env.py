@@ -6,7 +6,8 @@ import random
 
 import rospy
 
-from rl_env.Environment import Environment, Experience
+from rl_env.Environment import Environment
+from rl_env.Experience import Experience
 from rl_env.cli_args import parser
 from rl_py.msg import (RLEnvDescription, RLStateReward, RLEnvSeedExperience,
                        RLAction, RLExperimentInfo)
@@ -23,6 +24,9 @@ args = None
 
 # Process action from the agent
 def process_action(actionIn):
+    if args.debug:
+        print("env : process_action")
+
     sr = RLStateReward()
 
     # process action from the agent, affecting the environment
@@ -34,11 +38,12 @@ def process_action(actionIn):
     if args.debug:
        print("Got action", actionIn.action, "at state:", sr.state[0],
             ",", sr.state[1], ", reward:", sr.reward)
-
     out_env_sr.publish(sr)
 
 # Process end-of-episode reward info. Mostly to start new episode.
 def process_episode_info(infoIn):
+    if args.debug:
+        print("env : process_episode_info")
     # Start new episode if terminal
     if args.debug:
         print("Episode", infoIn.episode_number, "terminated with reward:",
@@ -46,15 +51,17 @@ def process_episode_info(infoIn):
 
     env.reset()
 
-    sr = RLStateReward
+    sr = RLStateReward()
     sr.reward = 0
     sr.state = env.sensation()
-    sr.terminal = false
+    sr.terminal = False
 
     out_env_sr.publish(sr)
 
 # Init the environment, publish a description.
 def init_environment(rng):
+    if args.debug:
+        print("env : init_environment")
     global env
     # init the environment
     env = None

@@ -26,7 +26,7 @@ class Gridworld:
         self._width = width
         if northsouth != None and eastwest != None:
             self._ns = northsouth
-            self._es = eastwest
+            self._ew = eastwest
         else:
             self._ns = [[False] * (self.height - 1)] * self._width
             self._ew = [[False] * (self.width - 1)] * self._height
@@ -41,7 +41,7 @@ class Gridworld:
     def width(self):
         return self._width
 
-    def wall(ns_coord, ew_coord, dir):
+    def wall(self, ns_coord, ew_coord, dir):
         """
         Checks if a wall blocks movement in a given direction from a given
         coordinate.

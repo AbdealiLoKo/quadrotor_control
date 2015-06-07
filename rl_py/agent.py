@@ -30,6 +30,8 @@ rng = None
 
 # Process the state/reward message from the environment
 def process_state(state_in):
+    if args.debug:
+        print("agent : process_state")
     global info, first_action
 
     if agent == None:
@@ -60,7 +62,7 @@ def process_state(state_in):
             a.action = agent.next_action(state_in.reward, state_in.state)
             info.number_actions += 1
 
-    first_action = false;
+    first_action = False;
 
     # publish agent's action
     out_rl_action.publish(a);
@@ -68,6 +70,8 @@ def process_state(state_in):
 
 # Process seeds for initializing model
 def process_seed(seed_in):
+    if args.debug:
+        print("agent : process_seed")
     if agent == None:
         print("No agent yet")
         return
@@ -85,6 +89,8 @@ def process_seed(seed_in):
 
 # Process the env description message from the environment
 def process_env_description(env_in):
+    if args.debug:
+        print("agent : process_env_description")
     global agent, first_action, info
     # Initialize the agent based on some info from the environment descriptor
     agent = None;
@@ -97,7 +103,7 @@ def process_env_description(env_in):
                          alpha=args.alpha,
                          epsilon=args.epsilon,
                          rng=rng)
-    elif ards.type == "sarsa":
+    elif args.type == "sarsa":
         print("Agent: Sarsa")
         agent = Sarsa(num_actions=env_in.num_actions,
                       gamma=args.gamma,
