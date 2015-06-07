@@ -1,3 +1,4 @@
+from __future__ import print_function
 import random
 import math
 
@@ -81,7 +82,7 @@ class Gridworld:
             retval += " -"
         retval += " \n"
 
-        for h in xrange(len(self._ew), 0, -1):
+        for h in xrange(len(self._ew)-1, 0, -1):
             retval += "| "
             for w in xrange(0, len(self._ew[h])):
                 retval += "| " if self._ew[h][w] else "  "
@@ -92,7 +93,7 @@ class Gridworld:
             retval += " \n"
 
         retval += "| "
-        for w in xrange(0, len(self._ew)):
+        for w in xrange(0, len(self._ew[0])):
             retval += "| " if self._ew[0][w] else "  "
         retval += "|\n"
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import random
 import pickle
 
@@ -37,7 +38,7 @@ class Sarsa(Agent):
 
     def first_action(self, sensation):
         if self.ACTDEBUG:
-            print("First - in state: ", ",".join(sensation))
+            print("First - in state: ", ",".join(str(x) for x in sensation))
 
         self.sparse_populate(sensation)
 
@@ -57,13 +58,15 @@ class Sarsa(Agent):
             print("MAX - act:", a, "val:", self.Q[sensation][a])
             for i_act, act_val in enumerate(self.Q[sensation]):
                 print("Action:", i_act, "val:", act_val)
-            print("Took action", a, "from state", ",".join(sensation))
+            print("Took action", a, "from state", ",".join(str(x) for x in sensation))
 
-        return a;
+        return a
 
     def next_action(self, reward, sensation):
+        # for i in self.Q:
+        #     print("state:", i, "-", ",".join("%.2f" % x for x in self.Q[i]))
         if self.ACTDEBUG:
-            print("Next: got reward", reward, "in state:", ",".join(sensation))
+            print("Next: got reward", reward, "in state:", ",".join(str(x) for x in sensation))
 
         self.sparse_populate(sensation)
 
@@ -78,7 +81,7 @@ class Sarsa(Agent):
             for i_act in xrange(self.num_actions):
                 if self.eligibility[state][i_act] > 0.0:
                     if self.ELIGDEBUG:
-                        print("updating state:", ",".join(state),
+                        print("updating state:", ",".join(str(x) for x in state),
                               "act:", i_act,
                               "with elig:", self.eligibility[state][i_act])
                     self.Q[state][i_act] += self.alpha * \
@@ -92,7 +95,7 @@ class Sarsa(Agent):
             print("MAX - act:", a, "val:", self.Q[sensation][a])
             for i_act, act_val in enumerate(self.Q[sensation]):
                 print("Action:", i_act, "val:", act_val)
-            print("Took action", a, "from state", ",".join(sensation))
+            print("Took action", a, "from state", ",".join(str(x) for x in sensation))
 
         return a
 
@@ -105,7 +108,7 @@ class Sarsa(Agent):
             for i_act in xrange(self.num_actions):
                 if self.eligibility[state][i_act] > 0.0:
                     if self.ELIGDEBUG:
-                        print("updating state:", ",".join(state),
+                        print("updating state:", ",".join(str(x) for x in state),
                               "act:", i_act,
                               "with elig:", self.eligibility[state][i_act])
                     self.Q[state][i_act] += self.alpha * \
@@ -126,10 +129,10 @@ class Sarsa(Agent):
                 (exp.reward + self.gamma * val_act - self.Q[exp.s][e.act])
 
             print("Seeding with experience" << i_exp)
-            print("last:", ",".join(exp.s))
+            print("last:", ",".join(str(x) for x in exp.s))
             print("act:", exp.act, "reward:", exp.reward)
             print("act:", exp.act, "reward:", exp.reward)
-            print("next:", ",".join(exp.next), "terminal:", exp.terminal)
+            print("next:", ",".join(str(x) for x in exp.next), "terminal:", exp.terminal)
 
     def save_policy(self, filename):
         with open(filename, "wb") as f:

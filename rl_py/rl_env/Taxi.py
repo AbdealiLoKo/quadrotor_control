@@ -2,6 +2,7 @@
 Defines the taxi domain, from:
 Dietterich, "The MAXQ method for hierarchical reinforcement learning," ICML 1998.
 """
+from __future__ import print_function
 import random
 
 from rl_env.Environment import Environment
@@ -33,8 +34,8 @@ class Taxi(Environment):
         self.reset()
 
     def sensation(self):
+        # print(self.landmarks[self.s['dest']], " - ", (self.s['ns'], self.s['ew']))
         return [self.s['ns'], self.s['ew'], self.s['pass'], self.s['dest']]
-        # return self.s
 
     def apply(self, action):
         if self.noisy:
@@ -71,7 +72,7 @@ class Taxi(Environment):
             else:
                 return -10
         elif effect == Taxi.PUTDOWN:
-            if self.s['pass'] < len(self.landmarks) and \
+            if self.s['pass'] == len(self.landmarks) and \
                 (self.s['ns'], self.s['ew']) == self.landmarks[self.s['dest']]:
                 self.s['pass'] = self.s['dest']
                 return 20
@@ -89,7 +90,7 @@ class Taxi(Environment):
         self.s['ew'] = self.rng.randint(1, self.grid.width) - 1
         self.s['pass'] = self.rng.randint(1, len(self.landmarks)) - 1
         self.s['dest'] = self.s['pass']
-        while self.s['pass'] != self.s['dest']:
+        while self.s['pass'] == self.s['dest']:
             self.s['dest'] = self.rng.randint(1, len(self.landmarks)) - 1
         self.fickle = False
 
@@ -168,15 +169,16 @@ class Taxi(Environment):
         """
         Creates the default gridworld map
         """
-        nsv = [ [False] * 4 ] * 5
-        ewv = [ [False] * 4 ] * 5
-        ewv[0][0] = True;
-        ewv[0][2] = True;
-        ewv[1][0] = True;
-        ewv[1][2] = True;
-        ewv[3][1] = True;
-        ewv[4][1] = True;
-        return Gridworld(5, 5, northsouth=nsv, eastwest=ewv);
+        nsv = [ [False] * 4 for i in xrange(5)]
+        ewv = [ [False] * 4 for i in xrange(5)]
+        ewv[0][0] = True
+        ewv[0][2] = True
+        ewv[1][0] = True
+        ewv[1][2] = True
+        ewv[3][1] = True
+        ewv[4][1] = True
+        grid = Gridworld(5, 5, northsouth=nsv, eastwest=ewv);
+        return grid
 
     def add_noise(self, action):
         """
@@ -214,7 +216,7 @@ class Taxi(Environment):
             self.fickle = False
             if self.rng.random() > 0.3:
                 self.s['dest'] += self.rng.randint(1, len(self.landmarks) - 1)
-                self.s['dest'] = dest % len(self.landmarks)
+                self.s['dest'] = self.s['dest'] % len(self.landmarks)
 
     def randomize_landmarks(self):
         """

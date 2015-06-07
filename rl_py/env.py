@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import sys
 import os
 import random
@@ -24,9 +25,6 @@ args = None
 
 # Process action from the agent
 def process_action(actionIn):
-    if args.debug:
-        print("env : process_action")
-
     sr = RLStateReward()
 
     # process action from the agent, affecting the environment
@@ -36,14 +34,14 @@ def process_action(actionIn):
 
     # publish the state-reward message
     if args.debug:
-       print("Got action", actionIn.action, "at state:", sr.state[0],
-            ",", sr.state[1], ", reward:", sr.reward)
+       print("Got action", actionIn.action, "at state:",
+             ",".join(str(x) for x in sr.state),
+             ", terminal:", sr.terminal,
+             ", reward:", sr.reward)
     out_env_sr.publish(sr)
 
 # Process end-of-episode reward info. Mostly to start new episode.
 def process_episode_info(infoIn):
-    if args.debug:
-        print("env : process_episode_info")
     # Start new episode if terminal
     if args.debug:
         print("Episode", infoIn.episode_number, "terminated with reward:",
@@ -60,8 +58,6 @@ def process_episode_info(infoIn):
 
 # Init the environment, publish a description.
 def init_environment(rng):
-    if args.debug:
-        print("env : init_environment")
     global env
     # init the environment
     env = None
