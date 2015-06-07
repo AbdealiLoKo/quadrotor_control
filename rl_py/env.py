@@ -154,8 +154,8 @@ if __name__ == "__main__":
 
     # Subscribers
     rospy.loginfo("Making subscribers ...")
-    # rl_action = rospy.Subscriber("rl_agent/rl_action", queue_depth, process_action, tcp_nodelay=True)
-    # rl_exp_info = rospy.Subscriber("rl_agent/rl_experiment_info", queue_depth, process_episode_info, tcp_nodelay=True)
+    rl_action = rospy.Subscriber("rl_agent/rl_action", queue_depth, process_action, tcp_nodelay=True)
+    rl_exp_info = rospy.Subscriber("rl_agent/rl_experiment_info", queue_depth, process_episode_info, tcp_nodelay=True)
 
     # Setup RL World
     rospy.loginfo("Setting up RL World ...")

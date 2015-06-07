@@ -2,18 +2,18 @@ import argparse
 
 parser = argparse.ArgumentParser(
     formatter_class=argparse.RawDescriptionHelpFormatter,
-    description="Provides a set of reinforcement learning environments"
-                "(gridworlds, mountain car, cart pole, stock trading, robot"
+    description="Provides a set of reinforcement learning environments "
+                "(gridworlds, mountain car, cart pole, stock trading, robot "
                 "car simulations) for RL agents to learn in.")
 
 parser.add_argument('--type',
                     '-t',
                     required=True,
                     metavar="ENUM",
-                    choices="taxi tworooms fourrooms energy fuelworld mcar"
-                            "cartpole car2to7 car7to2 carrandom stocks"
+                    choices="taxi tworooms fourrooms energy fuelworld mcar "
+                            "cartpole car2to7 car7to2 carrandom stocks "
                             "lightworld".split(),
-                    help="Integer seed for random number generator")
+                    help="Type of environment to create")
 
 parser.add_argument('--seed',
                     default=1,

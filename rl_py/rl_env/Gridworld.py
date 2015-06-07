@@ -7,7 +7,8 @@ class Gridworld:
     allows users easily to determine available directions of travel in
     each cell.
     """
-    def __init__(self, height, width, northsouth=None, eastwest=None, rng=random):
+    def __init__(self, height, width, northsouth=None, eastwest=None,
+                 rng=random.Random()):
         """
         Creates a gridworld using the given wall occupancy matrices.
         :param height:     Height of the gridworld.
@@ -101,7 +102,7 @@ class Gridworld:
 
         return retval
 
-    def _add_obstacle(self, rng=random):
+    def _add_obstacle(self, rng=random.Random()):
         """
         Attempts to add a random wall that must not touch any other
         interior wall.
@@ -129,7 +130,7 @@ class Gridworld:
         _choose_segment(first, last, seedj, parallel, rng);
 
 
-    def _choose_segment(self, first, last, j, parallel, rng=random):
+    def _choose_segment(self, first, last, j, parallel, rng=random.Random()):
         """
         Given a segment of wall that could be built, builds a subset of
         it of random length. Always builds from one of the two ends.
