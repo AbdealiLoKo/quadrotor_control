@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
+#include <hector_uav_msgs/Altimeter.h>
 
 #include <rl_msgs/RLStateReward.h>
 #include <rl_msgs/RLEnvDescription.h>
@@ -23,6 +24,7 @@
 #include <rl_env/MountainCar.hh>
 #include <rl_env/CartPole.hh>
 #include <rl_env/LightWorld.hh>
+#include <rl_env/Hector_quadrotor.hh>
 
 #include <getopt.h>
 #include <stdlib.h>
@@ -47,9 +49,10 @@ int delay = 0;
 bool lag = false;
 bool highvar = false;
 
+
 void displayHelp(){
   cout << "\n Call env --env type [options]\n";
-  cout << "Env types: taxi tworooms fourrooms energy fuelworld mcar cartpole car2to7 car7to2 carrandom stocks lightworld\n";
+  cout << "Env types: taxi tworooms fourrooms energy fuelworld mcar cartpole car2to7 car7to2 carrandom stocks lightworld quad\n";
   cout << "\n Options:\n";
   cout << "--seed value (integer seed for random number generator)\n";
   cout << "--deterministic (deterministic version of domain)\n";
@@ -173,6 +176,13 @@ void initEnvironment(){
   else if (strcmp(envType, "stocks") == 0){
     desc.title = "Environment: Stocks\n";
     e = new Stocks(rng, stochastic, nsectors, nstocks);
+  }
+
+  // hector_quadrotor
+  else if (strcmp(envType, "quad") == 0){
+    desc.title = "Environment: Quadrotor\n";
+    // Set up a subscriber
+    e = new HectorQuad(rng);
   }
 
   else {
@@ -412,6 +422,11 @@ int main(int argc, char *argv[])
   rng = Random(1+seed);
   initEnvironment();
 
+  if (strcmp(envType, "quad") == 0){
+    // Set up a subscriber
+    HectorQuad *e1 = dynamic_cast<HectorQuad*>(e);
+    ros::Subscriber quadrotor_state = node.subscribe("/altimeter", 1000, &HectorQuad::zPosCallback, &(*e1));
+  }
 
   ROS_INFO(NODE ": starting main loop");
   
