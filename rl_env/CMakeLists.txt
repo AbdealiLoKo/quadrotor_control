@@ -23,6 +23,7 @@ add_library(envlib
   src/Env/gridworld.cc
   src/Env/stocks.cc
   src/Env/LightWorld.cc
+  src/Env/HectorQuad.cc
 )
 
 add_executable(env
