@@ -16,9 +16,9 @@ HectorQuad::HectorQuad(Random &rand):
 {
   ros::NodeHandle node;
   int qDepth = 1;
-  // ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
+  ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
   cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
-  ros::Subscriber quadrotor_state = node.subscribe("/altimeter", qDepth, &HectorQuad::zPosCallback, this);
+  ros::Subscriber quadrotor_state = node.subscribe("/altimeter", qDepth, &HectorQuad::zPosCallback, this, noDelay);
   reset();
 }
 
