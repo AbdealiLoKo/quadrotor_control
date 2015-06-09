@@ -41,7 +41,7 @@ protected:
   // 0,1,2,3,4,5,6,7,8,9
 
   // hardcoded num_actions to be able to calculate action value
-  int num_actions = 9;
+  int num_actions;
   ros::Publisher cmd_vel;
 
 private:

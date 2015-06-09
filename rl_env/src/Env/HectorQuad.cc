@@ -10,6 +10,7 @@ HectorQuad::HectorQuad(Random &rand):
   zPos(s[0]),
   zVel(s[1]),
   TARGET(100),
+  num_actions(9),
   MAX_HEIGHT(2*TARGET)
 {
   ros::NodeHandle nh;
