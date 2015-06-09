@@ -24,7 +24,7 @@
 #include <rl_env/MountainCar.hh>
 #include <rl_env/CartPole.hh>
 #include <rl_env/LightWorld.hh>
-#include <rl_env/Hector_quadrotor.hh>
+#include <rl_env/HectorQuad.hh>
 
 #include <getopt.h>
 #include <stdlib.h>
