@@ -1,4 +1,4 @@
-#include <rl_env/Hector_quadrotor.hh>
+#include <rl_env/HectorQuad.hh>
 #include <math.h>
 #include <geometry_msgs/Twist.h>
 
