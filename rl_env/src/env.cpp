@@ -86,7 +86,7 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
 
 }
 
-/** Process end-of-episode reward info. 
+/** Process end-of-episode reward info.
     Mostly to start new episode. */
 void processEpisodeInfo(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn){
   // start new episode if terminal
@@ -108,7 +108,6 @@ void initEnvironment(){
   // init the environment
   e = NULL;
   rl_msgs::RLEnvDescription desc;
-  
 
   if (strcmp(envType, "cartpole") == 0){
     desc.title = "Environment: Cart Pole\n";
@@ -235,7 +234,7 @@ void initEnvironment(){
   sr.reward = 0;
   sr.state = e->sensation();
   out_env_sr.publish(sr);
-  
+
 }
 
 
@@ -345,7 +344,6 @@ int main(int argc, char *argv[])
         }
         break;
       }
-    
     case 't':
       {
         if (strcmp(envType, "stocks") == 0){
@@ -357,7 +355,7 @@ int main(int argc, char *argv[])
         }
         break;
       }
-      
+
     case 'l':
       {
         if (strcmp(envType, "car2to7") == 0 || strcmp(envType, "car7to2") == 0 || strcmp(envType, "carrandom") == 0){
@@ -429,7 +427,7 @@ int main(int argc, char *argv[])
   }
 
   ROS_INFO(NODE ": starting main loop");
-  
+
   ros::spin();                          // handle incoming data
   //while (ros::ok()){
   //  ros::getGlobalCallbackQueue()->callAvailable(ros::WallDuration(0.1));

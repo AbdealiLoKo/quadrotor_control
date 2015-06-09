@@ -65,12 +65,12 @@ float HectorQuad::apply(int action) {
   refreshState();
   return reward();
 }
- 
+
 // Reward policy function
 float HectorQuad::reward() {
-  if (!zError()) 
+  if (!zError())
     return 0;
-  else 
+  else
     // Return a negative reward in every other case
     return -log(abs(zError())+1);
 }
@@ -100,7 +100,7 @@ experience HectorQuad::getExp(float s0, float s1, int a){
 
   zPos = s0;
   zVel = s1;
-  
+
   e.act = a;
   e.s = sensation();
   e.reward = apply(e.act);
@@ -114,7 +114,7 @@ experience HectorQuad::getExp(float s0, float s1, int a){
 void HectorQuad::getMinMaxFeatures(std::vector<float> *minFeat, std::vector<float> *maxFeat) {
   // No clue what model to impleent here
 }
-  
+
 
 void HectorQuad::getMinMaxReward(float* minR, float* maxR) {
   *minR = -(num_actions-1)/2;

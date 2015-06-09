@@ -33,7 +33,7 @@ public:
 
   /** Get an experience for the given state-action */
   experience getExp(float s0, float s1, int a);
-  
+
   void zPosCallback(const hector_uav_msgs::Altimeter::ConstPtr& msg);
 
 protected:
