@@ -13,7 +13,8 @@ HectorQuad::HectorQuad(Random &rand):
   MAX_HEIGHT(2*TARGET)
 {
   ros::NodeHandle nh;
-  pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
+  cmd_vel = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
+  ros::Subscriber quadrotor_state = node.subscribe("/altimeter", 1000, zPosCallback, &(this));
   reset();
 }
 
@@ -60,7 +61,7 @@ float HectorQuad::apply(int action) {
   // Publish a simple message with the z_desired
   geometry_msgs::Twist m;
   m.linear.z = z_desired;
-  pub.publish(m);
+  cmd_vel.publish(m);
 
   refreshState();
   return reward();

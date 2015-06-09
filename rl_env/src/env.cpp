@@ -420,12 +420,6 @@ int main(int argc, char *argv[])
   rng = Random(1+seed);
   initEnvironment();
 
-  if (strcmp(envType, "hectorquad") == 0){
-    // Set up a subscriber
-    HectorQuad *e1 = dynamic_cast<HectorQuad*>(e);
-    ros::Subscriber quadrotor_state = node.subscribe("/altimeter", 1000, &HectorQuad::zPosCallback, &(*e1));
-  }
-
   ROS_INFO(NODE ": starting main loop");
 
   ros::spin();                          // handle incoming data

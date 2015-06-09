@@ -42,7 +42,7 @@ protected:
 
   // hardcoded num_actions to be able to calculate action value
   int num_actions = 9;
-  ros::Publisher pub;
+  ros::Publisher cmd_vel;
 
 private:
   const bool noisy;
