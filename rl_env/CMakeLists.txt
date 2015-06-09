@@ -30,6 +30,7 @@ add_executable(env
   src/env.cpp
 )
 
+target_link_libraries(envlib ${catkin_LIBRARIES})
 target_link_libraries(env envlib ${catkin_LIBRARIES})
 
 ## Mark executables and/or libraries for installation

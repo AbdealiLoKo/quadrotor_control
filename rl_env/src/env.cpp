@@ -1,6 +1,5 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
-#include <hector_uav_msgs/Altimeter.h>
 
 #include <rl_msgs/RLStateReward.h>
 #include <rl_msgs/RLEnvDescription.h>

@@ -1,6 +1,7 @@
-#include <rl_env/HectorQuad.hh>
+#include <ros/ros.h>
 #include <math.h>
 #include <geometry_msgs/Twist.h>
+#include <rl_env/HectorQuad.hh>
 
 // Random initialization of position
 HectorQuad::HectorQuad(Random &rand):
@@ -13,9 +14,11 @@ HectorQuad::HectorQuad(Random &rand):
   num_actions(9),
   MAX_HEIGHT(2*TARGET)
 {
-  ros::NodeHandle nh;
-  cmd_vel = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
-  ros::Subscriber quadrotor_state = node.subscribe("/altimeter", 1000, zPosCallback, &(this));
+  ros::NodeHandle node;
+  int qDepth = 1;
+  // ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
+  cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
+  ros::Subscriber quadrotor_state = node.subscribe("/altimeter", qDepth, &HectorQuad::zPosCallback, this);
   reset();
 }
 
