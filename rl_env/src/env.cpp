@@ -52,7 +52,7 @@ bool highvar = false;
 
 void displayHelp(){
   cout << "\n Call env --env type [options]\n";
-  cout << "Env types: taxi tworooms fourrooms energy fuelworld mcar cartpole car2to7 car7to2 carrandom stocks lightworld quad\n";
+  cout << "Env types: taxi tworooms fourrooms energy fuelworld mcar cartpole car2to7 car7to2 carrandom stocks lightworld hectorquad\n";
   cout << "\n Options:\n";
   cout << "--seed value (integer seed for random number generator)\n";
   cout << "--deterministic (deterministic version of domain)\n";
@@ -179,7 +179,7 @@ void initEnvironment(){
   }
 
   // hector_quadrotor
-  else if (strcmp(envType, "quad") == 0){
+  else if (strcmp(envType, "hectorquad") == 0){
     desc.title = "Environment: Quadrotor\n";
     // Set up a subscriber
     e = new HectorQuad(rng);
@@ -422,7 +422,7 @@ int main(int argc, char *argv[])
   rng = Random(1+seed);
   initEnvironment();
 
-  if (strcmp(envType, "quad") == 0){
+  if (strcmp(envType, "hectorquad") == 0){
     // Set up a subscriber
     HectorQuad *e1 = dynamic_cast<HectorQuad*>(e);
     ros::Subscriber quadrotor_state = node.subscribe("/altimeter", 1000, &HectorQuad::zPosCallback, &(*e1));
