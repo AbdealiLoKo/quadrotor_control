@@ -18,14 +18,15 @@ HectorQuad::HectorQuad(Random &rand):
   int qDepth = 1;
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
   cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
-  ros::Subscriber quadrotor_state = node.subscribe("/altimeter", qDepth, &HectorQuad::zPosCallback, this, noDelay);
+  ros::Subscriber quadrotor_state = node.subscribe("/ground_truth/state", qDepth, &HectorQuad::gazeboStateCallback, this, noDelay);
   reset();
 }
 
 HectorQuad::~HectorQuad() { }
 
-void HectorQuad::zPosCallback(const hector_uav_msgs::Altimeter::ConstPtr& msg) {
-  vel(2) = msg->altitude;
+void HectorQuad::gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
+  pos(2) = msg->pose.pose.position.z;
+  vel(2) = msg->twist.twist.linear.z;
 }
 
 void HectorQuad::refreshState() {

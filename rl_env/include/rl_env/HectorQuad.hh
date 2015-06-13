@@ -5,7 +5,7 @@
 #include <Eigen/Geometry>
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
-#include <hector_uav_msgs/Altimeter.h>
+#include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
 
 class HectorQuad: public Environment {
@@ -35,7 +35,7 @@ public:
   /** Get an experience for the given state-action */
   experience getExp(float s0, float s1, int a);
 
-  void zPosCallback(const hector_uav_msgs::Altimeter::ConstPtr& msg);
+  void gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg);
 
 protected:
   enum quad_action_t {UP_4, UP_3, UP_2, UP_1, ZERO, DOWN_1, DOWN_2, DOWN_3, DOWN_4};
