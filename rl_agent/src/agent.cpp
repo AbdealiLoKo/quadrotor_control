@@ -312,7 +312,8 @@ int main(int argc, char *argv[])
     {"history", 1, 0, 'y'},
     {"b", 1, 0, 'b'},
     {"v", 1, 0, 'v'},
-    {"n", 1, 0, 'n'}
+    {"n", 1, 0, 'n'},
+    {NULL, 0, 0, 0}
   };
 
   bool epsilonChanged = false;

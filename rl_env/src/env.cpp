@@ -287,7 +287,8 @@ int main(int argc, char *argv[])
     {"nolag", 0, 0, 'o'},
     {"seed", 1, 0, 'x'},
     {"prints", 0, 0, 'p'},
-    {"highvar", 0, 0, 'v'}
+    {"highvar", 0, 0, 'v'},
+    {NULL, 0, 0, 0}
   };
 
   while(-1 != (ch = getopt_long_only(argc, argv, optflags, long_options, &option_index))) {
