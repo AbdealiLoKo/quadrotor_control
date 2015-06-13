@@ -108,12 +108,13 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     a.action = agent->first_action(stateIn->state);
     info.episode_reward = 0;
     info.number_actions = 1;
+    if (PRINTS) std::cout << NODE << " Episode " << info.episode_number << ", First Action, reward: " << info.episode_reward << endl;
   } else {
     info.episode_reward += stateIn->reward;
     // if terminal, no action, but calculate reward sum
     if (stateIn->terminal){
       agent->last_action(stateIn->reward);
-      std::cout << "Episode " << info.episode_number << " reward: " << info.episode_reward << endl;
+      std::cout << NODE << " Episode " << info.episode_number << ", Last Action (" << info.number_actions << "), reward: " << info.episode_reward << endl;
       // publish episode reward message
       out_exp_info.publish(info);
       info.episode_number++;
@@ -123,6 +124,7 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     } else {
       a.action = agent->next_action(stateIn->reward, stateIn->state);
       info.number_actions++;
+      if (PRINTS) std::cout << NODE << " Episode " << info.episode_number << ", Action " << info.number_actions << ", reward: " << info.episode_reward << endl;
     }
   }
   firstAction = false;
@@ -136,9 +138,11 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
 void processSeed(const rl_msgs::RLEnvSeedExperience::ConstPtr &seedIn){
 
   if (agent == NULL){
-    std::cout << "no agent yet" << endl;
+    std::cout << NODE << " no agent yet" << endl;
     return;
   }
+
+  if (PRINTS) std::cout << NODE << " Got a seed.";
 
   std::vector<experience> seeds;
   experience seed1;
