@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rl_env)
 
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+endif()
+
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common)
 include_directories(include ${catkin_INCLUDE_DIRS})
 

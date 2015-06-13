@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rl_msgs)
 
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+endif()
+
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs message_generation)
 
 add_message_files(
