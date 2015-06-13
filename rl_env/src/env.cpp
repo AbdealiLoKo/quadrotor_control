@@ -70,7 +70,6 @@ void displayHelp(){
 
 /** process action from the agent */
 void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
-
   rl_msgs::RLStateReward sr;
 
   // process action from the agent, affecting the environment
@@ -178,7 +177,7 @@ void initEnvironment(){
 
   // hector_quadrotor
   else if (strcmp(envType, "hectorquad") == 0){
-    desc.title = "Environment: Quadrotor\n";
+    desc.title = "Environment: HectorQuad\n";
     // Set up a subscriber
     e = new HectorQuad(rng);
   }
