@@ -26,7 +26,6 @@ HectorQuad::~HectorQuad() { }
 
 void HectorQuad::zPosCallback(const hector_uav_msgs::Altimeter::ConstPtr& msg) {
   zVel = msg->altitude;
-  std::cout << msg->altitude;
 }
 
 void HectorQuad::refreshState() {
