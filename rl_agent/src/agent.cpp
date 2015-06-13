@@ -62,33 +62,33 @@ float n = 0;
 
 
 void displayHelp(){
-  cout << "\n Call agent --agent type [options]\n";
-  cout << "Agent types: qlearner sarsa modelbased rmax texplore dyna savedpolicy\n";
-  cout << "\n Options:\n";
-  cout << "--seed value (integer seed for random number generator)\n";
-  cout << "--gamma value (discount factor between 0 and 1)\n";
-  cout << "--epsilon value (epsilon for epsilon-greedy exploration)\n";
-  cout << "--alpha value (learning rate alpha)\n";
-  cout << "--initialvalue value (initial q values)\n";
-  cout << "--actrate value (action selection rate (Hz))\n";
-  cout << "--lamba value (lamba for eligibility traces)\n";
-  cout << "--m value (parameter for R-Max)\n";
-  cout << "--k value (For Dyna: # of model based updates to do between each real world update)\n";
-  cout << "--history value (# steps of history to use for planning with delay)\n";
-  cout << "--filename file (file to load saved policy from for savedpolicy agent)\n";
-  cout << "--model type (tabular,tree,m5tree)\n";
-  cout << "--planner type (vi,pi,sweeping,uct,parallel-uct,delayed-uct,delayed-parallel-uct)\n";
-  cout << "--explore type (unknown,greedy,epsilongreedy,variancenovelty)\n";
-  cout << "--combo type (average,best,separate)\n";
-  cout << "--nmodels value (# of models)\n";
-  cout << "--nstates value (optionally discretize domain into value # of states on each feature)\n";
-  cout << "--reltrans (learn relative transitions)\n";
-  cout << "--abstrans (learn absolute transitions)\n";
-  cout << "--v value (For TEXPLORE: b/v coefficient for rewarding state-actions where models disagree)\n";
-  cout << "--n value (For TEXPLORE: n coefficient for rewarding state-actions which are novel)\n";
-  cout << "--prints (turn on debug printing of actions/rewards)\n";
+  std::cout << "\n Call agent --agent type [options]\n";
+  std::cout << "Agent types: qlearner sarsa modelbased rmax texplore dyna savedpolicy\n";
+  std::cout << "\n Options:\n";
+  std::cout << "--seed value (integer seed for random number generator)\n";
+  std::cout << "--gamma value (discount factor between 0 and 1)\n";
+  std::cout << "--epsilon value (epsilon for epsilon-greedy exploration)\n";
+  std::cout << "--alpha value (learning rate alpha)\n";
+  std::cout << "--initialvalue value (initial q values)\n";
+  std::cout << "--actrate value (action selection rate (Hz))\n";
+  std::cout << "--lamba value (lamba for eligibility traces)\n";
+  std::cout << "--m value (parameter for R-Max)\n";
+  std::cout << "--k value (For Dyna: # of model based updates to do between each real world update)\n";
+  std::cout << "--history value (# steps of history to use for planning with delay)\n";
+  std::cout << "--filename file (file to load saved policy from for savedpolicy agent)\n";
+  std::cout << "--model type (tabular,tree,m5tree)\n";
+  std::cout << "--planner type (vi,pi,sweeping,uct,parallel-uct,delayed-uct,delayed-parallel-uct)\n";
+  std::cout << "--explore type (unknown,greedy,epsilongreedy,variancenovelty)\n";
+  std::cout << "--combo type (average,best,separate)\n";
+  std::cout << "--nmodels value (# of models)\n";
+  std::cout << "--nstates value (optionally discretize domain into value # of states on each feature)\n";
+  std::cout << "--reltrans (learn relative transitions)\n";
+  std::cout << "--abstrans (learn absolute transitions)\n";
+  std::cout << "--v value (For TEXPLORE: b/v coefficient for rewarding state-actions where models disagree)\n";
+  std::cout << "--n value (For TEXPLORE: n coefficient for rewarding state-actions which are novel)\n";
+  std::cout << "--prints (turn on debug printing of actions/rewards)\n";
 
-  cout << "\n For more info, see: http://www.ros.org/wiki/rl_agent\n";
+  std::cout << "\n For more info, see: http://www.ros.org/wiki/rl_agent\n";
   exit(-1);
 
 }
@@ -97,7 +97,7 @@ void displayHelp(){
 void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
 
   if (agent == NULL){
-    cout << "no agent yet" << endl;
+    std::cout << "no agent yet" << endl;
     return;
   }
 
@@ -113,7 +113,7 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     // if terminal, no action, but calculate reward sum
     if (stateIn->terminal){
       agent->last_action(stateIn->reward);
-      cout << "Episode " << info.episode_number << " reward: " << info.episode_reward << endl;
+      std::cout << "Episode " << info.episode_number << " reward: " << info.episode_reward << endl;
       // publish episode reward message
       out_exp_info.publish(info);
       info.episode_number++;
@@ -136,7 +136,7 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
 void processSeed(const rl_msgs::RLEnvSeedExperience::ConstPtr &seedIn){
 
   if (agent == NULL){
-    cout << "no agent yet" << endl;
+    std::cout << "no agent yet" << endl;
     return;
   }
 
@@ -162,7 +162,7 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
 
 
   if (strcmp(agentType, "qlearner") == 0){
-    cout << "Agent: QLearner" << endl;
+    std::cout << "Agent: QLearner" << endl;
     agent = new QLearner(envIn->num_actions,
                          discountfactor, // gamma
                          initialvalue, // initial value
@@ -172,7 +172,7 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
   }
 
   else if (strcmp(agentType, "rmax") == 0 || strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0){
-    cout << "Agent: Model Based" << endl;
+    std::cout << "Agent: Model Based" << endl;
     agent = new ModelBasedAgent(envIn->num_actions,
                                 discountfactor,
                                 envIn->max_reward, envIn->reward_range,
@@ -192,26 +192,26 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
   }
 
   else if (strcmp(agentType, "dyna") == 0){
-    cout << "Agent: Dyna" << endl;
+    std::cout << "Agent: Dyna" << endl;
     agent = new Dyna(envIn->num_actions, discountfactor,
                      initialvalue, alpha, k, epsilon,
                      rng);
   }
 
   else if (strcmp(agentType, "sarsa") == 0){
-    cout << "Agent: Sarsa" << endl;
+    std::cout << "Agent: Sarsa" << endl;
     agent = new Sarsa(envIn->num_actions, discountfactor,
                       initialvalue, alpha, epsilon, lambda,
                       rng);
   }
 
   else if (strcmp(agentType, "savedpolicy") == 0){
-    cout << "Agent: Saved Policy" << endl;
+    std::cout << "Agent: Saved Policy" << endl;
     agent = new SavedPolicy(envIn->num_actions, filename);
   }
 
   else {
-    cout << "Invalid Agent!" << endl;
+    std::cout << "Invalid Agent!" << endl;
     displayHelp();
     exit(-1);
   }
@@ -220,7 +220,7 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
   // not for model based when doing continuous model
   if (nstates > 0 && (model != M5ALLMULTI || strcmp(agentType, "qlearner") == 0)){
     int totalStates = powf(nstates,envIn->min_state_range.size());
-    if (PRINTS) cout << "Discretize with " << nstates << ", total: " << totalStates << endl;
+    if (PRINTS) std::cout << "Discretize with " << nstates << ", total: " << totalStates << endl;
     agent = new DiscretizationAgent(nstates, a2,
                                     envIn->min_state_range,
                                     envIn->max_state_range, PRINTS);
@@ -241,7 +241,7 @@ int main(int argc, char *argv[])
 
   // agent is required required
   if (argc < 3){
-    cout << "--agent type  option is required" << endl;
+    std::cout << "--agent type  option is required" << endl;
     displayHelp();
     exit(-1);
   }
@@ -259,7 +259,7 @@ int main(int argc, char *argv[])
     }
   }
   if (!gotAgent) {
-    cout << "--agent type  option is required" << endl;
+    std::cout << "--agent type  option is required" << endl;
     displayHelp();
   }
 
@@ -326,22 +326,22 @@ int main(int argc, char *argv[])
 
     case 'g':
       discountfactor = std::atof(optarg);
-      cout << "discountfactor: " << discountfactor << endl;
+      std::cout << "discountfactor: " << discountfactor << endl;
       break;
 
     case 'e':
       epsilonChanged = true;
       epsilon = std::atof(optarg);
-      cout << "epsilon: " << epsilon << endl;
+      std::cout << "epsilon: " << epsilon << endl;
       break;
 
     case 'y':
       {
         if (strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0){
           history = std::atoi(optarg);
-          cout << "history: " << history << endl;
+          std::cout << "history: " << history << endl;
         } else {
-          cout << "--history is not a valid option for agent: " << agentType << endl;
+          std::cout << "--history is not a valid option for agent: " << agentType << endl;
           exit(-1);
         }
         break;
@@ -351,9 +351,9 @@ int main(int argc, char *argv[])
       {
         if (strcmp(agentType, "dyna") == 0){
           k = std::atoi(optarg);
-          cout << "k: " << k << endl;
+          std::cout << "k: " << k << endl;
         } else {
-          cout << "--k is only a valid option for the Dyna agent" << endl;
+          std::cout << "--k is only a valid option for the Dyna agent" << endl;
           exit(-1);
         }
         break;
@@ -361,16 +361,16 @@ int main(int argc, char *argv[])
 
     case 'f':
       filename = optarg;
-      cout << "policy filename: " <<  filename << endl;
+      std::cout << "policy filename: " <<  filename << endl;
       break;
 
     case 'a':
       {
         if (strcmp(agentType, "qlearner") == 0 || strcmp(agentType, "dyna") == 0 || strcmp(agentType, "sarsa") == 0){
           alpha = std::atof(optarg);
-          cout << "alpha: " << alpha << endl;
+          std::cout << "alpha: " << alpha << endl;
         } else {
-          cout << "--alpha option is only valid for Q-Learning, Dyna, and Sarsa" << endl;
+          std::cout << "--alpha option is only valid for Q-Learning, Dyna, and Sarsa" << endl;
           exit(-1);
         }
         break;
@@ -380,9 +380,9 @@ int main(int argc, char *argv[])
       {
         if (strcmp(agentType, "qlearner") == 0 || strcmp(agentType, "dyna") == 0 || strcmp(agentType, "sarsa") == 0){
           initialvalue = std::atof(optarg);
-          cout << "initialvalue: " << initialvalue << endl;
+          std::cout << "initialvalue: " << initialvalue << endl;
         } else {
-          cout << "--initialvalue option is only valid for Q-Learning, Dyna, and Sarsa" << endl;
+          std::cout << "--initialvalue option is only valid for Q-Learning, Dyna, and Sarsa" << endl;
           exit(-1);
         }
         break;
@@ -393,9 +393,9 @@ int main(int argc, char *argv[])
         actrateChanged = true;
         if (strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0 || strcmp(agentType, "rmax") == 0){
           actrate = std::atof(optarg);
-          cout << "actrate: " << actrate << endl;
+          std::cout << "actrate: " << actrate << endl;
         } else {
-          cout << "Model-free methods do not require an action rate" << endl;
+          std::cout << "Model-free methods do not require an action rate" << endl;
           exit(-1);
         }
         break;
@@ -406,9 +406,9 @@ int main(int argc, char *argv[])
         lambdaChanged = true;
         if (strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0 || strcmp(agentType, "rmax") == 0 || strcmp(agentType, "sarsa") == 0){
           lambda = std::atof(optarg);
-          cout << "lambda: " << lambda << endl;
+          std::cout << "lambda: " << lambda << endl;
         } else {
-          cout << "--lambda option is invalid for this agent: " << agentType << endl;
+          std::cout << "--lambda option is invalid for this agent: " << agentType << endl;
           exit(-1);
         }
         break;
@@ -419,9 +419,9 @@ int main(int argc, char *argv[])
         mChanged = true;
         if (strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0 || strcmp(agentType, "rmax") == 0){
           M = std::atoi(optarg);
-          cout << "M: " << M << endl;
+          std::cout << "M: " << M << endl;
         } else {
-          cout << "--M option only useful for model-based agents, not " << agentType << endl;
+          std::cout << "--M option only useful for model-based agents, not " << agentType << endl;
           exit(-1);
         }
         break;
@@ -436,14 +436,14 @@ int main(int argc, char *argv[])
           else if (strcmp(optarg, "c45tree") == 0) model = C45TREE;
           else if (strcmp(optarg, "m5tree") == 0) model = M5ALLMULTI;
           if (strcmp(agentType, "rmax") == 0 && model != RMAX){
-            cout << "R-Max should use tabular model" << endl;
+            std::cout << "R-Max should use tabular model" << endl;
             exit(-1);
           }
         } else {
-          cout << "Model-free methods do not need a model, --model option does nothing for this agent type" << endl;
+          std::cout << "Model-free methods do not need a model, --model option does nothing for this agent type" << endl;
           exit(-1);
         }
-        cout << "model: " << modelNames[model] << endl;
+        std::cout << "model: " << modelNames[model] << endl;
         break;
       }
 
@@ -456,15 +456,15 @@ int main(int argc, char *argv[])
         else if (strcmp(optarg, "unvisitedactions") == 0) explore = UNVISITED_ACT_BONUS;
         else if (strcmp(optarg, "variancenovelty") == 0) explore = DIFF_AND_NOVEL_BONUS;
         if (strcmp(agentType, "rmax") == 0 && explore != EXPLORE_UNKNOWN){
-          cout << "R-Max should use \"--explore unknown\" exploration" << endl;
+          std::cout << "R-Max should use \"--explore unknown\" exploration" << endl;
           exit(-1);
         }
         else if (strcmp(agentType, "texplore") != 0 && strcmp(agentType, "modelbased") != 0 && strcmp(agentType, "rmax") != 0 && (explore != GREEDY && explore != EPSILONGREEDY)) {
-          cout << "Model free methods must use either greedy or epsilon-greedy exploration!" << endl;
+          std::cout << "Model free methods must use either greedy or epsilon-greedy exploration!" << endl;
           explore = EPSILONGREEDY;
           exit(-1);
         }
-        cout << "explore: " << exploreNames[explore] << endl;
+        std::cout << "explore: " << exploreNames[explore] << endl;
         break;
       }
 
@@ -486,13 +486,13 @@ int main(int argc, char *argv[])
         else if (strcmp(optarg, "delayedparalleluct") == 0) planner = POMDP_PAR_ETUCT;
         else if (strcmp(optarg, "delayed-parallel-uct") == 0) planner = POMDP_PAR_ETUCT;
         if (strcmp(agentType, "texplore") != 0 && strcmp(agentType, "modelbased") != 0 && strcmp(agentType, "rmax") != 0){
-          cout << "Model-free methods do not require planners, --planner option does nothing with this agent" << endl;
+          std::cout << "Model-free methods do not require planners, --planner option does nothing with this agent" << endl;
           exit(-1);
         }
         if (strcmp(agentType, "rmax") == 0 && planner != VALUE_ITERATION){
-          cout << "Typical implementation of R-Max would use value iteration, but another planner type is ok" << endl;
+          std::cout << "Typical implementation of R-Max would use value iteration, but another planner type is ok" << endl;
         }
-        cout << "planner: " << plannerNames[planner] << endl;
+        std::cout << "planner: " << plannerNames[planner] << endl;
         break;
       }
 
@@ -503,9 +503,9 @@ int main(int argc, char *argv[])
           else if (strcmp(optarg, "weighted") == 0) modelcombo = WEIGHTAVG;
           else if (strcmp(optarg, "best") == 0) modelcombo = BEST;
           else if (strcmp(optarg, "separate") == 0) modelcombo = SEPARATE;
-          cout << "modelcombo: " << comboNames[modelcombo] << endl;
+          std::cout << "modelcombo: " << comboNames[modelcombo] << endl;
         } else {
-          cout << "--combo is an invalid option for agent: " << agentType << endl;
+          std::cout << "--combo is an invalid option for agent: " << agentType << endl;
           exit(-1);
         }
         break;
@@ -515,13 +515,13 @@ int main(int argc, char *argv[])
       {
         if (strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0){
           nmodels = std::atoi(optarg);
-          cout << "nmodels: " << nmodels << endl;
+          std::cout << "nmodels: " << nmodels << endl;
         } else {
-          cout << "--nmodels is an invalid option for agent: " << agentType << endl;
+          std::cout << "--nmodels is an invalid option for agent: " << agentType << endl;
           exit(-1);
         }
         if (nmodels < 1){
-          cout << "nmodels must be > 0" << endl;
+          std::cout << "nmodels must be > 0" << endl;
           exit(-1);
         }
         break;
@@ -531,9 +531,9 @@ int main(int argc, char *argv[])
       {
         if (strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0){
           reltrans = true;
-          cout << "reltrans: " << reltrans << endl;
+          std::cout << "reltrans: " << reltrans << endl;
         } else {
-          cout << "--reltrans is an invalid option for agent: " << agentType << endl;
+          std::cout << "--reltrans is an invalid option for agent: " << agentType << endl;
           exit(-1);
         }
         break;
@@ -543,9 +543,9 @@ int main(int argc, char *argv[])
       {
         if (strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0){
           reltrans = false;
-          cout << "reltrans: " << reltrans << endl;
+          std::cout << "reltrans: " << reltrans << endl;
         } else {
-          cout << "--abstrans is an invalid option for agent: " << agentType << endl;
+          std::cout << "--abstrans is an invalid option for agent: " << agentType << endl;
           exit(-1);
         }
         break;
@@ -553,12 +553,12 @@ int main(int argc, char *argv[])
 
     case 's':
       seed = std::atoi(optarg);
-      cout << "seed: " << seed << endl;
+      std::cout << "seed: " << seed << endl;
       break;
 
     case 'q':
       // already processed this one
-      cout << "agent: " << agentType << endl;
+      std::cout << "agent: " << agentType << endl;
       break;
 
     case 'd':
@@ -567,7 +567,7 @@ int main(int argc, char *argv[])
 
     case 'w':
       nstates = std::atoi(optarg);
-      cout << "nstates for discretization: " << nstates << endl;
+      std::cout << "nstates for discretization: " << nstates << endl;
       break;
 
     case 'v':
@@ -576,10 +576,10 @@ int main(int argc, char *argv[])
         bvnChanged = true;
         if (strcmp(agentType, "texplore") == 0){
           v = std::atof(optarg);
-          cout << "v coefficient (variance bonus): " << v << endl;
+          std::cout << "v coefficient (variance bonus): " << v << endl;
         }
         else {
-          cout << "--v and --b are invalid options for agent: " << agentType << endl;
+          std::cout << "--v and --b are invalid options for agent: " << agentType << endl;
           exit(-1);
         }
         break;
@@ -590,10 +590,10 @@ int main(int argc, char *argv[])
         bvnChanged = true;
         if (strcmp(agentType, "texplore") == 0){
           n = std::atof(optarg);
-          cout << "n coefficient (novelty bonus): " << n << endl;
+          std::cout << "n coefficient (novelty bonus): " << n << endl;
         }
         else {
-          cout << "--n is an invalid option for agent: " << agentType << endl;
+          std::cout << "--n is an invalid option for agent: " << agentType << endl;
           exit(-1);
         }
         break;
@@ -615,43 +615,43 @@ int main(int argc, char *argv[])
   // check for conflicting options
   // changed epsilon but not doing epsilon greedy exploration
   if (epsilonChanged && explore != EPSILONGREEDY){
-    cout << "No reason to change epsilon when not using epsilon-greedy exploration" << endl;
+    std::cout << "No reason to change epsilon when not using epsilon-greedy exploration" << endl;
     exit(-1);
   }
 
   // set history value but not doing uct w/history planner
   if (history > 0 && (planner == VALUE_ITERATION || planner == POLICY_ITERATION || planner == PRI_SWEEPING)){
-    cout << "No reason to set history higher than 0 if not using a UCT planner" << endl;
+    std::cout << "No reason to set history higher than 0 if not using a UCT planner" << endl;
     exit(-1);
   }
 
   // set action rate but not doing real-time planner
   if (actrateChanged && (planner == VALUE_ITERATION || planner == POLICY_ITERATION || planner == PRI_SWEEPING)){
-    cout << "No reason to set actrate if not using a UCT planner" << endl;
+    std::cout << "No reason to set actrate if not using a UCT planner" << endl;
     exit(-1);
   }
 
   // set lambda but not doing uct (lambda)
   if (lambdaChanged && (strcmp(agentType, "texplore") == 0 || strcmp(agentType, "modelbased") == 0 || strcmp(agentType, "rmax") == 0) && (planner == VALUE_ITERATION || planner == POLICY_ITERATION || planner == PRI_SWEEPING)){
-    cout << "No reason to set actrate if not using a UCT planner" << endl;
+    std::cout << "No reason to set actrate if not using a UCT planner" << endl;
     exit(-1);
   }
 
   // set n/v/b but not doing that diff_novel exploration
   if (bvnChanged && explore != DIFF_AND_NOVEL_BONUS){
-    cout << "No reason to set n or v if not doing variance & novelty exploration" << endl;
+    std::cout << "No reason to set n or v if not doing variance & novelty exploration" << endl;
     exit(-1);
   }
 
   // set combo other than best but only doing 1 model
   if (modelcombo != BEST && nmodels == 1){
-    cout << "No reason to have model combo other than best with nmodels = 1" << endl;
+    std::cout << "No reason to have model combo other than best with nmodels = 1" << endl;
     exit(-1);
   }
 
   // set M but not doing explore unknown
   if (mChanged && explore != EXPLORE_UNKNOWN){
-    cout << "No reason to set M if not doing R-max style Explore Unknown exploration" << endl;
+    std::cout << "No reason to set M if not doing R-max style Explore Unknown exploration" << endl;
     exit(-1);
   }
 

@@ -50,20 +50,20 @@ bool highvar = false;
 
 
 void displayHelp(){
-  cout << "\n Call env --env type [options]\n";
-  cout << "Env types: taxi tworooms fourrooms energy fuelworld mcar cartpole car2to7 car7to2 carrandom stocks lightworld hectorquad\n";
-  cout << "\n Options:\n";
-  cout << "--seed value (integer seed for random number generator)\n";
-  cout << "--deterministic (deterministic version of domain)\n";
-  cout << "--stochastic (stochastic version of domain)\n";
-  cout << "--delay value (# steps of action delay (for mcar and tworooms)\n";
-  cout << "--lag (turn on brake lag for car driving domain)\n";
-  cout << "--highvar (have variation fuel costs in Fuel World)\n";
-  cout << "--nsectors value (# sectors for stocks domain)\n";
-  cout << "--nstocks value (# stocks for stocks domain)\n";
-  cout << "--prints (turn on debug printing of actions/rewards)\n";
+  std::cout << "\n Call env --env type [options]\n";
+  std::cout << "Env types: taxi tworooms fourrooms energy fuelworld mcar cartpole car2to7 car7to2 carrandom stocks lightworld hectorquad\n";
+  std::cout << "\n Options:\n";
+  std::cout << "--seed value (integer seed for random number generator)\n";
+  std::cout << "--deterministic (deterministic version of domain)\n";
+  std::cout << "--stochastic (stochastic version of domain)\n";
+  std::cout << "--delay value (# steps of action delay (for mcar and tworooms)\n";
+  std::cout << "--lag (turn on brake lag for car driving domain)\n";
+  std::cout << "--highvar (have variation fuel costs in Fuel World)\n";
+  std::cout << "--nsectors value (# sectors for stocks domain)\n";
+  std::cout << "--nstocks value (# stocks for stocks domain)\n";
+  std::cout << "--prints (turn on debug printing of actions/rewards)\n";
 
-  cout << "\n For more info, see: http://www.ros.org/wiki/rl_env\n";
+  std::cout << "\n For more info, see: http://www.ros.org/wiki/rl_env\n";
   exit(-1);
 }
 
@@ -79,7 +79,7 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
   sr.terminal = e->terminal();
 
   // publish the state-reward message
-  if (PRINTS) cout << "Got action " << actionIn->action << " at state: " << sr.state[0] << ", " << sr.state[1] << ", reward: " << sr.reward << endl;
+  if (PRINTS) std::cout << "Got action " << actionIn->action << " at state: " << sr.state[0] << ", " << sr.state[1] << ", reward: " << sr.reward << endl;
 
   out_env_sr.publish(sr);
 
@@ -89,7 +89,7 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
     Mostly to start new episode. */
 void processEpisodeInfo(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn){
   // start new episode if terminal
-  if (PRINTS) cout << "Episode " << infoIn->episode_number << " terminated with reward: " << infoIn->episode_reward << ", start new episode " << endl;
+  if (PRINTS) std::cout << "Episode " << infoIn->episode_number << " terminated with reward: " << infoIn->episode_reward << ", start new episode " << endl;
 
   e->reset();
 
@@ -208,7 +208,7 @@ void initEnvironment(){
   desc.max_reward = maxReward;
   desc.reward_range = maxReward - minReward;
 
-  cout << desc.title << endl;
+  std::cout << desc.title << endl;
 
   // publish environment description
   out_env_desc.publish(desc);
@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
   ros::NodeHandle node;
 
   if (argc < 2){
-    cout << "--env type  option is required" << endl;
+    std::cout << "--env type  option is required" << endl;
     displayHelp();
     exit(-1);
   }
@@ -268,7 +268,7 @@ int main(int argc, char *argv[])
     }
   }
   if (!gotEnv) {
-    cout << "--env type  option is required" << endl;
+    std::cout << "--env type  option is required" << endl;
     displayHelp();
   }
 
@@ -295,21 +295,21 @@ int main(int argc, char *argv[])
 
     case 'x':
       seed = std::atoi(optarg);
-      cout << "seed: " << seed << endl;
+      std::cout << "seed: " << seed << endl;
       break;
 
     case 'd':
       stochastic = false;
-      cout << "stochastic: " << stochastic << endl;
+      std::cout << "stochastic: " << stochastic << endl;
       break;
 
     case 'v':
       {
         if (strcmp(envType, "fuelworld") == 0){
           highvar = true;
-          cout << "fuel world fuel cost variation: " << highvar << endl;
+          std::cout << "fuel world fuel cost variation: " << highvar << endl;
         } else {
-          cout << "--highvar is only a valid option for the fuelworld domain." << endl;
+          std::cout << "--highvar is only a valid option for the fuelworld domain." << endl;
           exit(-1);
         }
         break;
@@ -317,16 +317,16 @@ int main(int argc, char *argv[])
 
     case 's':
       stochastic = true;
-      cout << "stochastic: " << stochastic << endl;
+      std::cout << "stochastic: " << stochastic << endl;
       break;
 
     case 'a':
       {
         if (strcmp(envType, "mcar") == 0 || strcmp(envType, "tworooms") == 0){
           delay = std::atoi(optarg);
-          cout << "delay steps: " << delay << endl;
+          std::cout << "delay steps: " << delay << endl;
         } else {
-          cout << "--delay option is only valid for the mcar and tworooms domains" << endl;
+          std::cout << "--delay option is only valid for the mcar and tworooms domains" << endl;
           exit(-1);
         }
         break;
@@ -336,9 +336,9 @@ int main(int argc, char *argv[])
       {
         if (strcmp(envType, "stocks") == 0){
           nsectors = std::atoi(optarg);
-          cout << "nsectors: " << nsectors << endl;
+          std::cout << "nsectors: " << nsectors << endl;
         } else {
-          cout << "--nsectors option is only valid for the stocks domain" << endl;
+          std::cout << "--nsectors option is only valid for the stocks domain" << endl;
           exit(-1);
         }
         break;
@@ -347,9 +347,9 @@ int main(int argc, char *argv[])
       {
         if (strcmp(envType, "stocks") == 0){
           nstocks = std::atoi(optarg);
-          cout << "nstocks: " << nstocks << endl;
+          std::cout << "nstocks: " << nstocks << endl;
         } else {
-          cout << "--nstocks option is only valid for the stocks domain" << endl;
+          std::cout << "--nstocks option is only valid for the stocks domain" << endl;
           exit(-1);
         }
         break;
@@ -359,9 +359,9 @@ int main(int argc, char *argv[])
       {
         if (strcmp(envType, "car2to7") == 0 || strcmp(envType, "car7to2") == 0 || strcmp(envType, "carrandom") == 0){
           lag = true;
-          cout << "lag: " << lag << endl;
+          std::cout << "lag: " << lag << endl;
         } else {
-          cout << "--lag option is only valid for car velocity tasks" << endl;
+          std::cout << "--lag option is only valid for car velocity tasks" << endl;
           exit(-1);
         }
         break;
@@ -371,9 +371,9 @@ int main(int argc, char *argv[])
        {
          if (strcmp(envType, "car2to7") == 0 || strcmp(envType, "car7to2") == 0 || strcmp(envType, "carrandom") == 0){
            lag = false;
-           cout << "lag: " << lag << endl;
+           std::cout << "lag: " << lag << endl;
          } else {
-           cout << "--nolag option is only valid for car velocity tasks" << endl;
+           std::cout << "--nolag option is only valid for car velocity tasks" << endl;
            exit(-1);
          }
          break;
@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
 
     case 'e':
       // already processed this one
-      cout << "env: " << envType << endl;
+      std::cout << "env: " << envType << endl;
       break;
 
     case 'p':
