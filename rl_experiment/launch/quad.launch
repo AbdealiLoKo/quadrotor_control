@@ -33,7 +33,7 @@
   </include>
 
   <!-- Start rviz visualization with preset config -->
-  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find rl_env)/src/Env/hectorQuad/quad.rviz"/>
+  <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find rl_env)/src/Env/hectorQuad/quad.rviz"/> -->
 
   <node name="RLAgent" pkg="rl_agent" type="agent" args="--agent sarsa" output="screen" />
 
