@@ -2,6 +2,7 @@
 #define _HECTORQUAD_H_
 
 #include <set>
+#include <Eigen/Geometry>
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
 #include <hector_uav_msgs/Altimeter.h>
@@ -48,8 +49,8 @@ private:
   const bool noisy;
   Random &rng;
   std::vector<float> s;
-  float &zPos;
-  float &zVel;
+  Eigen::Vector3d pos;
+  Eigen::Vector3d vel;
   float reward();
   int zError();
   void refreshState();

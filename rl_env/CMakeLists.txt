@@ -8,7 +8,8 @@ else()
 endif()
 
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common)
-include_directories(include ${catkin_INCLUDE_DIRS})
+find_package(Eigen3 REQUIRED)
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 catkin_package(
     INCLUDE_DIRS include

@@ -8,11 +8,11 @@ HectorQuad::HectorQuad(Random &rand):
   noisy(false),
   s(2),
   rng(rand),
-  zPos(s[0]),
-  zVel(s[1]),
   TARGET(100),
   num_actions(9),
-  MAX_HEIGHT(2*TARGET)
+  MAX_HEIGHT(2*TARGET),
+  pos(0, 0, s[0]),
+  vel(0, 0, s[1])
 {
   ros::NodeHandle node;
   int qDepth = 1;
@@ -25,19 +25,19 @@ HectorQuad::HectorQuad(Random &rand):
 HectorQuad::~HectorQuad() { }
 
 void HectorQuad::zPosCallback(const hector_uav_msgs::Altimeter::ConstPtr& msg) {
-  zVel = msg->altitude;
+  vel(2) = msg->altitude;
 }
 
 void HectorQuad::refreshState() {
   // TODO: May need normalization
-  s[0] = int(log(zPos));
-  s[1] = int(log(zVel));
+  s[0] = int(log(pos(2)));
+  s[1] = int(log(vel(2)));
 }
 
 // zError function calculation
 int HectorQuad::zError() {
   // Get the current Z position directly using a subscriber
-  return (TARGET-zPos);
+  return (TARGET-pos(2));
 }
 
 const std::vector<float> &HectorQuad::sensation() const {
@@ -51,7 +51,7 @@ int HectorQuad::getNumActions() {
 }
 
 bool HectorQuad::terminal() const {
-  return (TARGET-zPos==0);
+  return (TARGET-pos(2)==0);
 }
 
 // Called by env.cpp for next action
@@ -103,8 +103,8 @@ experience HectorQuad::getExp(float s0, float s1, int a){
   e.s.resize(2, 0.0);
   e.next.resize(2, 0.0);
 
-  zPos = s0;
-  zVel = s1;
+  pos(2) = s0;
+  vel(2) = s1;
 
   e.act = a;
   e.s = sensation();
