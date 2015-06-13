@@ -657,13 +657,12 @@ int main(int argc, char *argv[])
 
   int qDepth = 1;
 
-  // Set up Publishers
+  std::cout << NODE << " Setting up Publishers ...\n";
   out_rl_action = node.advertise<rl_msgs::RLAction>("rl_agent/rl_action",qDepth, false);
   out_exp_info = node.advertise<rl_msgs::RLExperimentInfo>("rl_agent/rl_experiment_info",qDepth, false);
 
-  // Set up subscribers
+  std::cout << NODE << " Setting up Subscribers ...\n";
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
-
   ros::Subscriber rl_description =  node.subscribe("rl_env/rl_env_description", qDepth, processEnvDescription, noDelay);
   ros::Subscriber rl_state =  node.subscribe("rl_env/rl_state_reward", qDepth, processState, noDelay);
   ros::Subscriber rl_seed =  node.subscribe("rl_env/rl_seed", 20, processSeed, noDelay);
