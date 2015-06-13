@@ -671,9 +671,6 @@ int main(int argc, char *argv[])
   ROS_INFO(NODE ": starting main loop");
 
   ros::spin();                          // handle incoming data
-  //while (ros::ok()){
-  //  ros::getGlobalCallbackQueue()->callAvailable(ros::WallDuration(0.1));
-  //}
 
   if(agent != NULL) {
     if(filename != NULL) {
