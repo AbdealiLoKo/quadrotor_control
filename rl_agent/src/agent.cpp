@@ -114,7 +114,7 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     // if terminal, no action, but calculate reward sum
     if (stateIn->terminal){
       agent->last_action(stateIn->reward);
-      if (PRINTS >= 2) std::cout << NODE << " Episode " << info.episode_number << ", Last Action (" << info.number_actions << "), reward: " << info.episode_reward << endl;
+      std::cout << NODE << " Episode " << info.episode_number << ", Last Action (" << info.number_actions << "), reward: " << info.episode_reward << endl;
       // publish episode reward message
       out_exp_info.publish(info);
       info.episode_number++;

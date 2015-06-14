@@ -32,7 +32,7 @@ void HectorQuad::gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
   last_vel = vel;
   pos(2) = msg->pose.pose.position.z;
   vel(2) = msg->twist.twist.linear.z;
-  std::cout << "Pos: " << pos(2) << " pose:" << msg->pose.pose.position.z << endl;
+  // std::cout << "Pos: " << pos(2) << " Vel: " << vel(2) << endl;
 }
 
 void HectorQuad::refreshState() {
@@ -50,7 +50,7 @@ int HectorQuad::getNumActions() {
 }
 
 bool HectorQuad::terminal() {
-  return (TARGET-pos(2)==0);
+  return(abs(TARGET - pos(2)) < 0.5);
 }
 
 // Called by env.cpp for next action
@@ -67,7 +67,7 @@ float HectorQuad::apply(int action) {
       action_vel.linear.z = 0;
       break;
   }
-  std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << "," << s[1] << " Pos:" << pos(2) << " Targ:" << TARGET << " Reward:" << reward() << endl;
+  // std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << "," << s[1] << " Pos:" << pos(2) << " Targ:" << TARGET << " Reward:" << reward() << endl;
 
   cmd_vel.publish(action_vel);
 
