@@ -35,16 +35,17 @@ public:
   /** Get an experience for the given state-action */
   experience getExp(float s0, float s1, int a);
 
-  void gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg);
+  void gazeboGroundTruth(const nav_msgs::Odometry::ConstPtr& msg);
 
 protected:
   // Actions
   enum quad_action_t {UP, DOWN, STAY};
   // hardcoded num_actions to be able to calculate action value
   int num_actions;
-  // Publishers and subscribers
+  // Publishers, subscribers and services
   ros::Publisher cmd_vel;
-  ros::Subscriber quadrotor_state;
+  ros::Subscriber ground_truth;
+  ros::ServiceClient reset_world;
   // Stochasticity related variables
   Random &rng;
   // State and positions

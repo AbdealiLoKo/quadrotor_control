@@ -7,14 +7,14 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common gazebo_msgs std_srvs)
 find_package(Eigen3 REQUIRED)
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIR})
 
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES envlib
-    CATKIN_DEPENDS roscpp std_msgs rl_msgs tf rl_common
+    CATKIN_DEPENDS roscpp std_msgs rl_msgs tf rl_common gazebo_msgs std_srvs
     DEPENDS
 )
 

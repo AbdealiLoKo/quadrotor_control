@@ -3,6 +3,7 @@
 #include <geometry_msgs/Twist.h>
 #include <rl_env/HectorQuad.hh>
 #include <nav_msgs/Odometry.h>
+#include <std_srvs/Empty.h>
 
 // Random initialization of position
 HectorQuad::HectorQuad(Random &rand, Eigen::Vector3d target/* = Eigen::Vector3d(0, 0, 0)*/):
@@ -18,14 +19,18 @@ HectorQuad::HectorQuad(Random &rand, Eigen::Vector3d target/* = Eigen::Vector3d(
   ros::NodeHandle node;
   int qDepth = 1;
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
+  // Publishers
   cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
-  quadrotor_state = node.subscribe<nav_msgs::Odometry>("/ground_truth/state", qDepth, &HectorQuad::gazeboStateCallback, this, noDelay);
+  // Subscribers
+  ground_truth = node.subscribe<nav_msgs::Odometry>("/ground_truth/state", qDepth, &HectorQuad::gazeboGroundTruth, this, noDelay);
+  // Services
+  reset_world = node.serviceClient<std_srvs::Empty>("/gazebo/reset_world");
   reset();
 }
 
 HectorQuad::~HectorQuad() { }
 
-void HectorQuad::gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
+void HectorQuad::gazeboGroundTruth(const nav_msgs::Odometry::ConstPtr& msg) {
   last_pos = pos;
   last_vel = vel;
   pos(2) = msg->pose.pose.position.z;
@@ -137,4 +142,7 @@ void HectorQuad::getMinMaxReward(float* minR, float* maxR) {
 
 void HectorQuad::reset() {
   terminal_count = 0;
+  // Reset the world
+  std_srvs::Empty msg;
+  reset_world.call(msg);
 }
