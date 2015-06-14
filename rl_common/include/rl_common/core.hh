@@ -187,7 +187,7 @@ public:
   /** Provides access to the current sensation that the environment
       gives to the agent.
       \return The current sensation. */
-  virtual const std::vector<float> &sensation() const = 0;
+  virtual const std::vector<float> &sensation() = 0;
 
   /** Allows an agent to affect its environment.
       \param action The action the agent wishes to apply.
@@ -198,7 +198,7 @@ public:
       \return true iff the task is episodic and the present episode
       has ended.  Nonepisodic tasks should simply always
       return false. */
-  virtual bool terminal() const = 0;
+  virtual bool terminal() = 0;
 
   /** Resets the internal state of the environment according to some
       initial state distribution.  Typically the user calls this only

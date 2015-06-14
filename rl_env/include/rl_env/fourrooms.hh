@@ -24,7 +24,7 @@ public:
       \param rand Random number generator to use.
       \param gridworld The map to use.
       \param stochastic Whether to use nondeterministic actions. */
-  FourRooms(Random &rand, const Gridworld *gridworld, bool stochastic);
+  FourRooms(Random &rand, Gridworld *gridworld, bool stochastic);
 
   /** Creates a deterministic FourRooms domain.
       \param rand Random number generator used solely for random
@@ -47,17 +47,17 @@ public:
 
   virtual ~FourRooms();
 
-  virtual const std::vector<float> &sensation() const;
+  virtual const std::vector<float> &sensation();
   virtual float apply(int action);
 
-  virtual bool terminal() const;
+  virtual bool terminal();
   virtual void reset();
 
   virtual int getNumActions();
   virtual void getMinMaxFeatures(std::vector<float> *minFeat, std::vector<float> *maxFeat);
   virtual void getMinMaxReward(float* minR, float* maxR);
 
-  const Gridworld &gridworld() const { return *grid; }
+  Gridworld &gridworld() { return *grid; }
 
   friend std::ostream &operator<<(std::ostream &out, const FourRooms &rooms);
 
@@ -71,7 +71,7 @@ protected:
   enum room_action_t {NORTH, SOUTH, EAST, WEST};
 
 private:
-  const Gridworld *const grid;
+  Gridworld *grid;
   coord_t goal;
 
   const bool negReward;
@@ -99,7 +99,7 @@ private:
 
   const bool goalOption;
 
-  const Gridworld *create_default_map();
+  Gridworld *create_default_map();
 
   /** Corrupts a movement action.
       \param action The intended action

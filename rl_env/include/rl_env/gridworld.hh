@@ -39,7 +39,7 @@ public:
       \param ewCoord The coordinate along the EW direction.
       \param dir The direction in which to check movement.  0 is
                  north, 1 is south, 2 is east, 3 is west.  */
-  bool wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) const;
+  bool wall(unsigned nsCoord, unsigned ewCoord, unsigned dir);
 
   friend std::ostream &operator<<(std::ostream &out, const Gridworld &g);
 

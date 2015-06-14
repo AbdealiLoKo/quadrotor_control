@@ -21,7 +21,7 @@ public:
       \param gridworld The map to use.
       \param stochastic Whether to use nondeterministic actions and
                         fickle passenger. */
-  Taxi(Random &rand, const Gridworld *gridworld, bool stochastic);
+  Taxi(Random &rand, Gridworld *gridworld, bool stochastic);
 
   /** Creates a deterministic Taxi domain.
       \param rand Random number generator used solely for random
@@ -46,10 +46,10 @@ public:
 
   virtual ~Taxi();
 
-  virtual const std::vector<float> &sensation() const;
+  virtual const std::vector<float> &sensation();
   virtual float apply(int action);
 
-  virtual bool terminal() const;
+  virtual bool terminal();
   virtual void reset();
   virtual int getNumActions();
   virtual void getMinMaxFeatures(std::vector<float> *minFeat, std::vector<float> *maxFeat);
@@ -73,7 +73,7 @@ protected:
   };
 
 private:
-  const Gridworld *const grid;
+  Gridworld *grid;
   std::vector<coord_t> landmarks; // not const because of randomize_landmarks
   const bool noisy;
   Random &rng;
@@ -87,7 +87,7 @@ private:
   float &dest;
 
   /** Create the default gridworld */
-  static const Gridworld *create_default_map();
+  static Gridworld *create_default_map();
 
   static const DefaultLandmarks defaultlandmarks;
 

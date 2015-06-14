@@ -136,7 +136,7 @@ FourRooms::FourRooms(Random &rand, unsigned width, unsigned height, bool stochas
 
 FourRooms::~FourRooms() { delete grid; }
 
-const std::vector<float> &FourRooms::sensation() const { 
+const std::vector<float> &FourRooms::sensation() { 
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s; 
@@ -253,7 +253,7 @@ float FourRooms::reward(int effect) {
 }
 
 
-bool FourRooms::terminal() const {
+bool FourRooms::terminal() {
   // current position equal to goal??
   return coord_t(ns,ew) == goal;
 }
@@ -444,7 +444,7 @@ std::ostream &operator<<(std::ostream &out, const FourRooms &rooms) {
   return out;
 }
 
-const Gridworld *FourRooms::create_default_map() {
+Gridworld *FourRooms::create_default_map() {
   int width = 11;
   int height = 11;
   std::vector<std::vector<bool> > nsv(width, std::vector<bool>(height-1,false));

@@ -45,7 +45,7 @@ Gridworld::Gridworld(unsigned height, unsigned width, Random &rng):
     add_obstacle(rng);
 }
 
-bool Gridworld::wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) const {
+bool Gridworld::wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) {
   const bool isNS = 0 == dir/2;
   const bool isIncr = 0 == dir%2;
   const std::vector<std::vector<bool> > &walls = isNS ? ns : ew;

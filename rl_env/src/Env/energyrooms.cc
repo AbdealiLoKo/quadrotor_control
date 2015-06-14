@@ -84,7 +84,7 @@ EnergyRooms::EnergyRooms(Random &rand, bool stochastic, bool negReward,
 
 EnergyRooms::~EnergyRooms() { delete grid; }
 
-const std::vector<float> &EnergyRooms::sensation() const {
+const std::vector<float> &EnergyRooms::sensation() {
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s;
@@ -210,7 +210,7 @@ float EnergyRooms::reward() {
 }
 
 
-bool EnergyRooms::terminal() const {
+bool EnergyRooms::terminal() {
   // current position equal to goal??
   return coord_t(ns,ew) == goal;
 }
@@ -296,7 +296,7 @@ std::ostream &operator<<(std::ostream &out, const EnergyRooms &rooms) {
   return out;
 }
 
-const Gridworld *EnergyRooms::create_default_map() {
+Gridworld *EnergyRooms::create_default_map() {
   int width = 11;
   int height = 11;
   std::vector<std::vector<bool> > nsv(width, std::vector<bool>(height-1,false));

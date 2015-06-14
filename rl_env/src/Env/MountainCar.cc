@@ -36,7 +36,7 @@ MountainCar::MountainCar(Random &rand, bool stochastic, bool lin, int delay):
 
 MountainCar::~MountainCar() { }
 
-const std::vector<float> &MountainCar::sensation() const { 
+const std::vector<float> &MountainCar::sensation() { 
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s; 
@@ -104,7 +104,7 @@ float MountainCar::reward() {
 }
 
 
-bool MountainCar::terminal() const {
+bool MountainCar::terminal() {
   // current position equal to goal??
   return (pos >= 0.6); 
 }

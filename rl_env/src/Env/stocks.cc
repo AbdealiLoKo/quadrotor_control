@@ -37,7 +37,7 @@ Stocks::~Stocks() {
   delete [] rising;
 }
 
-const std::vector<float> &Stocks::sensation() const { return s; }
+const std::vector<float> &Stocks::sensation() { return s; }
 
 float Stocks::apply(int action) {
 
@@ -135,7 +135,7 @@ float Stocks::reward() {
 
 }
 
-bool Stocks::terminal() const {
+bool Stocks::terminal() {
   return false;
 }
 

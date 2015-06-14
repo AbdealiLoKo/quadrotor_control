@@ -33,7 +33,7 @@ RobotCarVel::RobotCarVel(Random &rand, bool randomVel, bool upVel, bool tenToSix
 
 RobotCarVel::~RobotCarVel() { }
 
-const std::vector<float> &RobotCarVel::sensation() const { 
+const std::vector<float> &RobotCarVel::sensation() { 
   return s; 
 }
 
@@ -121,7 +121,7 @@ float RobotCarVel::apply(int action) {
 }
 
 
-bool RobotCarVel::terminal() const {
+bool RobotCarVel::terminal() {
   return false;
 }
 

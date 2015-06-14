@@ -61,7 +61,7 @@ LightWorld::LightWorld(Random &rand, bool stochastic, int nrooms):
 LightWorld::~LightWorld() {  }
 
 
-const std::vector<float> &LightWorld::sensation() const {
+const std::vector<float> &LightWorld::sensation() {
   if (LWDEBUG) print_map();
   return s;
 }
@@ -279,7 +279,7 @@ void LightWorld::setKey(std::vector<float> testS){
 
 
 
-bool LightWorld::terminal() const {
+bool LightWorld::terminal() {
   // TODO: different terminal condition
   //return scream || (dangerous && (under_eye == 6 || under_hand == 6));
   return false;

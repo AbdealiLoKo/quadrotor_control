@@ -17,10 +17,10 @@ public:
 
   virtual ~HectorQuad();
 
-  virtual const std::vector<float> &sensation() const;
+  virtual const std::vector<float> &sensation();
   virtual float apply(int action);
 
-  virtual bool terminal() const;
+  virtual bool terminal();
   virtual void reset();
 
   virtual int getNumActions();

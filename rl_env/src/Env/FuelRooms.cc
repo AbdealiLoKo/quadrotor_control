@@ -41,7 +41,7 @@ FuelRooms::~FuelRooms() {
   delete [] stateVisits;
 }
 
-const std::vector<float> &FuelRooms::sensation() const { 
+const std::vector<float> &FuelRooms::sensation() { 
   return s; 
 }
 
@@ -145,7 +145,7 @@ float FuelRooms::reward(int effect) {
 }
 
 
-bool FuelRooms::terminal() const {
+bool FuelRooms::terminal() {
   // current position equal to goal??
   // or out of fuel
   return (coord_t(ns,ew) == goal) || (energy < 0.0);

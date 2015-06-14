@@ -31,10 +31,10 @@ public:
 
   virtual ~TwoRooms();
 
-  virtual const std::vector<float> &sensation() const;
+  virtual const std::vector<float> &sensation();
   virtual float apply(int action);
 
-  virtual bool terminal() const;
+  virtual bool terminal();
   virtual void reset();
 
   virtual int getNumActions();
@@ -51,7 +51,7 @@ protected:
   enum room_action_t {NORTH, SOUTH, EAST, WEST};
 
 private:
-  const Gridworld *const grid;
+  Gridworld *grid;
   coord_t goal;
   coord_t goal2;
   std::deque<int> actHistory;
@@ -72,7 +72,7 @@ private:
   float &ew;
 
   /** Create default two room gridworld */
-  const Gridworld *create_default_map();
+  Gridworld *create_default_map();
 
   /** Corrupts a movement action.
       \param action The intended action

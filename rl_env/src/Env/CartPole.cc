@@ -35,7 +35,7 @@ CartPole::CartPole(Random &rand, bool stochastic):
 
 CartPole::~CartPole() { }
 
-const std::vector<float> &CartPole::sensation() const { 
+const std::vector<float> &CartPole::sensation() { 
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s; 
@@ -127,7 +127,7 @@ float CartPole::reward() {
 
 
 
-bool CartPole::terminal() const {
+bool CartPole::terminal() {
   // current position past termination conditions (off track, pole angle)
   return (fabs(poleAngle) > (DEG_T_RAD*12.0) || fabs(cartPos) > 2.4);
 }

@@ -41,7 +41,7 @@ int HectorQuad::zError() {
   return (TARGET-pos(2));
 }
 
-const std::vector<float> &HectorQuad::sensation() const {
+const std::vector<float> &HectorQuad::sensation() {
   // Returns the current state
   // Characterised by Quad position in Z direction and velocity
   return s;
@@ -51,7 +51,7 @@ int HectorQuad::getNumActions() {
   return num_actions;
 }
 
-bool HectorQuad::terminal() const {
+bool HectorQuad::terminal() {
   return (TARGET-pos(2)==0);
 }
 

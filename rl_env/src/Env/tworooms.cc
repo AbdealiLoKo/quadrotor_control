@@ -28,7 +28,7 @@ TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType,
 
 TwoRooms::~TwoRooms() { delete grid; }
 
-const std::vector<float> &TwoRooms::sensation() const { 
+const std::vector<float> &TwoRooms::sensation() { 
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s; 
@@ -122,7 +122,7 @@ float TwoRooms::reward() {
 
 
 
-bool TwoRooms::terminal() const {
+bool TwoRooms::terminal() {
   // current position equal to goal??
   if (useGoal2)
     return coord_t(ns,ew) == goal2;
@@ -159,7 +159,7 @@ int TwoRooms::getNumActions(){
 }
 
 
-const Gridworld *TwoRooms::create_default_map() {
+Gridworld *TwoRooms::create_default_map() {
   int width = 11;
   int height = 5;
   std::vector<std::vector<bool> > nsv(width, std::vector<bool>(height-1,false));

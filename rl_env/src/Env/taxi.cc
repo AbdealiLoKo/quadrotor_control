@@ -16,7 +16,7 @@ Taxi::DefaultLandmarks::DefaultLandmarks() {
   push_back(value_type(0.,0.));
 }
 
-Taxi::Taxi(Random &rand, const Gridworld *gridworld, bool stochastic):
+Taxi::Taxi(Random &rand, Gridworld *gridworld, bool stochastic):
   grid(gridworld), landmarks(4), noisy(stochastic), rng(rand),
   s(4),
   ns(s[0]),
@@ -71,7 +71,7 @@ Taxi::Taxi(Random &rand, unsigned width, unsigned height, bool stochastic):
 
 Taxi::~Taxi() { delete grid; }
 
-const std::vector<float> &Taxi::sensation() const { return s; }
+const std::vector<float> &Taxi::sensation() { return s; }
 
 float Taxi::apply(int action) {
   const taxi_action_t effect =
@@ -137,7 +137,7 @@ float Taxi::apply(int action) {
   return 0; // unreachable, I hope
 }
 
-bool Taxi::terminal() const {
+bool Taxi::terminal() {
   return pass == dest;
 }
 
@@ -157,7 +157,7 @@ int Taxi::getNumActions() {
 }
 
 
-const Gridworld *Taxi::create_default_map() {
+Gridworld *Taxi::create_default_map() {
   std::vector<std::vector<bool> > nsv(5, std::vector<bool>(4,false));
   std::vector<std::vector<bool> > ewv(5, std::vector<bool>(4,false));
   ewv[0][0] = true;
