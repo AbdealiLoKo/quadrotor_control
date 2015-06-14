@@ -4,11 +4,11 @@
 #include <rl_env/HectorQuad.hh>
 
 // Random initialization of position
-HectorQuad::HectorQuad(Random &rand):
+HectorQuad::HectorQuad(Random &rand, int target = 100):
   noisy(false),
   s(2),
   rng(rand),
-  TARGET(100),
+  TARGET(target),
   num_actions(9),
   MAX_HEIGHT(2*TARGET),
   pos(0, 0, s[0]),
@@ -30,9 +30,8 @@ void HectorQuad::gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
 }
 
 void HectorQuad::refreshState() {
-  // TODO: May need normalization
-  s[0] = int(log(pos(2)));
-  s[1] = int(log(vel(2)));
+  s[0] = (pos(2)-TARGET >= 0)?1:0;
+  s[1] = (pos(2)-TARGET <= 0)?1:0;
 }
 
 // zError function calculation
@@ -42,8 +41,7 @@ int HectorQuad::zError() {
 }
 
 const std::vector<float> &HectorQuad::sensation() {
-  // Returns the current state
-  // Characterised by Quad position in Z direction and velocity
+  refreshState();
   return s;
 }
 
@@ -57,18 +55,22 @@ bool HectorQuad::terminal() {
 
 // Called by env.cpp for next action
 float HectorQuad::apply(int action) {
-  // Let's publish here to make the quad go up or down
-  // TODO Use talker.py for actions
+  geometry_msgs::Twist action_vel;
 
-  // Finding z_desired velocity
-  int z_desired = action - (num_actions-1)/2;
+  switch(action) {
+    case UP:
+      action_vel.linear.z = +2;
+      break;
+    case DOWN:
+      action_vel.linear.z = -2;
+      break;
+    case STAY:
+      action_vel.linear.z = 0;
+      break;
+  }
 
-  // Publish a simple message with the z_desired
-  geometry_msgs::Twist m;
-  m.linear.z = z_desired;
-  cmd_vel.publish(m);
+  cmd_vel.publish(action_vel);
 
-  refreshState();
   return reward();
 }
 

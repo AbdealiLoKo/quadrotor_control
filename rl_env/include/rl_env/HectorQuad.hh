@@ -10,7 +10,7 @@
 
 class HectorQuad: public Environment {
 public:
-  HectorQuad(Random &rand);
+  HectorQuad(Random &rand, int target);
 
   // Not implemented
   HectorQuad(Random &rand, bool stochastic);
@@ -38,8 +38,7 @@ public:
   void gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg);
 
 protected:
-  enum quad_action_t {UP_4, UP_3, UP_2, UP_1, ZERO, DOWN_1, DOWN_2, DOWN_3, DOWN_4};
-  // 0,1,2,3,4,5,6,7,8,9
+  enum quad_action_t {UP, DOWN, STAY};
 
   // hardcoded num_actions to be able to calculate action value
   int num_actions;
