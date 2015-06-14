@@ -10,7 +10,7 @@
 
 class HectorQuad: public Environment {
 public:
-  HectorQuad(Random &rand, int target = 100);
+  HectorQuad(Random &rand, int target = 5);
 
   // Not implemented
   // HectorQuad(Random &rand, bool stochastic);
@@ -43,13 +43,13 @@ protected:
   // hardcoded num_actions to be able to calculate action value
   int num_actions;
   ros::Publisher cmd_vel;
+  ros::Subscriber quadrotor_state;
 
 private:
   const bool noisy;
   Random &rng;
   std::vector<float> s;
-  Eigen::Vector3d pos;
-  Eigen::Vector3d vel;
+  Eigen::Vector3d pos, last_pos, vel, last_vel;
   float reward();
   void refreshState();
 

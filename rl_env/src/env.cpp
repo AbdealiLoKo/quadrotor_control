@@ -100,6 +100,10 @@ void processEpisodeInfo(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn){
 }
 
 
+void gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
+  std::cout << msg->pose.pose.position.z << endl;
+}
+
 /** init the environment, publish a description. */
 void initEnvironment(){
 
@@ -414,6 +418,7 @@ int main(int argc, char *argv[])
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
   ros::Subscriber rl_action =  node.subscribe("rl_agent/rl_action", qDepth, processAction, noDelay);
   ros::Subscriber rl_exp_info =  node.subscribe("rl_agent/rl_experiment_info", qDepth, processEpisodeInfo, noDelay);
+  // ros::Subscriber quadrotor_state = node.subscribe("/ground_truth/state", qDepth, &gazeboStateCallback, noDelay);
 
   // publish env description, first state
   std::cout << NODE << " Initializing the environment ...\n";
@@ -422,7 +427,7 @@ int main(int argc, char *argv[])
 
   ROS_INFO(NODE ": starting main loop");
 
-  ros::spin();                          // handle incoming data
+  ros::spin();
 
   return 0;
 }

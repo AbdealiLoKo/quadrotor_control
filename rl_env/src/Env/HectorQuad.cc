@@ -2,9 +2,10 @@
 #include <math.h>
 #include <geometry_msgs/Twist.h>
 #include <rl_env/HectorQuad.hh>
+#include <nav_msgs/Odometry.h>
 
 // Random initialization of position
-HectorQuad::HectorQuad(Random &rand, int target/* = 100*/):
+HectorQuad::HectorQuad(Random &rand, int target/* = 5*/):
   noisy(false),
   s(2),
   rng(rand),
@@ -12,21 +13,26 @@ HectorQuad::HectorQuad(Random &rand, int target/* = 100*/):
   num_actions(3),
   MAX_HEIGHT(2*TARGET),
   pos(0, 0, s[0]),
-  vel(0, 0, s[1])
+  vel(0, 0, s[1]),
+  last_pos(0, 0, s[0]),
+  last_vel(0, 0, s[1])
 {
   ros::NodeHandle node;
   int qDepth = 1;
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
   cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
-  ros::Subscriber quadrotor_state = node.subscribe("/ground_truth/state", qDepth, &HectorQuad::gazeboStateCallback, this, noDelay);
+  quadrotor_state = node.subscribe<nav_msgs::Odometry>("/ground_truth/state", qDepth, &HectorQuad::gazeboStateCallback, this, noDelay);
   reset();
 }
 
 HectorQuad::~HectorQuad() { }
 
 void HectorQuad::gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
+  last_pos = pos;
+  last_vel = vel;
   pos(2) = msg->pose.pose.position.z;
   vel(2) = msg->twist.twist.linear.z;
+  std::cout << "Pos: " << pos(2) << " pose:" << msg->pose.pose.position.z << endl;
 }
 
 void HectorQuad::refreshState() {
@@ -50,7 +56,6 @@ bool HectorQuad::terminal() {
 // Called by env.cpp for next action
 float HectorQuad::apply(int action) {
   geometry_msgs::Twist action_vel;
-
   switch(action) {
     case UP:
       action_vel.linear.z = +2;
@@ -62,6 +67,7 @@ float HectorQuad::apply(int action) {
       action_vel.linear.z = 0;
       break;
   }
+  std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << "," << s[1] << " Pos:" << pos(2) << " Targ:" << TARGET << " Reward:" << reward() << endl;
 
   cmd_vel.publish(action_vel);
 
@@ -70,7 +76,11 @@ float HectorQuad::apply(int action) {
 
 // Reward policy function
 float HectorQuad::reward() {
-  return -abs(TARGET - pos(2));
+  if ( abs(TARGET - pos(2)) < abs(TARGET - last_pos(2)) ) {
+    return 1;
+  } else if ( abs(TARGET - pos(2)) > abs(TARGET - last_pos(2)) ) {
+    return -1;
+  }
 }
 
 void HectorQuad::setSensation(std::vector<float> newS){

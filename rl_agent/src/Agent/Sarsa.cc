@@ -11,7 +11,7 @@ Sarsa::Sarsa(int numactions, float gamma,
 {
 
   currentq = NULL;
-  ACTDEBUG = false; //true; //false;
+  ACTDEBUG = false; //true;
   ELIGDEBUG = false;
 
 }
@@ -53,7 +53,7 @@ int Sarsa::first_action(const std::vector<float> &s) {
   if (ACTDEBUG){
     cout << " act: " << (a-Q_s.begin()) << " val: " << *a << endl;
     for (int iAct = 0; iAct < numactions; iAct++){
-      cout << " Action: " << iAct 
+      cout << " Action: " << iAct
 	   << " val: " << Q_s[iAct] << endl;
     }
     cout << "Took action " << (a-Q_s.begin()) << " from state ";
@@ -100,7 +100,6 @@ int Sarsa::next_action(float r, const std::vector<float> &s) {
         elig_s[j] *= lambda;
       }
     }
-        
   }
 
   // Set elig to 1
@@ -109,7 +108,7 @@ int Sarsa::next_action(float r, const std::vector<float> &s) {
   if (ACTDEBUG){
     cout << " act: " << (a-Q_s.begin()) << " val: " << *a << endl;
     for (int iAct = 0; iAct < numactions; iAct++){
-      cout << " Action: " << iAct 
+      cout << " Action: " << iAct
 	   << " val: " << Q_s[iAct] << endl;
     }
     cout << "Took action " << (a-Q_s.begin()) << " from state ";
@@ -129,7 +128,7 @@ void Sarsa::last_action(float r) {
   // Update value for all with positive eligibility
   for (std::map<state_t, std::vector<float> >::iterator i = eligibility.begin();
        i != eligibility.end(); i++){
-    
+
     state_t si = (*i).first;
     std::vector<float> & elig_s = (*i).second;
     for (int j = 0; j < numactions; j++){
@@ -141,22 +140,21 @@ void Sarsa::last_action(float r) {
         Q[si][j] += alpha * elig_s[j] * (r - Q[si][j]);
         elig_s[j] = 0.0;
       }
-    }  
+    }
   }
-  
 }
 
 Sarsa::state_t Sarsa::canonicalize(const std::vector<float> &s) {
   const std::pair<std::set<std::vector<float> >::iterator, bool> result =
     statespace.insert(s);
-  state_t retval = &*result.first; // Dereference iterator then get pointer 
+  state_t retval = &*result.first; // Dereference iterator then get pointer
   if (result.second) { // s is new, so initialize Q(s,a) for all a
     std::vector<float> &Q_s = Q[retval];
     Q_s.resize(numactions,initialvalue);
     std::vector<float> &elig = eligibility[retval];
     elig.resize(numactions,0);
   }
-  return retval; 
+  return retval;
 }
 
 
@@ -200,22 +198,21 @@ void Sarsa::seedExp(std::vector<experience> seeds){
   // for each seeding experience, update our model
   for (unsigned i = 0; i < seeds.size(); i++){
     experience e = seeds[i];
-     
+
     std::vector<float> &Q_s = Q[canonicalize(e.s)];
-    
+
     // Get q value for action taken
     const std::vector<float>::iterator a = Q_s.begin() + e.act;
 
     // Update value of action just executed
     Q_s[e.act] += alpha * (e.reward + gamma * (*a) - Q_s[e.act]);
-    
- 
+
     /*
     cout << "Seeding with experience " << i << endl;
-    cout << "last: " << (e.s)[0] << ", " << (e.s)[1] << ", " 
+    cout << "last: " << (e.s)[0] << ", " << (e.s)[1] << ", "
 	 << (e.s)[2] << endl;
     cout << "act: " << e.act << " r: " << e.reward << endl;
-    cout << "next: " << (e.next)[0] << ", " << (e.next)[1] << ", " 
+    cout << "next: " << (e.next)[0] << ", " << (e.next)[1] << ", "
 	 << (e.next)[2] << ", " << e.terminal << endl;
     cout << "Q: " << *currentq << " max: " << *max << endl;
     */
@@ -262,7 +259,7 @@ float Sarsa::getValue(std::vector<float> state){
 
     // get state's info
     std::vector<float> &Q_s = Q[s];
-      
+
     for (int j = 0; j < numactions; j++){
       valSum += Q_s[j];
       cnt++;
