@@ -13,16 +13,9 @@
 #include <rl_common/core.hh>
 #include <rl_common/Random.h>
 
-#include <rl_env/RobotCarVel.hh>
-#include <rl_env/fourrooms.hh>
-#include <rl_env/tworooms.hh>
-#include <rl_env/taxi.hh>
-#include <rl_env/FuelRooms.hh>
-#include <rl_env/stocks.hh>
-#include <rl_env/energyrooms.hh>
+#include <rl_env/TwoRooms.hh>
+#include <rl_env/Taxi.hh>
 #include <rl_env/MountainCar.hh>
-#include <rl_env/CartPole.hh>
-#include <rl_env/LightWorld.hh>
 #include <rl_env/HectorQuad.hh>
 
 #include <getopt.h>
@@ -57,19 +50,13 @@ void displayHelp(){
   std::cout << "--deterministic (deterministic version of domain)\n";
   std::cout << "--stochastic (stochastic version of domain)\n";
   std::cout << "--delay value (# steps of action delay (for mcar and tworooms)\n";
-  std::cout << "--lag (turn on brake lag for car driving domain)\n";
-  std::cout << "--highvar (have variation fuel costs in Fuel World)\n";
-  std::cout << "--nsectors value (# sectors for stocks domain)\n";
-  std::cout << "--nstocks value (# stocks for stocks domain)\n";
   std::cout << "--prints (turn on debug printing of actions/rewards)\n";
-
-  std::cout << "\n For more info, see: http://www.ros.org/wiki/rl_env\n";
   exit(-1);
 }
 
 
-/** process action from the agent */
 void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
+  /** process action from the agent */
   rl_msgs::RLStateReward sr;
 
   // process action from the agent, affecting the environment
@@ -84,10 +71,8 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
 
 }
 
-/** Process end-of-episode reward info.
-    Mostly to start new episode. */
 void processEpisodeInfo(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn){
-  // start new episode if terminal
+  /** Process end-of-episode reward info. Mostly to start new episode. */
   if (PRINTS >= 2) std::cout << "Episode " << infoIn->episode_number << " terminated with reward: " << infoIn->episode_reward << ", start new episode " << endl;
 
   e->reset();
@@ -99,94 +84,25 @@ void processEpisodeInfo(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn){
   out_env_sr.publish(sr);
 }
 
-
-void gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
-  std::cout << msg->pose.pose.position.z << endl;
-}
-
-/** init the environment, publish a description. */
 void initEnvironment(){
-
+  /** init the environment, publish a description. */
   // init the environment
   e = NULL;
   rl_msgs::RLEnvDescription desc;
 
-  if (strcmp(envType, "cartpole") == 0){
-    desc.title = "Environment: Cart Pole\n";
-    e = new CartPole(rng, stochastic);
-  }
-
-  else if (strcmp(envType, "mcar") == 0){
+  if (strcmp(envType, "mcar") == 0){
     desc.title = "Environment: Mountain Car\n";
     e = new MountainCar(rng, stochastic, false, delay);
-  }
-
-  // taxi
-  else if (strcmp(envType, "taxi") == 0){
+  } else if (strcmp(envType, "taxi") == 0){
     desc.title = "Environment: Taxi\n";
     e = new Taxi(rng, stochastic);
-  }
-
-  // Light World
-  else if (strcmp(envType, "lightworld") == 0){
-    desc.title = "Environment: Light World\n";
-    e = new LightWorld(rng, stochastic, 4);
-  }
-
-  // two rooms
-  else if (strcmp(envType, "tworooms") == 0){
+  } else if (strcmp(envType, "tworooms") == 0){
     desc.title = "Environment: TwoRooms\n";
     e = new TwoRooms(rng, stochastic, true, delay, false);
-  }
-
-  // car vel, 2 to 7
-  else if (strcmp(envType, "car2to7") == 0){
-    desc.title = "Environment: Car Velocity 2 to 7 m/s\n";
-    e = new RobotCarVel(rng, false, true, false, lag);
-  }
-  // car vel, 7 to 2
-  else if (strcmp(envType, "car7to2") == 0){
-    desc.title = "Environment: Car Velocity 7 to 2 m/s\n";
-    e = new RobotCarVel(rng, false, false, false, lag);
-  }
-  // car vel, random vels
-  else if (strcmp(envType, "carrandom") == 0){
-    desc.title = "Environment: Car Velocity Random Velocities\n";
-    e = new RobotCarVel(rng, true, false, false, lag);
-  }
-
-  // four rooms
-  else if (strcmp(envType, "fourrooms") == 0){
-    desc.title = "Environment: FourRooms\n";
-    e = new FourRooms(rng, stochastic, true, false);
-  }
-
-  // four rooms with energy level
-  else if (strcmp(envType, "energy") == 0){
-    desc.title = "Environment: EnergyRooms\n";
-    e = new EnergyRooms(rng, stochastic, true, false);
-  }
-
-  // gridworld with fuel (fuel stations on top and bottom with random costs)
-  else if (strcmp(envType, "fuelworld") == 0){
-    desc.title = "Environment: FuelWorld\n";
-    e = new FuelRooms(rng, highvar, stochastic);
-  }
-
-  // stocks
-  else if (strcmp(envType, "stocks") == 0){
-    desc.title = "Environment: Stocks\n";
-    e = new Stocks(rng, stochastic, nsectors, nstocks);
-  }
-
-  // hector_quadrotor
-  else if (strcmp(envType, "hectorquad") == 0){
+  } else if (strcmp(envType, "hectorquad") == 0){
     desc.title = "Environment: HectorQuad\n";
-    // Set up a subscriber
     e = new HectorQuad(rng);
-  }
-
-  else {
+  } else {
     std::cerr << "Invalid env type" << endl;
     displayHelp();
     exit(-1);
@@ -277,20 +193,15 @@ int main(int argc, char *argv[])
 
   // now parse other options
   char ch;
-  const char* optflags = "ds:";
+  const char* optflags = "edsaxp";
   int option_index = 0;
   static struct option long_options[] = {
     {"env", 1, 0, 'e'},
     {"deterministic", 0, 0, 'd'},
     {"stochastic", 0, 0, 's'},
     {"delay", 1, 0, 'a'},
-    {"nsectors", 1, 0, 'c'},
-    {"nstocks", 1, 0, 't'},
-    {"lag", 0, 0, 'l'},
-    {"nolag", 0, 0, 'o'},
     {"seed", 1, 0, 'x'},
     {"prints", 1, 0, 'p'},
-    {"highvar", 0, 0, 'v'},
     {NULL, 0, 0, 0}
   };
 
@@ -335,53 +246,6 @@ int main(int argc, char *argv[])
         }
         break;
       }
-
-    case 'c':
-      {
-        if (strcmp(envType, "stocks") == 0){
-          nsectors = std::atoi(optarg);
-          std::cout << "nsectors: " << nsectors << endl;
-        } else {
-          std::cout << "--nsectors option is only valid for the stocks domain" << endl;
-          exit(-1);
-        }
-        break;
-      }
-    case 't':
-      {
-        if (strcmp(envType, "stocks") == 0){
-          nstocks = std::atoi(optarg);
-          std::cout << "nstocks: " << nstocks << endl;
-        } else {
-          std::cout << "--nstocks option is only valid for the stocks domain" << endl;
-          exit(-1);
-        }
-        break;
-      }
-
-    case 'l':
-      {
-        if (strcmp(envType, "car2to7") == 0 || strcmp(envType, "car7to2") == 0 || strcmp(envType, "carrandom") == 0){
-          lag = true;
-          std::cout << "lag: " << lag << endl;
-        } else {
-          std::cout << "--lag option is only valid for car velocity tasks" << endl;
-          exit(-1);
-        }
-        break;
-      }
-
-    case 'o':
-       {
-         if (strcmp(envType, "car2to7") == 0 || strcmp(envType, "car7to2") == 0 || strcmp(envType, "carrandom") == 0){
-           lag = false;
-           std::cout << "lag: " << lag << endl;
-         } else {
-           std::cout << "--nolag option is only valid for car velocity tasks" << endl;
-           exit(-1);
-         }
-         break;
-       }
 
     case 'e':
       // already processed this one

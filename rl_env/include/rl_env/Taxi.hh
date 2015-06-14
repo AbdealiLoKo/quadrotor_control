@@ -11,7 +11,7 @@
 #include <set>
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
-#include "gridworld.hh"
+#include "Gridworld.hh"
 
 /** This class defines the Taxi domain. */
 class Taxi: public Environment {

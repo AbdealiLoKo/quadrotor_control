@@ -17,18 +17,6 @@ catkin_package(
   DEPENDS
 )
 
-add_executable(experiment
-  src/rl.cc
-)
-
-target_link_libraries(experiment ${catkin_LIBRARIES})
-
-## Mark cpp header files for installation
-install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-  FILES_MATCHING PATTERN "*.h"
-)
-
 ## Mark other files for installation (e.g. launch and bag files, etc.)
 install(DIRECTORY launch params DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 install(FILES
