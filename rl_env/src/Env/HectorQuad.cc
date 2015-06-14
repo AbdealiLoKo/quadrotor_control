@@ -4,12 +4,12 @@
 #include <rl_env/HectorQuad.hh>
 
 // Random initialization of position
-HectorQuad::HectorQuad(Random &rand, int target = 100):
+HectorQuad::HectorQuad(Random &rand, int target/* = 100*/):
   noisy(false),
   s(2),
   rng(rand),
   TARGET(target),
-  num_actions(9),
+  num_actions(3),
   MAX_HEIGHT(2*TARGET),
   pos(0, 0, s[0]),
   vel(0, 0, s[1])
@@ -32,12 +32,6 @@ void HectorQuad::gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
 void HectorQuad::refreshState() {
   s[0] = (pos(2)-TARGET >= 0)?1:0;
   s[1] = (pos(2)-TARGET <= 0)?1:0;
-}
-
-// zError function calculation
-int HectorQuad::zError() {
-  // Get the current Z position directly using a subscriber
-  return (TARGET-pos(2));
 }
 
 const std::vector<float> &HectorQuad::sensation() {
@@ -76,11 +70,7 @@ float HectorQuad::apply(int action) {
 
 // Reward policy function
 float HectorQuad::reward() {
-  if (!zError())
-    return 0;
-  else
-    // Return a negative reward in every other case
-    return -log(abs(zError())+1);
+  return -abs(TARGET - pos(2));
 }
 
 void HectorQuad::setSensation(std::vector<float> newS){

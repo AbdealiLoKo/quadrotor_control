@@ -10,10 +10,10 @@
 
 class HectorQuad: public Environment {
 public:
-  HectorQuad(Random &rand, int target);
+  HectorQuad(Random &rand, int target = 100);
 
   // Not implemented
-  HectorQuad(Random &rand, bool stochastic);
+  // HectorQuad(Random &rand, bool stochastic);
 
   virtual ~HectorQuad();
 
@@ -51,7 +51,6 @@ private:
   Eigen::Vector3d pos;
   Eigen::Vector3d vel;
   float reward();
-  int zError();
   void refreshState();
 
   float TARGET;
