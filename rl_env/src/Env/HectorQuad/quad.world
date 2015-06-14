@@ -33,28 +33,5 @@
       <direction>0.1 0.1 -1</direction>
       <cast_shadows>false</cast_shadows>
     </light>
-    <model name="120m_landscape_smooth_tri">
-      <link name="120m_landscape_smooth_tri_link">
-        <pose>0 0 0 0 0 0</pose>
-        <collision name="120m_landscape_smooth_tri_collision">
-          <geometry>
-            <mesh>
-              <uri>file://120m_landscape_smooth_tri.dae</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-        </collision>
-        <visual name="120m_landscape_smooth_tri">
-          <geometry>
-            <mesh>
-              <uri>file://120m_landscape_smooth_tri.dae</uri>
-              <scale>1 1 1</scale>
-            </mesh>
-          </geometry>
-          <cast_shadows>false</cast_shadows>
-        </visual>
-      </link>
-      <static>true</static>
-    </model>
   </world>
 </sdf>
