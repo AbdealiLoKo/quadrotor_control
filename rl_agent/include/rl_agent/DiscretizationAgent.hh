@@ -10,14 +10,14 @@
 class DiscretizationAgent: public Agent {
 public:
 
-  DiscretizationAgent(int statesPerDim, Agent* a, 
+  DiscretizationAgent(int statesPerDim, Agent* a,
                       std::vector<float> featmin, std::vector<float> featmax,
                       bool d);
-  DiscretizationAgent(std::vector<int> statesPerDim, Agent* a, 
+  DiscretizationAgent(std::vector<int> statesPerDim, Agent* a,
                       std::vector<float> featmin, std::vector<float> featmax,
                       bool d);
   ~DiscretizationAgent();
-  
+
   void initEverything(Agent* a, std::vector<float> fmin,
                       std::vector<float> fmax, bool d);
   virtual int first_action(const std::vector<float> &s);
@@ -27,7 +27,7 @@ public:
   virtual void seedExp(std::vector<experience> seeds);
   virtual void savePolicy(const char* filename);
 
-  
+
   std::vector<float> discretizeState(const std::vector<float> &s);
   std::vector<int> statesPerDim;
   Agent* agent;

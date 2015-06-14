@@ -1,12 +1,12 @@
 /** \file MountainCar.cc
-    Implements the Mountain Car domain, with possible action delays or linearized 
+    Implements the Mountain Car domain, with possible action delays or linearized
       transition dynamics.
     \author Todd Hester
 */
 
 #include <rl_env/MountainCar.hh>
 
- 
+
 MountainCar::MountainCar(Random &rand):
   noisy(false),
   rng(rand),
@@ -19,7 +19,7 @@ MountainCar::MountainCar(Random &rand):
   reset();
   //cout << *this << endl;
 }
- 
+
 
 MountainCar::MountainCar(Random &rand, bool stochastic, bool lin, int delay):
   noisy(stochastic),
@@ -36,10 +36,10 @@ MountainCar::MountainCar(Random &rand, bool stochastic, bool lin, int delay):
 
 MountainCar::~MountainCar() { }
 
-const std::vector<float> &MountainCar::sensation() { 
+const std::vector<float> &MountainCar::sensation() {
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
-  return s; 
+  return s;
 }
 
 float MountainCar::apply(int action) {
@@ -94,19 +94,19 @@ float MountainCar::bound(float val, float min, float max){
 
 
 float MountainCar::reward() {
-  
+
   // normally -1 and 0 on goal
   if (terminal())
     return 0;
-  else 
+  else
     return -1;
-  
+
 }
 
 
 bool MountainCar::terminal() {
   // current position equal to goal??
-  return (pos >= 0.6); 
+  return (pos >= 0.6);
 }
 
 
@@ -203,7 +203,7 @@ experience MountainCar::getExp(float s0, float s1, int a){
 
 void MountainCar::getMinMaxFeatures(std::vector<float> *minFeat,
                                     std::vector<float> *maxFeat){
-  
+
   minFeat->resize(s.size(), 0.0);
   maxFeat->resize(s.size(), 1.0);
 
@@ -217,8 +217,8 @@ void MountainCar::getMinMaxFeatures(std::vector<float> *minFeat,
 
 void MountainCar::getMinMaxReward(float *minR,
                               float *maxR){
-  
+
   *minR = -1.0;
-  *maxR = 0.0;    
-  
+  *maxR = 0.0;
+
 }

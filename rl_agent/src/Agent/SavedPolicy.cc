@@ -11,7 +11,7 @@ SavedPolicy::SavedPolicy(int numactions, const char* filename):
 
   loadPolicy(filename);
 
-  
+
 }
 
 SavedPolicy::~SavedPolicy() {}
@@ -34,7 +34,7 @@ int SavedPolicy::first_action(const std::vector<float> &s) {
   if (ACTDEBUG){
     cout << " act: " << (a-Q_s.begin()) << " val: " << *a << endl;
     for (int iAct = 0; iAct < numactions; iAct++){
-      cout << " Action: " << iAct 
+      cout << " Action: " << iAct
 	   << " val: " << Q_s[iAct] << endl;
     }
     cout << "Took action " << (a-Q_s.begin()) << " from state ";
@@ -64,7 +64,7 @@ int SavedPolicy::next_action(float r, const std::vector<float> &s) {
   if (ACTDEBUG){
     cout << " act: " << (a-Q_s.begin()) << " val: " << *a << endl;
     for (int iAct = 0; iAct < numactions; iAct++){
-      cout << " Action: " << iAct 
+      cout << " Action: " << iAct
 	   << " val: " << Q_s[iAct] << endl;
     }
     cout << "Took action " << (a-Q_s.begin()) << " from state ";
@@ -86,7 +86,7 @@ void SavedPolicy::last_action(float r) {
 SavedPolicy::state_t SavedPolicy::canonicalize(const std::vector<float> &s) {
   const std::pair<std::set<std::vector<float> >::iterator, bool> result =
     statespace.insert(s);
-  state_t retval = &*result.first; // Dereference iterator then get pointer 
+  state_t retval = &*result.first; // Dereference iterator then get pointer
   if (result.second) { // s is new, so initialize Q(s,a) for all a
     if (loaded){
       cout << "State unknown in policy!!!" << endl;
@@ -98,7 +98,7 @@ SavedPolicy::state_t SavedPolicy::canonicalize(const std::vector<float> &s) {
     std::vector<float> &Q_s = Q[retval];
     Q_s.resize(numactions,0.0);
   }
-  return retval; 
+  return retval;
 }
 
 
@@ -130,7 +130,7 @@ void SavedPolicy::loadPolicy(const char* filename){
   policyFile.read((char*)&nact, sizeof(int));
 
   if (nact != numactions){
-    cout << "this policy is not valid loaded nact: " << nact 
+    cout << "this policy is not valid loaded nact: " << nact
          << " was told: " << numactions << endl;
     exit(-1);
   }
@@ -153,7 +153,7 @@ void SavedPolicy::loadPolicy(const char* filename){
 
     // load q values
     policyFile.read((char*)&(Q[s][0]), sizeof(float)*numactions);
-    
+
     if (LOADDEBUG){
       cout << "Q values: " << endl;
       for (int iAct = 0; iAct < numactions; iAct++){
@@ -161,7 +161,7 @@ void SavedPolicy::loadPolicy(const char* filename){
       }
     }
   }
-  
+
   policyFile.close();
   cout << "Policy loaded!!!" << endl;
   loaded = true;

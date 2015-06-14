@@ -1,6 +1,6 @@
 /** \file tworooms.hh
-    Defines a two room gridworld domain, with possible action delays or 
-    multiple goals (with partial observability). 
+    Defines a two room gridworld domain, with possible action delays or
+    multiple goals (with partial observability).
     \author Todd Hester
 */
 
@@ -22,7 +22,7 @@ public:
 
   /** Standard Constructor
       \param rand Random Number generator
-      \param stochastic Make the domain stochastic 
+      \param stochastic Make the domain stochastic
       \param rewardType Create -1 per step and 0 on termination (vs 0 and 1)
       \param actDelay # of steps to delay actions
       \param multiGoal create mulitple goals that are randomly selected from each episode
@@ -79,7 +79,7 @@ private:
       \return The action actually executed */
   room_action_t add_noise(room_action_t action);
 
-  /** Randomly assigns the goal to any random 
+  /** Randomly assigns the goal to any random
       position in the world. */
   void randomize_goal();
 

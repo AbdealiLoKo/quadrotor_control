@@ -3,7 +3,7 @@
     implementations, stolen from http://ftp.arl.mil/random/ */
 
 // Random.h: Definition and Implementation of Random Number Distribution Class
-//           Ref: Richard Saucier, "Computer Generation of Statistical 
+//           Ref: Richard Saucier, "Computer Generation of Statistical
 //                Distributions," ARL-TR-2168, US Army Research Laboratory,
 //                Aberdeen Proving Ground, MD, 21005-5068, March 2000.
 
@@ -31,7 +31,7 @@ static const unsigned DEGREE_MAX = 32;   // max degree (bits per word)
 
 static const unsigned BIT[ 1 + DEGREE_MAX ] = {
 
-// Hexidecimal       Value      Degree   
+// Hexidecimal       Value      Degree
 // -----------       -----      ------
    0x00000000,    // 0          0
    0x00000001,    // 2^0        1
@@ -64,7 +64,7 @@ static const unsigned BIT[ 1 + DEGREE_MAX ] = {
    0x08000000,    // 2^27       28
    0x10000000,    // 2^28       29
    0x20000000,    // 2^29       30
-   0x40000000,    // 2^30       31 
+   0x40000000,    // 2^30       31
    0x80000000     // 2^31       32
 };
 
@@ -148,7 +148,7 @@ class Random {
 
 // friends list
 // overloaded relational operators
-   
+
    friend bool operator==( const Random& p, const Random& q )
    {
       bool equal = ( p._seed == q._seed ) && ( p._next == q._next );
@@ -156,28 +156,28 @@ class Random {
          equal = equal && ( p._table[ i ] == q._table[ i ] );
       return equal;
    }
-   
+
    friend bool operator!=( const Random& p, const Random& q )
    {
       return !( p == q );
    }
-   
+
 // overloaded stream operator
-   
+
    friend istream& operator>>( istream& is, Random& rv )
    {
       cout << "Enter a random number seed "
            << "(between 1 and " << LONG_MAX - 1 << ", inclusive): " << endl;
-        
+
       is >> rv._seed;
 
       assert( rv._seed != 0 && rv._seed != LONG_MAX );
-   
+
       rv._seedTable();
-   
+
       return is;
    }
-  
+
 public:
 
    Random( long seed )   // constructor to set the seed
@@ -187,10 +187,10 @@ public:
       assert( seed != 0 && seed != LONG_MAX );
       _seed = seed;
       _seedTable();
-      
+
       _seed2 = _seed | 1;  // for tausworthe random bit generation
    }
-   
+
    Random( void )   // default constructor uses process id to set the seed
    {
      pthread_mutex_init(&random_mutex, NULL);
@@ -204,7 +204,7 @@ public:
    {
 
    }
-   
+
    Random( const Random& r )   // copy constructor (copies current state)
    {
      pthread_mutex_init(&random_mutex, NULL);
@@ -217,14 +217,14 @@ public:
       _next = r._next;
       for ( int i = 0; i < _NTAB; i++ ) _table[ i ] = r._table[ i ];
    }
-   
+
    Random& operator=( const Random& r )   // overloaded assignment
    {
       if ( *this == r ) return *this;
 
       _seed  = r._seed;
       _seed2 = r._seed2;
-   
+
       // copy the current state of the shuffle table
 
       _next = r._next;
@@ -232,7 +232,7 @@ public:
 
       return *this;
    }
-   
+
 // utility functions
 
    void reset( long seed )   // reset the seed explicitly
@@ -242,7 +242,7 @@ public:
       _seedTable();
       _seed2 = _seed | 1;   // so that all bits cannot be zero
    }
-   
+
    void reset( void )   // reset seed from current process id
    {
       _seed = long( getpid() );
@@ -257,7 +257,7 @@ public:
       float q = sin( M_PI_2 * _u() );
       return xMin + ( xMax - xMin ) * q * q;
    }
-   
+
    float beta( float v, float w,                    // Beta
                 float xMin = 0., float xMax = 1. )   // (v > 0. and w > 0.)
    {
@@ -266,41 +266,41 @@ public:
       float y2 = gamma( 0., 1., w );
       return xMin + ( xMax - xMin ) * y1 / ( y1 + y2 );
    }
-   
+
    float cauchy( float a = 0., float b = 1. )   // Cauchy (or Lorentz)
    {
       // a is the location parameter and b is the scale parameter
       // b is the half width at half maximum (HWHM) and variance doesn't exist
-   
+
       assert( b > 0. );
-   
+
       return a + b * tan( M_PI * uniform( -0.5, 0.5 ) );
    }
 
    float chiSquare( int df )   // Chi-Square
    {
       assert( df >= 1 );
-   
+
       return gamma( 0., 2., 0.5 * float( df ) );
    }
 
    float cosine( float xMin = 0., float xMax = 1. )   // Cosine
    {
       assert( xMin < xMax );
-   
+
       float a = 0.5 * ( xMin + xMax );    // location parameter
       float b = ( xMax - xMin ) / M_PI;   // scale parameter
-   
+
       return a + b * asin( uniform( -1., 1. ) );
    }
-   
+
    float floatLog( float xMin = -1., float xMax = 1. )   // Double Log
    {
       assert( xMin < xMax );
-   
+
       float a = 0.5 * ( xMin + xMax );    // location parameter
       float b = 0.5 * ( xMax - xMin );    // scale parameter
-   
+
       if ( bernoulli( 0.5 ) ) return a + b * _u() * _u();
       else                    return a - b * _u() * _u();
    }
@@ -308,48 +308,48 @@ public:
    float erlang( float b, int c )   // Erlang (b > 0. and c >= 1)
    {
       assert( b > 0. && c >= 1 );
-  
+
       float prod = 1.;
       for ( int i = 0; i < c; i++ ) prod *= _u();
-      
+
       return -b * log( prod );
    }
-   
+
    float exponential( float a = 0., float c = 1. )   // Exponential
    {                                                    // location a, shape c
       assert( c > 0.0 );
-   
+
       return a - c * log( _u() );
    }
-   
+
    float extremeValue( float a = 0., float c = 1. )   // Extreme Value
    {                                                     // location a, shape c
       assert( c > 0. );
-   
+
       return a + c * log( -log( _u() ) );
    }
-   
+
    float fRatio( int v, int w )   // F Ratio (v and w >= 1)
    {
       assert( v >= 1 && w >= 1 );
-   
+
       return ( chiSquare( v ) / v ) / ( chiSquare( w ) / w );
    }
-   
+
    float gamma( float a, float b, float c )  // Gamma
    {                                             // location a, scale b, shape c
       assert( b > 0. && c > 0. );
-   
+
       const float A = 1. / sqrt( 2. * c - 1. );
       const float B = c - log( 4. );
       const float Q = c + 1. / A;
       const float T = 4.5;
       const float D = 1. + log( T );
       const float C = 1. + c / M_E;
-   
-      if ( c < 1. ) {  
+
+      if ( c < 1. ) {
          while ( true ) {
-            float p = C * _u();      
+            float p = C * _u();
             if ( p > 1. ) {
                float y = -log( ( C - p ) / c );
                if ( _u() <= powf( y, c - 1. ) ) return a + b * y;
@@ -373,49 +373,49 @@ public:
          }
       }
    }
-   
+
    float laplace( float a = 0., float b = 1. )   // Laplace
    {                                                // (or float exponential)
       assert( b > 0. );
 
       // composition method
-  
+
       if ( bernoulli( 0.5 ) ) return a + b * log( _u() );
       else                    return a - b * log( _u() );
    }
-   
+
    float logarithmic( float xMin = 0., float xMax = 1. )   // Logarithmic
    {
       assert( xMin < xMax );
-   
+
       float a = xMin;          // location parameter
       float b = xMax - xMin;   // scale parameter
-   
+
       // use convolution formula for product of two IID uniform variates
 
       return a + b * _u() * _u();
    }
-   
+
    float logistic( float a = 0., float c = 1. )   // Logistic
    {
       assert( c > 0. );
 
       return a - c * log( 1. / _u() - 1. );
    }
-   
+
    float lognormal( float a, float mu, float sigma )   // Lognormal
    {
       return a + exp( normal( mu, sigma ) );
    }
-   
+
    float normal( float mu = 0., float sigma = 1. )   // Normal
    {
       assert( sigma > 0. );
-   
+
       static bool f = true;
       static float p, p1, p2;
       float q;
-   
+
       if ( f ) {
          do {
             p1 = uniform( -1., 1. );
@@ -430,80 +430,80 @@ public:
 
       return mu + sigma * q * sqrt( -2. * log( p ) / p );
    }
-   
+
    float parabolic( float xMin = 0., float xMax = 1. )   // Parabolic
-   {  
+   {
       assert( xMin < xMax );
-   
+
       float a    = 0.5 * ( xMin + xMax );        // location parameter
       float yMax = _parabola( a, xMin, xMax );   // maximum function range
-   
+
       return userSpecified( _parabola, xMin, xMax, 0., yMax );
    }
-   
+
    float pareto( float c )   // Pareto
    {                           // shape c
       assert( c > 0. );
-   
+
       return powf( _u(), -1. / c );
    }
-   
+
    float pearson5( float b, float c )   // Pearson Type 5
    {                                       // scale b, shape c
       assert( b > 0. && c > 0. );
-   
+
       return 1. / gamma( 0., 1. / b, c );
    }
-   
+
    float pearson6( float b, float v, float w )   // Pearson Type 6
    {                                                 // scale b, shape v & w
       assert( b > 0. && v > 0. && w > 0. );
-   
+
       return gamma( 0., b, v ) / gamma( 0., b, w );
    }
-   
+
    float power( float c )   // Power
    {                          // shape c
       assert( c > 0. );
-   
+
       return powf( _u(), 1. / c );
    }
-   
+
    float rayleigh( float a, float b )   // Rayleigh
    {                                       // location a, scale b
       assert( b > 0. );
-   
+
       return a + b * sqrt( -log( _u() ) );
    }
-   
+
    float studentT( int df )   // Student's T
    {                           // degres of freedom df
       assert( df >= 1 );
-   
+
       return normal() / sqrt( chiSquare( df ) / df );
    }
-   
+
    float triangular( float xMin = 0.,     // Triangular
                       float xMax = 1.,     // with default interval [0,1)
                       float c    = 0.5 )   // and default mode 0.5
    {
       assert( xMin < xMax && xMin <= c && c <= xMax );
-      
+
       float p = _u(), q = 1. - p;
-      
+
       if ( p <= ( c - xMin ) / ( xMax - xMin ) )
          return xMin + sqrt( ( xMax - xMin ) * ( c - xMin ) * p );
       else
          return xMax - sqrt( ( xMax - xMin ) * ( xMax - c ) * q );
    }
-   
+
    float uniform( float xMin = 0., float xMax = 1. )   // Uniform
    {                                                      // on [xMin,xMax)
       assert( xMin < xMax );
-   
+
       return xMin + ( xMax - xMin ) * _u();
    }
-   
+
    float userSpecified(                // User-Specified Distribution
         float( *usf )(                 // pointer to user-specified function
              float,                    // x
@@ -513,65 +513,65 @@ public:
         float yMin, float yMax )      // function range
    {
       assert( xMin < xMax && yMin < yMax );
-   
-      float x, y, areaMax = ( xMax - xMin ) * ( yMax - yMin ); 
+
+      float x, y, areaMax = ( xMax - xMin ) * ( yMax - yMin );
 
       // acceptance-rejection method
-   
-      do {   
-         x = uniform( 0.0, areaMax ) / ( yMax - yMin ) + xMin;  
+
+      do {
+         x = uniform( 0.0, areaMax ) / ( yMax - yMin ) + xMin;
          y = uniform( yMin, yMax );
-   
+
       } while ( y > usf( x, xMin, xMax ) );
-   
+
       return x;
    }
-   
+
    float weibull( float a, float b, float c )   // Weibull
    {                                                // location a, scale b,
       assert( b > 0. && c > 0. );                   // shape c
-   
+
       return a + b * powf( -log( _u() ), 1. / c );
    }
-                   
+
 // Discrete Distributions
 
    bool bernoulli( float p = 0.5 )   // Bernoulli Trial
    {
       assert( 0. <= p && p <= 1. );
-   
+
       return _u() < p;
    }
-   
+
    int binomial( int n, float p )   // Binomial
    {
       assert( n >= 1 && 0. <= p && p <= 1. );
-   
+
       int sum = 0;
       for ( int i = 0; i < n; i++ ) sum += bernoulli( p );
       return sum;
    }
-   
+
    int geometric( float p )   // Geometric
    {
       assert( 0. < p && p < 1. );
 
       return int( log( _u() ) / log( 1. - p ) );
    }
-   
+
    int hypergeometric( int n, int N, int K )            // Hypergeometric
    {                                                    // trials n, size N,
       assert( 0 <= n && n <= N && N >= 1 && K >= 0 );   // successes K
-      
+
       int count = 0;
       for ( int i = 0; i < n; i++, N-- ) {
-   
+
          float p = float( K ) / float( N );
          if ( bernoulli( p ) ) { count++; K--; }
       }
       return count;
    }
-   
+
    void multinomial( int    n,            // Multinomial
                      float p[],          // trials n, probability vector p,
                      int    count[],      // success vector count,
@@ -581,11 +581,11 @@ public:
       float sum = 0.;
       for ( int bin = 0; bin < m; bin++ ) sum += p[ bin ];    // probabilities
       assert( sum == 1. );                                    // must sum to 1
-      
+
       for ( int bin = 0; bin < m; bin++ ) count[ bin ] = 0;   // initialize
-   
+
       // generate n uniform variates in the interval [0,1) and bin the results
-   
+
       for ( int i = 0; i < n; i++ ) {
 
          float lower = 0., upper = 0., u = _u();
@@ -594,40 +594,40 @@ public:
 
          // locate subinterval, which is of length p[ bin ],
          // that contains the variate and increment the corresponding counter
-      
+
             lower = upper;
             upper += p[ bin ];
             if ( lower <= u && u < upper ) { count[ bin ]++; break; }
          }
       }
    }
-   
+
    int negativeBinomial( int s, float p )   // Negative Binomial
    {                                         // successes s, probability p
       assert( s >= 1 && 0. < p && p < 1. );
-   
+
       int sum = 0;
       for ( int i = 0; i < s; i++ ) sum += geometric( p );
       return sum;
    }
-   
+
    int pascal( int s, float p )              // Pascal
    {                                          // successes s, probability p
       return negativeBinomial( s, p ) + s;
    }
-   
+
    int poisson( float mu )   // Poisson
    {
       assert ( mu > 0. );
-   
+
       float a = exp( -mu );
       float b = 1.;
-   
+
       int i;
-      for ( i = 0; b >= a; i++ ) b *= _u();   
+      for ( i = 0; b >= a; i++ ) b *= _u();
       return i - 1;
    }
-   
+
    int uniformDiscrete( int i, int j )   // Uniform Discrete
    {                                     // inclusive i to j
       assert( i < j );
@@ -642,7 +642,7 @@ public:
       static vector< float > x, cdf;
       static int              n;
       static bool             init = false;
-   
+
       if ( !init ) {
          ifstream in( "empiricalDistribution" );
          if ( !in ) {
@@ -656,7 +656,7 @@ public:
          }
          n = x.size();
          init = true;
-      
+
          // check that this is indeed a cumulative distribution
 
          assert( 0. == cdf[ 0 ] && cdf[ n - 1 ] == 1. );
@@ -670,7 +670,7 @@ public:
                             ( p - cdf[ i ] ) / ( cdf[ i + 1 ] - cdf[ i ] );
       return x[ n - 1 ];
    }
-   
+
    int empiricalDiscrete( void )   // Empirical Discrete
    {
       static vector< int >    k;
@@ -678,7 +678,7 @@ public:
       static float           max;
       static int              n;
       static bool             init = false;
-   
+
       if ( !init ) {
          ifstream in ( "empiricalDiscrete" );
          if ( !in ) {
@@ -693,7 +693,7 @@ public:
          }
          n = k.size();
          init = true;
-   
+
          // form the cumulative distribution
 
          f[ 1 ].push_back( f[ 0 ][ 0 ] );
@@ -703,10 +703,10 @@ public:
          // check that the integer points are in ascending order
 
          for ( int i = 1; i < n; i++ ) assert( k[ i - 1 ] < k[ i ] );
-      
+
          max = f[ 1 ][ n - 1 ];
       }
-   
+
       // select a uniform variate between 0 and the max value of the cdf
 
       float p = uniform( 0., max );
@@ -716,14 +716,14 @@ public:
       for ( int i = 0; i < n; i++ ) if ( p <= f[ 1 ][ i ] ) return k[ i ];
       return k[ n - 1 ];
    }
-   
+
    float sample( bool replace = true )  // Sample w or w/o replacement from a
    {                                     // distribution of 1-D data in a file
       static vector< float > v;         // vector for sampling with replacement
       static bool init = false;          // flag that file has been read in
       static int n;                      // number of data elements in the file
       static int index = 0;              // subscript in the sequential order
-   
+
       if ( !init ) {
          ifstream in( "sampleData" );
          if ( !in ) {
@@ -736,7 +736,7 @@ public:
          n = v.size();
          init = true;
          if ( replace == false ) {   // sample without replacement
-         
+
             // shuffle contents of v once and for all
             // Ref: Knuth, D. E., The Art of Computer Programming, Vol. 2:
             //      Seminumerical Algorithms. London: Addison-Wesley, 1969.
@@ -757,16 +757,16 @@ public:
          return v[ index++ ];                       // in sequential order
       }
    }
-   
+
    void sample( float x[], int ndim )   // Sample from a given distribution
    {                                     // of multi-dimensional data
       static const int N_DIM = 6;
       assert( ndim <= N_DIM );
-   
+
       static vector< float > v[ N_DIM ];
       static bool init = false;
       static int n;
-   
+
       if ( !init )  {
          ifstream in( "sampleData" );
          if ( !in ) {
@@ -799,7 +799,7 @@ public:
 
    cartesianCoord stochasticInterpolation( void )   // Stochastic Interpolation
 
-   // Refs: Taylor, M. S. and J. R. Thompson, Computational Statistics & Data 
+   // Refs: Taylor, M. S. and J. R. Thompson, Computational Statistics & Data
    //       Analysis, Vol. 4, pp. 93-101, 1986; Thompson, J. R., Empirical Model
    //       Building, pp. 108-114, Wiley, 1989; Bodt, B. A. and M. S. Taylor,
    //       A Data Based Random Number Generator for A Multivariate Distribution
@@ -817,9 +817,9 @@ public:
             cerr << "Cannot open \"stochasticData\" input file" << endl;
             exit( 1 );
          }
-   
+
          // read in the data and set min and max values
-   
+
          min.x = min.y = FLT_MAX;
          max.x = max.y = FLT_MIN;
          cartesianCoord p;
@@ -829,73 +829,73 @@ public:
             min.y = ( p.y < min.y ? p.y : min.y );
             max.x = ( p.x > max.x ? p.x : max.x );
             max.y = ( p.y > max.y ? p.y : max.y );
-      
+
             data.push_back( p );
          }
          in.close();
          init = true;
-   
+
          // scale the data so that each dimension will have equal weight
 
          for ( unsigned i = 0; i < data.size(); i++ ) {
-       
+
             data[ i ].x = ( data[ i ].x - min.x ) / ( max.x - min.x );
             data[ i ].y = ( data[ i ].y - min.y ) / ( max.y - min.y );
          }
-   
+
          // set m, the number of points in a neighborhood of a given point
-   
+
          m = data.size() / 20;       // 5% of all the data points
          if ( m < 5  ) m = 5;        // but no less than 5
          if ( m > 20 ) m = 20;       // and no more than 20
-   
+
          lower = ( 1. - sqrt( 3. * ( float( m ) - 1. ) ) ) / float( m );
          upper = ( 1. + sqrt( 3. * ( float( m ) - 1. ) ) ) / float( m );
       }
-   
+
       // uniform random selection of a data point (with replacement)
-      
+
       cartesianCoord origin = data[ uniformDiscrete( 0, data.size() - 1 ) ];
 
       // make this point the origin of the coordinate system
 
       for ( unsigned n = 0; n < data.size(); n++ ) data[ n ] -= origin;
-      
+
       // sort the data with respect to its distance (squared) from this origin
-      
+
       sort( data.begin(), data.end(), dSquared() );
-      
+
       // find the mean value of the data in the neighborhood about this point
-      
+
       cartesianCoord mean;
       mean.x = mean.y = 0.;
       for ( int n = 0; n < m; n++ ) mean += data[ n ];
       mean /= float( m );
-   
+
       // select a random linear combination of the points in this neighborhood
 
       cartesianCoord p;
       p.x = p.y = 0.;
       for ( int n = 0; n < m; n++ ) {
-         
+
          float rn;
          if ( m == 1 ) rn = 1.;
          else          rn = uniform( lower, upper );
          p.x += rn * ( data[ n ].x - mean.x );
          p.y += rn * ( data[ n ].y - mean.y );
       }
-      
+
       // restore the data to its original form
 
       for ( unsigned n = 0; n < data.size(); n++ ) data[ n ] += origin;
-      
+
       // use mean and original point to translate the randomly-chosen point
 
       p += mean;
       p += origin;
 
       // scale randomly-chosen point to the dimensions of the original data
-      
+
       p.x = p.x * ( max.x - min.x ) + min.x;
       p.y = p.y * ( max.y - min.y ) + min.y;
 
@@ -906,42 +906,42 @@ public:
 
    cartesianCoord bivariateNormal( float muX    = 0.,   // Bivariate Gaussian
                                    float sigmaX = 1.,
-                                   float muY    = 0., 
+                                   float muY    = 0.,
                                    float sigmaY = 1. )
    {
       assert( sigmaX > 0. && sigmaY > 0. );
-   
+
       cartesianCoord p;
       p.x = normal( muX, sigmaX );
       p.y = normal( muY, sigmaY );
       return p;
    }
-   
+
    cartesianCoord bivariateUniform( float xMin = -1.,    // Bivariate Uniform
                                     float xMax =  1.,
                                     float yMin = -1.,
                                     float yMax =  1. )
    {
       assert( xMin < xMax && yMin < yMax );
-   
+
       float x0 = 0.5 * ( xMin + xMax );
       float y0 = 0.5 * ( yMin + yMax );
       float a  = 0.5 * ( xMax - xMin );
       float b  = 0.5 * ( yMax - yMin );
       float x, y;
-   
+
       do {
          x = uniform( -1., 1. );
          y = uniform( -1., 1. );
-      
+
       } while( x * x + y * y > 1. );
-      
+
       cartesianCoord p;
       p.x = x0 + a * x;
       p.y = y0 + b * y;
       return p;
    }
-   
+
    cartesianCoord corrNormal( float r,              // Correlated Normal
                               float muX    = 0.,
                               float sigmaX = 1.,
@@ -950,18 +950,18 @@ public:
    {
       assert( -1. <= r && r <= 1. &&          // bounds on correlation coeff
               sigmaX > 0. && sigmaY > 0. );   // positive std dev
-   
+
       float x = normal();
       float y = normal();
-   
+
       y = r * x + sqrt( 1. - r * r ) * y;     // correlate the variables
-   
+
       cartesianCoord p;
       p.x = muX + sigmaX * x;                 // translate and scale
       p.y = muY + sigmaY * y;
       return p;
    }
-   
+
    cartesianCoord corrUniform( float r,        // Correlated Uniform
                                float xMin = 0.,
                                float xMax = 1.,
@@ -976,21 +976,21 @@ public:
       float a  = 0.5 * ( xMax - xMin );
       float b  = 0.5 * ( yMax - yMin );
       float x, y;
-   
+
       do {
          x = uniform( -1., 1. );
          y = uniform( -1., 1. );
-      
+
       } while ( x * x + y * y > 1. );
-   
+
       y = r * x + sqrt( 1. - r * r ) * y;   // correlate the variables
-   
+
       cartesianCoord p;
       p.x = x0 + a * x;                     // translate and scale
       p.y = y0 + b * y;
       return p;
    }
-   
+
    sphericalCoord spherical( float thMin = 0.,     // Uniform Spherical
                              float thMax = M_PI,
                              float phMin = 0.,
@@ -998,13 +998,13 @@ public:
    {
       assert( 0. <= thMin && thMin < thMax && thMax <= M_PI &&
               0. <= phMin && phMin < phMax && phMax <= 2. * M_PI );
-   
+
       sphericalCoord p;                       // azimuth
       p.theta = acos( uniform( cos( thMax ), cos( thMin ) ) );   // polar angle
       p.phi   = uniform( phMin, phMax );                         // azimuth
       return p;
    }
-   
+
    void sphericalND( float x[], int n )   // Uniform over the surface of
                                            // an n-dimensional unit sphere
    {
@@ -1015,7 +1015,7 @@ public:
          x[ i ] = normal();
          r2 += x[ i ] * x[ i ];
       }
-   
+
       // project the point onto the surface of the unit n-sphere by scaling
 
       const float A = 1. / sqrt( r2 );
@@ -1030,12 +1030,12 @@ public:
       avoidance( x, 1 );
       return x[ 0 ];
    }
-   
+
    void avoidance( float x[], unsigned ndim )   // Maximal Avoidance (N-D)
    {
       static const unsigned MAXBIT = 30;
       static const unsigned MAXDIM = 6;
-   
+
       assert( ndim <= MAXDIM );
 
       static unsigned long ix[ MAXDIM + 1 ] = { 0 };
@@ -1060,7 +1060,7 @@ public:
       static int in = -1;
       unsigned j, k;
       unsigned long i, m, pp;
-      
+
       if ( in == -1 ) {
          in = 0;
          fac = 1. / ( 1L << MAXBIT );
@@ -1088,7 +1088,7 @@ public:
          x[ k ] = ix[ k + 1 ] * fac;
       }
    }
-   
+
    bool tausworthe( unsigned n )   // Tausworthe random bit generator
    {                               // returns a single random bit
       assert( 1 <= n && n <= 32 );
@@ -1102,10 +1102,10 @@ public:
          return false;
       }
    }
-   
+
    void tausworthe( bool*    bitvec,   // Tausworthe random bit generator
                     unsigned n )       // returns a bit vector of length n
-                    
+
    // It is guaranteed to cycle through all possible combinations of n bits
    // (except all zeros) before repeating, i.e., cycle has maximal length 2^n-1.
    // Ref: Press, W. H., B. P. Flannery, S. A. Teukolsky and W. T. Vetterling,
@@ -1119,7 +1119,7 @@ public:
          _seed2 <<= 1;
       for ( unsigned i = 0; i < n; i++ ) bitvec[ i ] = _seed2 & ( BIT[ n ] >> i );
    }
-                                 
+
 private:
 
    static const long   _M    = 0x7fffffff; // 2147483647 (Mersenne prime 2^31-1)
@@ -1138,46 +1138,46 @@ private:
    void _seedTable( void )                          // seeds the shuffle table
    {
      pthread_mutex_lock(&random_mutex);
-     
+
      for ( int i = _NTAB + 7; i >= 0; i-- ) {      // first perform 8 warm-ups
-       
+
        long k = _seed / Q_;                       // seed = ( A * seed ) % M
        _seed = A_ * ( _seed - k * Q_ ) - k * R_;  // without overflow by
        if ( _seed < 0 ) _seed += _M;              // Schrage's method
-       
+
        if ( i < _NTAB ) _table[ i ] = _seed;      // store seeds into table
      }
      _next = _table[ 0 ];                          // used as index next time
-     
+
      pthread_mutex_unlock(&random_mutex);
    }
-   
+
    float _u( void )                                // uniform rng
-   { 
+   {
      pthread_mutex_lock(&random_mutex);
-     
+
      long k = _seed / Q_;                          // seed = ( A*seed ) % M
      _seed = A_ * ( _seed - k * Q_ ) - k * R_;     // without overflow by
      if ( _seed < 0 ) _seed += _M;                 // Schrage's method
-     
+
      int index = _next / _DIV;                     // Bays-Durham shuffle
      _next = _table[ index ];                      // seed used for next time
      _table[ index ] = _seed;                      // replace with new seed
      float retval = _next * _F;                   // scale value within [0,1)
-     
+
      pthread_mutex_unlock(&random_mutex);
-     
-     return retval;                           
+
+     return retval;
    }
-   
+
    static float _parabola( float x, float xMin, float xMax )  // parabola
    {
       if ( x < xMin || x > xMax ) return 0.0;
-   
+
       float a    = 0.5 * ( xMin + xMax );   // location parameter
       float b    = 0.5 * ( xMax - xMin );   // scale parameter
       float yMax = 0.75 / b;
-      
+
       return yMax * ( 1. - ( x - a ) * ( x - a ) / ( b * b ) );
    }
 };

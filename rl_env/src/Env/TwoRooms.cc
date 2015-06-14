@@ -1,16 +1,16 @@
 /** \file TwoRooms.cc
-    Implements a two room gridworld domain, with possible action delays or 
-    multiple goals (with partial observability). 
+    Implements a two room gridworld domain, with possible action delays or
+    multiple goals (with partial observability).
     \author Todd Hester
 */
 
 #include <rl_env/TwoRooms.hh>
 
 
-TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType, 
+TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType,
                    int actDelay, bool multiGoal):
   grid(create_default_map()),
-  goal(coord_t(1.,1.)), 
+  goal(coord_t(1.,1.)),
   goal2(coord_t(4.,1.)),
   negReward(rewardType),
   noisy(stochastic),
@@ -28,10 +28,10 @@ TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType,
 
 TwoRooms::~TwoRooms() { delete grid; }
 
-const std::vector<float> &TwoRooms::sensation() { 
+const std::vector<float> &TwoRooms::sensation() {
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
-  return s; 
+  return s;
 }
 
 float TwoRooms::apply(int action) {
@@ -50,7 +50,7 @@ float TwoRooms::apply(int action) {
 
     const room_action_t effect =
       noisy
-      ? add_noise(static_cast<room_action_t>(actUsed)) 
+      ? add_noise(static_cast<room_action_t>(actUsed))
       : static_cast<room_action_t>(actUsed);
     switch(effect) {
     case NORTH:
@@ -89,8 +89,8 @@ float TwoRooms::apply(int action) {
 
     std::cerr << "Unreachable point reached in TwoRooms::apply!!!\n";
   }
-  
-  return 0; 
+
+  return 0;
 }
 
 // return the reward for this move
@@ -107,15 +107,15 @@ float TwoRooms::reward() {
     // normally -1 and 0 on goal
     if (terminal())
       return 0;
-    else 
+    else
       return -1;
-    
+
   }else{
 
     // or we could do 0 and 1 on goal
     if (terminal())
       return 1;
-    else 
+    else
       return 0;
   }
 }
@@ -206,7 +206,7 @@ void TwoRooms::randomize_goal() {
 
 void TwoRooms::getMinMaxFeatures(std::vector<float> *minFeat,
                                  std::vector<float> *maxFeat){
-  
+
   minFeat->resize(s.size(), 0.0);
   maxFeat->resize(s.size(), 10.0);
 
@@ -218,7 +218,7 @@ void TwoRooms::getMinMaxReward(float *minR,
                               float *maxR){
   if (negReward){
     *minR = -1.0;
-    *maxR = 0.0;    
+    *maxR = 0.0;
   }else{
     *minR = 0.0;
     *maxR = 1.0;
@@ -240,7 +240,7 @@ std::vector<experience> TwoRooms::getSeedings() {
   actHistory.clear();
   actHistory.assign(actDelay, SOUTH);
   seeds.push_back(getExp(2,1,SOUTH));
-  
+
   // possible seed of 2nd goal
   if (multiGoal){
     useGoal2 = true;

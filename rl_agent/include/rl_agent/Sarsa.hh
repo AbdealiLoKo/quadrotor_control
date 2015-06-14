@@ -24,7 +24,7 @@ public:
       \param epsilon The probability of taking a random action
       \param rng Initial state of the random number generator to use */
   Sarsa(int numactions, float gamma,
-        float initialvalue, float alpha, float epsilon, float lambda, 
+        float initialvalue, float alpha, float epsilon, float lambda,
         Random rng = Random());
 
   /** Unimplemented copy constructor: internal state cannot be simply
@@ -42,7 +42,7 @@ public:
 
   void printState(const std::vector<float> &s);
   float getValue(std::vector<float> state);
-  
+
   std::vector<float>::iterator random_max_element(
 						   std::vector<float>::iterator start,
 						   std::vector<float>::iterator end);

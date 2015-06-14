@@ -25,7 +25,7 @@
 #define M5MULTI     6
 #define M5SINGLE    7
 #define M5ALLMULTI  8
-#define M5ALLSINGLE 9 
+#define M5ALLSINGLE 9
 #define LSTMULTI    10
 #define LSTSINGLE   11
 #define ALLM5TYPES  12
@@ -94,7 +94,7 @@ const std::string exploreNames[] = {
   "Visits Confidence",
   "Type 10",
   "Unvisited State Bonus",
-  "Type 12", 
+  "Type 12",
   "Unvisited Action Bonus",
   "Type 14",
   "Type 15",
@@ -150,7 +150,7 @@ const std::string plannerNames[] = {
   "Parallel Delayed UCT",
   "Model Based Simulation - VI"
 };
-  
+
 
 
 #define EPSILON   1e-5
@@ -377,14 +377,14 @@ public:
   /** Set if this is the first experience of the agent. */
   virtual void setFirst() {};
 
-  /** A method to return at random one of the maximum values in the vector. 
+  /** A method to return at random one of the maximum values in the vector.
       Such that when more than one actions are optimal, we select one of them at random.
   */
   std::vector<float>::iterator
   random_max_element(std::vector<float>::iterator start,
 		     std::vector<float>::iterator end) {
     const float Q_EPSILON = 1e-4;
-    
+
     std::vector<float>::iterator max =
     std::max_element(start, end);
 
@@ -395,7 +395,7 @@ public:
         nfound++;
       }
     }
-    
+
     // only 1: take it
     if (nfound == 1)
       return max;
@@ -409,12 +409,12 @@ public:
         nfound--;
       }
     }
-    
+
     return max;
   };
 
   virtual ~Planner() {};
-  
+
   Random rng;
 
 };

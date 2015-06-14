@@ -1,4 +1,4 @@
-# Message for returning the current sensation vector 
+# Message for returning the current sensation vector
 # (i.e. state or observation or sensor readings) and a
 # reward from an  environment
 

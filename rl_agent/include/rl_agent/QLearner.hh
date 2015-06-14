@@ -43,7 +43,7 @@ public:
 
   void printState(const std::vector<float> &s);
   float getValue(std::vector<float> state);
-  
+
   std::vector<float>::iterator random_max_element(
 						   std::vector<float>::iterator start,
 						   std::vector<float>::iterator end);

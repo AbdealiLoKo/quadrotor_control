@@ -29,7 +29,7 @@ std::ostream &operator<<(std::ostream &out, const Gridworld &g) {
   return out;
 }
 
-Gridworld::Gridworld(unsigned height, unsigned width, 
+Gridworld::Gridworld(unsigned height, unsigned width,
 		     const std::vector<std::vector<bool> > &northsouth,
 		     const std::vector<std::vector<bool> > &eastwest):
   h(height), w(width), ns(northsouth), ew(eastwest)

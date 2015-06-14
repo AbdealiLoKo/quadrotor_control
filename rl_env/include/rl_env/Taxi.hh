@@ -1,6 +1,6 @@
 /** \file taxi.hh
     Defines the taxi domain, from:
-    Dietterich, "The MAXQ method for hierarchical reinforcement learning," ICML 1998. 
+    Dietterich, "The MAXQ method for hierarchical reinforcement learning," ICML 1998.
     \author Todd Hester
     \author Nick Jong
 */
@@ -28,20 +28,20 @@ public:
                   initial states.  */
   Taxi(Random &rand);
 
-  /** Creates a possibly noisy Taxi domain. 
+  /** Creates a possibly noisy Taxi domain.
       \param rand Random number generator to use.
       \param stochastic Whether to use nondeterministic actions and
-      fickle passenger. 
+      fickle passenger.
   */
   Taxi(Random &rand, bool stochastic);
 
-  /** Creates a random Taxi domain of the given size. 
+  /** Creates a random Taxi domain of the given size.
       \param rand Random number generator to use.
       \param width width of grid
       \param height height of grid
       \param stochastic Whether to use nondeterministic actions and
-      fickle passenger. 
-  */ 
+      fickle passenger.
+  */
   Taxi(Random &rand, unsigned width, unsigned height, bool stochastic);
 
   virtual ~Taxi();

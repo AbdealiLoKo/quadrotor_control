@@ -1,5 +1,5 @@
 /** \file MountainCar.hh
-    Defines the Mountain Car domain, with possible action delays or linearized 
+    Defines the Mountain Car domain, with possible action delays or linearized
       transition dynamics.
     \author Todd Hester
 */
@@ -12,7 +12,7 @@
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
 
-/** This class defines the Mountain Car domain, with possible action delays or linearized 
+/** This class defines the Mountain Car domain, with possible action delays or linearized
       transition dynamics.
 */
 class MountainCar: public Environment {
@@ -20,7 +20,7 @@ public:
 
   /** Creates a deterministic MountainCar domain.
       \param rand Random number generator used solely for random
-      initial states.  
+      initial states.
   */
   MountainCar(Random &rand);
 
@@ -51,7 +51,7 @@ public:
 
   /** Get an experience for the given state-action */
   experience getExp(float s0, float s1, int a);
-  
+
 protected:
   enum car_action_t {REVERSE, ZERO, FORWARD};
 
@@ -64,7 +64,7 @@ private:
   Random &rng;
 
   std::vector<float> s;
- 
+
   float &pos;
   float &vel;
   const bool linear;
@@ -73,7 +73,7 @@ private:
   float reward();
 
   float bound(float val, float min, float max);
-  
+
 };
 
 #endif
