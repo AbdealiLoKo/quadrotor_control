@@ -36,7 +36,7 @@ static ros::Publisher out_seed;
 
 Environment* e;
 Random rng;
-bool PRINTS = false;//true;
+bool PRINTS = 0;//true;
 int seed = 1;
 char* envType;
 
@@ -78,7 +78,7 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
   sr.terminal = e->terminal();
 
   // publish the state-reward message
-  if (PRINTS) std::cout << "Got action " << actionIn->action << " at state: " << sr.state[0] << ", " << sr.state[1] << ", reward: " << sr.reward << endl;
+  if (PRINTS >= 1) std::cout << "Got action " << actionIn->action << " at state: " << sr.state[0] << ", " << sr.state[1] << ", reward: " << sr.reward << endl;
 
   out_env_sr.publish(sr);
 
@@ -88,7 +88,7 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
     Mostly to start new episode. */
 void processEpisodeInfo(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn){
   // start new episode if terminal
-  if (PRINTS) std::cout << "Episode " << infoIn->episode_number << " terminated with reward: " << infoIn->episode_reward << ", start new episode " << endl;
+  if (PRINTS >= 2) std::cout << "Episode " << infoIn->episode_number << " terminated with reward: " << infoIn->episode_reward << ", start new episode " << endl;
 
   e->reset();
 
@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
     {"lag", 0, 0, 'l'},
     {"nolag", 0, 0, 'o'},
     {"seed", 1, 0, 'x'},
-    {"prints", 0, 0, 'p'},
+    {"prints", 1, 0, 'p'},
     {"highvar", 0, 0, 'v'},
     {NULL, 0, 0, 0}
   };
@@ -385,7 +385,7 @@ int main(int argc, char *argv[])
       break;
 
     case 'p':
-      PRINTS = true;
+      PRINTS = std::atoi(optarg);
       break;
 
     case 'h':

@@ -33,7 +33,7 @@ bool firstAction = true;
 int seed = 1;
 
 Agent* agent = NULL;
-bool PRINTS = true;
+bool PRINTS = 0;
 
 rl_msgs::RLExperimentInfo info;
 char* agentType;
@@ -108,13 +108,13 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     a.action = agent->first_action(stateIn->state);
     info.episode_reward = 0;
     info.number_actions = 1;
-    if (PRINTS) std::cout << NODE << " Episode " << info.episode_number << ", First Action, reward: " << info.episode_reward << endl;
+    if (PRINTS >= 2) std::cout << NODE << " Episode " << info.episode_number << ", First Action, reward: " << info.episode_reward << endl;
   } else {
     info.episode_reward += stateIn->reward;
     // if terminal, no action, but calculate reward sum
     if (stateIn->terminal){
       agent->last_action(stateIn->reward);
-      std::cout << NODE << " Episode " << info.episode_number << ", Last Action (" << info.number_actions << "), reward: " << info.episode_reward << endl;
+      if (PRINTS >= 2) std::cout << NODE << " Episode " << info.episode_number << ", Last Action (" << info.number_actions << "), reward: " << info.episode_reward << endl;
       // publish episode reward message
       out_exp_info.publish(info);
       info.episode_number++;
@@ -124,7 +124,7 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     } else {
       a.action = agent->next_action(stateIn->reward, stateIn->state);
       info.number_actions++;
-      if (PRINTS) std::cout << NODE << " Episode " << info.episode_number << ", Action " << info.number_actions << ", reward: " << info.episode_reward << endl;
+      if (PRINTS >= 2) std::cout << NODE << " Episode " << info.episode_number << ", Action " << info.number_actions << ", reward: " << info.episode_reward << endl;
     }
   }
   firstAction = false;
@@ -142,7 +142,7 @@ void processSeed(const rl_msgs::RLEnvSeedExperience::ConstPtr &seedIn){
     return;
   }
 
-  if (PRINTS) std::cout << NODE << " Got a seed.";
+  if (PRINTS >= 2) std::cout << NODE << " Got a seed.";
 
   std::vector<experience> seeds;
   experience seed1;
@@ -224,10 +224,10 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
   // not for model based when doing continuous model
   if (nstates > 0 && (model != M5ALLMULTI || strcmp(agentType, "qlearner") == 0)){
     int totalStates = powf(nstates,envIn->min_state_range.size());
-    if (PRINTS) std::cout << "Discretize with " << nstates << ", total: " << totalStates << endl;
+    if (PRINTS >= 2) std::cout << "Discretize with " << nstates << ", total: " << totalStates << endl;
     agent = new DiscretizationAgent(nstates, a2,
                                     envIn->min_state_range,
-                                    envIn->max_state_range, PRINTS);
+                                    envIn->max_state_range, PRINTS > 0);
   }
 
 
@@ -309,7 +309,7 @@ int main(int argc, char *argv[])
     {"abstrans", 0, 0, '0'},
     {"seed", 1, 0, 's'},
     {"agent", 1, 0, 'q'},
-    {"prints", 0, 0, 'd'},
+    {"prints", 1, 0, 'd'},
     {"nstates", 1, 0, 'w'},
     {"k", 1, 0, 'k'},
     {"filename", 1, 0, 'f'},
@@ -567,7 +567,7 @@ int main(int argc, char *argv[])
       break;
 
     case 'd':
-      PRINTS = true;
+      PRINTS = std::atoi(optarg);
       break;
 
     case 'w':
