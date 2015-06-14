@@ -10,7 +10,7 @@
 
 class HectorQuad: public Environment {
 public:
-  HectorQuad(Random &rand, int target = 5);
+  HectorQuad(Random &rand, Eigen::Vector3d target = Eigen::Vector3d(0, 0, 5));
 
   // Not implemented
   // HectorQuad(Random &rand, bool stochastic);
@@ -38,23 +38,24 @@ public:
   void gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg);
 
 protected:
+  // Actions
   enum quad_action_t {UP, DOWN, STAY};
-
   // hardcoded num_actions to be able to calculate action value
   int num_actions;
+  // Publishers and subscribers
   ros::Publisher cmd_vel;
   ros::Subscriber quadrotor_state;
+  // Stochasticity related variables
+  Random &rng;
+  // State and positions
+  std::vector<float> s;
+  Eigen::Vector3d pos, last_pos, vel, last_vel, target_pos;
+  // Terminal checker
+  int terminal_count;
 
 private:
-  const bool noisy;
-  Random &rng;
-  std::vector<float> s;
-  Eigen::Vector3d pos, last_pos, vel, last_vel;
   float reward();
   void refreshState();
-
-  float TARGET;
-  float MAX_HEIGHT;
 };
 
 #endif

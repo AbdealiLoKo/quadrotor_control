@@ -5,13 +5,11 @@
 #include <nav_msgs/Odometry.h>
 
 // Random initialization of position
-HectorQuad::HectorQuad(Random &rand, int target/* = 5*/):
-  noisy(false),
+HectorQuad::HectorQuad(Random &rand, Eigen::Vector3d target/* = Eigen::Vector3d(0, 0, 0)*/):
   s(2),
   rng(rand),
-  TARGET(target),
+  target_pos(target),
   num_actions(3),
-  MAX_HEIGHT(2*TARGET),
   pos(0, 0, s[0]),
   vel(0, 0, s[1]),
   last_pos(0, 0, s[0]),
@@ -36,8 +34,8 @@ void HectorQuad::gazeboStateCallback(const nav_msgs::Odometry::ConstPtr& msg) {
 }
 
 void HectorQuad::refreshState() {
-  s[0] = (pos(2)-TARGET >= 0)?1:0;
-  s[1] = (pos(2)-TARGET <= 0)?1:0;
+  s[0] = (pos(2)-target_pos(2) >= 0)?1:0;
+  s[1] = (pos(2)-target_pos(2) <= 0)?1:0;
 }
 
 const std::vector<float> &HectorQuad::sensation() {
@@ -50,7 +48,15 @@ int HectorQuad::getNumActions() {
 }
 
 bool HectorQuad::terminal() {
-  return(abs(TARGET - pos(2)) < 0.5);
+  if (abs(target_pos(2) - pos(2)) < 0.2) {
+    terminal_count += 1;
+    if (terminal_count >= 1000) {
+      return(true);
+    }
+  } else {
+    terminal_count = 0;
+  }
+  return(false);
 }
 
 // Called by env.cpp for next action
@@ -67,7 +73,7 @@ float HectorQuad::apply(int action) {
       action_vel.linear.z = 0;
       break;
   }
-  // std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << "," << s[1] << " Pos:" << pos(2) << " Targ:" << TARGET << " Reward:" << reward() << endl;
+  // std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << "," << s[1] << " Pos:" << pos(2) << " Targ:" << target_pos(2) << " Reward:" << reward() << endl;
 
   cmd_vel.publish(action_vel);
 
@@ -76,9 +82,9 @@ float HectorQuad::apply(int action) {
 
 // Reward policy function
 float HectorQuad::reward() {
-  if ( abs(TARGET - pos(2)) < abs(TARGET - last_pos(2)) ) {
+  if ( abs(target_pos(2) - pos(2)) < abs(target_pos(2) - last_pos(2)) ) {
     return 1;
-  } else if ( abs(TARGET - pos(2)) > abs(TARGET - last_pos(2)) ) {
+  } else if ( abs(target_pos(2) - pos(2)) > abs(target_pos(2) - last_pos(2)) ) {
     return -1;
   }
 }
@@ -130,5 +136,5 @@ void HectorQuad::getMinMaxReward(float* minR, float* maxR) {
 }
 
 void HectorQuad::reset() {
-  // Should be resetting the system, but we don't have anything to
+  terminal_count = 0;
 }
