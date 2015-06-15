@@ -47,7 +47,7 @@ public:
 						   std::vector<float>::iterator start,
 						   std::vector<float>::iterator end);
 
-  void logValues(ofstream *of, int xmin, int xmax, int ymin, int ymax);
+  void logValues(std::ofstream *of, int xmin, int xmax, int ymin, int ymax);
 
 protected:
   /** The implementation maps all sensations to a set of canonical

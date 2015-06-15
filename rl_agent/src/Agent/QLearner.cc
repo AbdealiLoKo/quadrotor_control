@@ -19,9 +19,9 @@ QLearner::~QLearner() {}
 int QLearner::first_action(const std::vector<float> &s) {
 
   if (ACTDEBUG){
-    cout << "First - in state: ";
+    std::cout << "First - in state: ";
     printState(s);
-    cout << endl;
+    std::cout << std::endl;
   }
 
   // Get action values
@@ -37,14 +37,14 @@ int QLearner::first_action(const std::vector<float> &s) {
   currentq = &*a;
 
   if (ACTDEBUG){
-    cout << " act: " << (a-Q_s.begin()) << " val: " << *a << endl;
+    std::cout << " act: " << (a-Q_s.begin()) << " val: " << *a << std::endl;
     for (int iAct = 0; iAct < numactions; iAct++){
-      cout << " Action: " << iAct
-           << " val: " << Q_s[iAct] << endl;
+      std::cout << " Action: " << iAct
+           << " val: " << Q_s[iAct] << std::endl;
     }
-    cout << "Took action " << (a-Q_s.begin()) << " from state ";
+    std::cout << "Took action " << (a-Q_s.begin()) << " from state ";
     printState(s);
-    cout << endl;
+    std::cout << std::endl;
   }
 
   return a - Q_s.begin();
@@ -53,9 +53,9 @@ int QLearner::first_action(const std::vector<float> &s) {
 int QLearner::next_action(float r, const std::vector<float> &s) {
 
   if (ACTDEBUG){
-    cout << "Next: got reward " << r << " in state: ";
+    std::cout << "Next: got reward " << r << " in state: ";
     printState(s);
-    cout << endl;
+    std::cout << std::endl;
   }
 
   // Get action values
@@ -76,14 +76,14 @@ int QLearner::next_action(float r, const std::vector<float> &s) {
   currentq = &*a;
 
   if (ACTDEBUG){
-    cout << " act: " << (a-Q_s.begin()) << " val: " << *a << endl;
+    std::cout << " act: " << (a-Q_s.begin()) << " val: " << *a << std::endl;
     for (int iAct = 0; iAct < numactions; iAct++){
-      cout << " Action: " << iAct
-           << " val: " << Q_s[iAct] << endl;
+      std::cout << " Action: " << iAct
+           << " val: " << Q_s[iAct] << std::endl;
     }
-    cout << "Took action " << (a-Q_s.begin()) << " from state ";
+    std::cout << "Took action " << (a-Q_s.begin()) << " from state ";
     printState(s);
-    cout << endl;
+    std::cout << std::endl;
   }
 
   return a - Q_s.begin();
@@ -92,7 +92,7 @@ int QLearner::next_action(float r, const std::vector<float> &s) {
 void QLearner::last_action(float r) {
 
   if (ACTDEBUG){
-    cout << "Last: got reward " << r << endl;
+    std::cout << "Last: got reward " << r << std::endl;
   }
 
   *currentq += alpha * (r - *currentq);
@@ -140,7 +140,7 @@ void QLearner::setDebug(bool d){
 
 void QLearner::printState(const std::vector<float> &s){
   for (unsigned j = 0; j < s.size(); j++){
-    cout << s[j] << ", ";
+    std::cout << s[j] << ", ";
   }
 }
 
@@ -168,21 +168,20 @@ void QLearner::seedExp(std::vector<experience> seeds){
 
 
     /*
-      cout << "Seeding with experience " << i << endl;
-      cout << "last: " << (e.s)[0] << ", " << (e.s)[1] << ", "
-      << (e.s)[2] << endl;
-      cout << "act: " << e.act << " r: " << e.reward << endl;
-      cout << "next: " << (e.next)[0] << ", " << (e.next)[1] << ", "
-      << (e.next)[2] << ", " << e.terminal << endl;
-      cout << "Q: " << *currentq << " max: " << *max << endl;
+      std::cout << "Seeding with experience " << i << std::endl;
+      std::cout << "last: " << (e.s)[0] << ", " << (e.s)[1] << ", "
+              << (e.s)[2] << std::endl;
+      std::cout << "act: " << e.act << " r: " << e.reward << std::endl;
+      std::cout << "next: " << (e.next)[0] << ", " << (e.next)[1] << ", "
+              << (e.next)[2] << ", " << e.terminal << std::endl;
+      std::cout << "Q: " << *currentq << " max: " << *max << std::endl;
     */
 
   }
 
-
 }
 
-void QLearner::logValues(ofstream *of, int xmin, int xmax, int ymin, int ymax){
+void QLearner::logValues(std::ofstream *of, int xmin, int xmax, int ymin, int ymax){
   std::vector<float> s;
   s.resize(2, 0.0);
   for (int i = xmin ; i < xmax; i++){
@@ -226,7 +225,7 @@ float QLearner::getValue(std::vector<float> state){
     }
   }
 
-  cout << "Avg Value: " << (valSum / cnt) << endl;
+  std::cout << "Avg Value: " << (valSum / cnt) << std::endl;
 
   return *a;
 }
@@ -234,7 +233,8 @@ float QLearner::getValue(std::vector<float> state){
 
 void QLearner::savePolicy(const char* filename){
 
-  ofstream policyFile(filename, ios::out | ios::binary | ios::trunc);
+  std::ofstream policyFile(filename,
+                           std::ios::out | std::ios::binary | std::ios::trunc);
 
   // first part, save the vector size
   std::set< std::vector<float> >::iterator i = statespace.begin();
@@ -266,22 +266,22 @@ void QLearner::savePolicy(const char* filename){
 void QLearner::loadPolicy(const char* filename){
   bool LOADDEBUG = false;
 
-  ifstream policyFile(filename, ios::in | ios::binary);
+  std::ifstream policyFile(filename, std::ios::in | std::ios::binary);
   if (!policyFile.is_open())
     return;
 
   // first part, save the vector size
   int fsize;
   policyFile.read((char*)&fsize, sizeof(int));
-  if (LOADDEBUG) cout << "Numfeats loaded: " << fsize << endl;
+  if (LOADDEBUG) std::cout << "Numfeats loaded: " << fsize << std::endl;
 
   // save numactions
   int nact;
   policyFile.read((char*)&nact, sizeof(int));
 
   if (nact != numactions){
-    cout << "this policy is not valid loaded nact: " << nact
-         << " was told: " << numactions << endl;
+    std::cout << "this policy is not valid loaded nact: " << nact
+              << " was told: " << numactions << std::endl;
     exit(-1);
   }
 
@@ -293,7 +293,7 @@ void QLearner::loadPolicy(const char* filename){
     // load state
     policyFile.read((char*)&(state[0]), sizeof(float)*fsize);
     if (LOADDEBUG){
-      cout << "load policy for state: ";
+      std::cout << "load policy for state: ";
       printState(state);
     }
 
@@ -306,15 +306,15 @@ void QLearner::loadPolicy(const char* filename){
     policyFile.read((char*)&((*Q_s)[0]), sizeof(float)*numactions);
 
     if (LOADDEBUG){
-      cout << "Q values: " << endl;
+      std::cout << "Q values: " << std::endl;
       for (int iAct = 0; iAct < numactions; iAct++){
-        cout << " Action: " << iAct << " val: " << (*Q_s)[iAct] << endl;
+        std::cout << " Action: " << iAct << " val: " << (*Q_s)[iAct] << std::endl;
       }
     }
   }
 
   policyFile.close();
-  cout << "Policy loaded!!!" << endl;
+  std::cout << "Policy loaded!!!" << std::endl;
   //loaded = true;
 }
 

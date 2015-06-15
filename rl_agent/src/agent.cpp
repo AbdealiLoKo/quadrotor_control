@@ -1,26 +1,22 @@
+// C ++
+#include <getopt.h>
+// ROS
 #include <ros/ros.h>
-
+// Messages
 #include <rl_msgs/RLStateReward.h>
 #include <rl_msgs/RLEnvDescription.h>
 #include <rl_msgs/RLAction.h>
 #include <rl_msgs/RLExperimentInfo.h>
 #include <rl_msgs/RLEnvSeedExperience.h>
-
-#include <ros/callback_queue.h>
-
+// RL ROS files
 #include <rl_common/core.hh>
 #include <rl_common/Random.h>
 #include <rl_common/ExperienceFile.hh>
-
+// Agents
 #include <rl_agent/DiscretizationAgent.hh>
 #include <rl_agent/QLearner.hh>
 #include <rl_agent/SavedPolicy.hh>
 #include <rl_agent/Sarsa.hh>
-
-#include "std_msgs/String.h"
-
-#include <getopt.h>
-#include <stdlib.h>
 
 #define NODE "RLAgent"
 
@@ -48,18 +44,23 @@ char *filename = NULL;
 
 
 void displayHelp(){
-  std::cout << "\n Call agent --agent type [options]\n";
-  std::cout << "Agent types: qlearner sarsa savedpolicy\n";
-  std::cout << "\n Options:\n";
-  std::cout << "--seed value (integer seed for random number generator)\n";
-  std::cout << "--gamma value (discount factor between 0 and 1)\n";
-  std::cout << "--epsilon value (epsilon for epsilon-greedy exploration)\n";
-  std::cout << "--alpha value (learning rate alpha)\n";
-  std::cout << "--initialvalue value (initial q values)\n";
-  std::cout << "--lamba value (lamba for eligibility traces)\n";
-  std::cout << "--nstates value (optionally discretize domain into value # of states on each feature)\n";
-  std::cout << "--filename file (file to load saved policy from for savedpolicy agent)\n";
-  std::cout << "--prints (turn on debug printing of actions/rewards)\n";
+  std::cout << std::endl << " Call agent --agent type [options]" << std::endl;
+  std::cout << "Agent types: qlearner sarsa savedpolicy" << std::endl;
+  std::cout << std::endl << " Options:" << std::endl;
+  std::cout << "--seed value (integer seed for random number generator)"
+            << std::endl;
+  std::cout << "--gamma value (discount factor between 0 and 1)" << std::endl;
+  std::cout << "--epsilon value (epsilon for epsilon-greedy exploration)"
+            << std::endl;
+  std::cout << "--alpha value (learning rate alpha)" << std::endl;
+  std::cout << "--initialvalue value (initial q values)" << std::endl;
+  std::cout << "--lamba value (lamba for eligibility traces)" << std::endl;
+  std::cout << "--nstates value (optionally discretize domain into value # of "
+               "states on each feature)" << std::endl;
+  std::cout << "--filename file (file to load saved policy from for "
+               "savedpolicy agent)" << std::endl;
+  std::cout << "--prints (turn on debug printing of actions/rewards)"
+            << std::endl;
   exit(-1);
 }
 
@@ -67,7 +68,7 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
   /** Process the state/reward message from the environment */
 
   if (agent == NULL){
-    std::cout << "no agent yet" << endl;
+    std::cout << "no agent yet" << std::endl;
     return;
   }
 
@@ -78,13 +79,17 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     a.action = agent->first_action(stateIn->state);
     info.episode_reward = 0;
     info.number_actions = 1;
-    if (PRINTS >= 2) std::cout << NODE << " Episode " << info.episode_number << ", First Action, reward: " << info.episode_reward << endl;
+    if (PRINTS >= 2)
+      std::cout << NODE << " Episode " << info.episode_number << ", First "
+                   "Action, reward: " << info.episode_reward << std::endl;
   } else {
     info.episode_reward += stateIn->reward;
     // if terminal, no action, but calculate reward sum
     if (stateIn->terminal){
       agent->last_action(stateIn->reward);
-      std::cout << NODE << " Episode " << info.episode_number << ", Last Action (" << info.number_actions << "), reward: " << info.episode_reward << endl;
+      std::cout << NODE << " Episode " << info.episode_number << ", Last "
+                   "Action (" << info.number_actions << "), reward: "
+                   << info.episode_reward << std::endl;
       // publish episode reward message
       out_exp_info.publish(info);
       info.episode_number++;
@@ -94,7 +99,10 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     } else {
       a.action = agent->next_action(stateIn->reward, stateIn->state);
       info.number_actions++;
-      if (PRINTS >= 2) std::cout << NODE << " Episode " << info.episode_number << ", Action " << info.number_actions << ", reward: " << info.episode_reward << endl;
+      if (PRINTS >= 2)
+        std::cout << NODE << " Episode " << info.episode_number << ", Action "
+                  << info.number_actions << ", reward: " << info.episode_reward
+                  << std::endl;
     }
   }
   firstAction = false;
@@ -108,11 +116,12 @@ void processSeed(const rl_msgs::RLEnvSeedExperience::ConstPtr &seedIn){
   /** Process seeds for initializing model */
 
   if (agent == NULL){
-    std::cout << NODE << " no agent yet" << endl;
+    std::cout << NODE << " no agent yet" << std::endl;
     return;
   }
 
-  if (PRINTS >= 2) std::cout << NODE << " Got a seed.";
+  if (PRINTS >= 2)
+    std::cout << NODE << " Got a seed.";
 
   std::vector<experience> seeds;
   experience seed1;
@@ -137,18 +146,18 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
 
 
   if (strcmp(agentType, "qlearner") == 0){
-    std::cout << "Agent: QLearner" << endl;
+    std::cout << "Agent: QLearner" << std::endl;
     agent = new QLearner(envIn->num_actions, _gamma, initialvalue,
                          alpha, epsilon, rng);
   } else if (strcmp(agentType, "sarsa") == 0){
-    std::cout << "Agent: Sarsa" << endl;
+    std::cout << "Agent: Sarsa" << std::endl;
     agent = new Sarsa(envIn->num_actions, _gamma, initialvalue, alpha,
                       epsilon, lambda, rng);
   } else if (strcmp(agentType, "savedpolicy") == 0){
-    std::cout << "Agent: Saved Policy" << endl;
+    std::cout << "Agent: Saved Policy" << std::endl;
     agent = new SavedPolicy(envIn->num_actions, filename);
   } else {
-    std::cout << "Invalid Agent!" << endl;
+    std::cout << "Invalid Agent!" << std::endl;
     displayHelp();
     exit(-1);
   }
@@ -156,8 +165,10 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
   Agent* a2 = agent;
   // not for model based when doing continuous model
   if (nstates > 0){
-    int totalStates = powf(nstates,envIn->min_state_range.size());
-    if (PRINTS >= 2) std::cout << "Discretize with " << nstates << ", total: " << totalStates << endl;
+    int totalStates = pow(nstates,envIn->min_state_range.size());
+    if (PRINTS >= 2)
+      std::cout << "Discretize with " << nstates << ", total: " << totalStates
+                << std::endl;
     agent = new DiscretizationAgent(nstates, a2,
                                     envIn->min_state_range,
                                     envIn->max_state_range, PRINTS > 0);
@@ -178,7 +189,7 @@ int main(int argc, char *argv[]) {
 
   // agent is required required
   if (argc < 3){
-    std::cout << "--agent type  option is required" << endl;
+    std::cout << "--agent type  option is required" << std::endl;
     displayHelp();
     exit(-1);
   }
@@ -196,7 +207,7 @@ int main(int argc, char *argv[]) {
     }
   }
   if (!gotAgent) {
-    std::cout << "--agent type  option is required" << endl;
+    std::cout << "--agent type  option is required" << std::endl;
     displayHelp();
   }
 
@@ -222,26 +233,27 @@ int main(int argc, char *argv[]) {
 
     case 'g':
       _gamma = std::atof(optarg);
-      std::cout << "gamma: " << _gamma << endl;
+      std::cout << "gamma: " << _gamma << std::endl;
       break;
 
     case 'e':
       epsilon = std::atof(optarg);
-      std::cout << "epsilon: " << epsilon << endl;
+      std::cout << "epsilon: " << epsilon << std::endl;
       break;
 
     case 'f':
       filename = optarg;
-      std::cout << "policy filename: " <<  filename << endl;
+      std::cout << "policy filename: " <<  filename << std::endl;
       break;
 
     case 'a':
       {
         if (strcmp(agentType, "qlearner") == 0 || strcmp(agentType, "sarsa") == 0){
           alpha = std::atof(optarg);
-          std::cout << "alpha: " << alpha << endl;
+          std::cout << "alpha: " << alpha << std::endl;
         } else {
-          std::cout << "--alpha option is only valid for Q-Learning and Sarsa" << endl;
+          std::cout << "--alpha option is only valid for Q-Learning and Sarsa"
+                    << std::endl;
           exit(-1);
         }
         break;
@@ -251,9 +263,10 @@ int main(int argc, char *argv[]) {
       {
         if (strcmp(agentType, "qlearner") == 0 || strcmp(agentType, "sarsa") == 0){
           initialvalue = std::atof(optarg);
-          std::cout << "initialvalue: " << initialvalue << endl;
+          std::cout << "initialvalue: " << initialvalue << std::endl;
         } else {
-          std::cout << "--initialvalue option is only valid for Q-Learning and Sarsa" << endl;
+          std::cout << "--initialvalue option is only valid for Q-Learning "
+                       "and Sarsa" << std::endl;
           exit(-1);
         }
         break;
@@ -263,9 +276,10 @@ int main(int argc, char *argv[]) {
       {
         if (strcmp(agentType, "sarsa") == 0){
           lambda = std::atof(optarg);
-          std::cout << "lambda: " << lambda << endl;
+          std::cout << "lambda: " << lambda << std::endl;
         } else {
-          std::cout << "--lambda option is invalid for this agent: " << agentType << endl;
+          std::cout << "--lambda option is invalid for this agent: "
+                    << agentType << std::endl;
           exit(-1);
         }
         break;
@@ -274,12 +288,12 @@ int main(int argc, char *argv[]) {
 
     case 's':
       seed = std::atoi(optarg);
-      std::cout << "seed: " << seed << endl;
+      std::cout << "seed: " << seed << std::endl;
       break;
 
     case 'q':
       // already processed this one
-      std::cout << "agent: " << agentType << endl;
+      std::cout << "agent: " << agentType << std::endl;
       break;
 
     case 'd':
@@ -288,7 +302,7 @@ int main(int argc, char *argv[]) {
 
     case 'w':
       nstates = std::atoi(optarg);
-      std::cout << "nstates for discretization: " << nstates << endl;
+      std::cout << "nstates for discretization: " << nstates << std::endl;
       break;
 
     case 'h':
@@ -302,19 +316,33 @@ int main(int argc, char *argv[]) {
 
   int qDepth = 1;
 
-  std::cout << NODE << " Setting up Publishers ...\n";
-  out_rl_action = node.advertise<rl_msgs::RLAction>("rl_agent/rl_action",qDepth, false);
-  out_exp_info = node.advertise<rl_msgs::RLExperimentInfo>("rl_agent/rl_experiment_info",qDepth, false);
+  std::cout << NODE << " Setting up Publishers ..." << std::endl;
+  out_rl_action = node.advertise<rl_msgs::RLAction>("rl_agent/rl_action",
+                                                    qDepth,
+                                                    false);
+  out_exp_info = node.advertise<rl_msgs::RLExperimentInfo>(
+    "rl_agent/rl_experiment_info",
+    qDepth,
+    false);
 
-  std::cout << NODE << " Setting up Subscribers ...\n";
+  std::cout << NODE << " Setting up Subscribers ..." << std::endl;
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
-  ros::Subscriber rl_description =  node.subscribe("rl_env/rl_env_description", qDepth, processEnvDescription, noDelay);
-  ros::Subscriber rl_state =  node.subscribe("rl_env/rl_state_reward", qDepth, processState, noDelay);
-  ros::Subscriber rl_seed =  node.subscribe("rl_env/rl_seed", 20, processSeed, noDelay);
+  ros::Subscriber rl_description =  node.subscribe("rl_env/rl_env_description",
+                                                   qDepth,
+                                                   processEnvDescription,
+                                                   noDelay);
+  ros::Subscriber rl_state =  node.subscribe("rl_env/rl_state_reward",
+                                             qDepth,
+                                             processState,
+                                             noDelay);
+  ros::Subscriber rl_seed =  node.subscribe("rl_env/rl_seed",
+                                            20,
+                                            processSeed,
+                                            noDelay);
 
   ROS_INFO(NODE ": starting main loop");
 
-  ros::spin();                          // handle incoming data
+  ros::spin(); // handle incoming data
 
   if(agent != NULL) {
     if(filename != NULL) {

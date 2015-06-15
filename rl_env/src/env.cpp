@@ -43,14 +43,18 @@ bool highvar = false;
 
 
 void displayHelp(){
-  std::cout << "\n Call env --env type [options]\n";
-  std::cout << "Env types: taxi tworooms fourrooms energy fuelworld mcar cartpole car2to7 car7to2 carrandom stocks lightworld hectorquad\n";
-  std::cout << "\n Options:\n";
-  std::cout << "--seed value (integer seed for random number generator)\n";
-  std::cout << "--deterministic (deterministic version of domain)\n";
-  std::cout << "--stochastic (stochastic version of domain)\n";
-  std::cout << "--delay value (# steps of action delay (for mcar and tworooms)\n";
-  std::cout << "--prints (turn on debug printing of actions/rewards)\n";
+  std::cout << std::endl << " Call env --env type [options]" << std::endl;
+  std::cout << "Env types: taxi tworooms fourrooms energy fuelworld mcar "
+               "cartpole car2to7 car7to2 carrandom stocks lightworld hectorquad" << std::endl;
+  std::cout << std::endl << " Options:" << std::endl;
+  std::cout << "--seed value (integer seed for random number generator)"
+            << std::endl;
+  std::cout << "--deterministic (deterministic version of domain)" << std::endl;
+  std::cout << "--stochastic (stochastic version of domain)" << std::endl;
+  std::cout << "--delay value (# steps of action delay (for mcar and "
+            << "tworooms)" << std::endl;
+  std::cout << "--prints (turn on debug printing of actions/rewards)"
+            << std::endl;
   exit(-1);
 }
 
@@ -65,7 +69,10 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
   sr.terminal = e->terminal();
 
   // publish the state-reward message
-  if (PRINTS >= 1) std::cout << "Got action " << actionIn->action << " at state: " << sr.state[0] << ", " << sr.state[1] << ", reward: " << sr.reward << endl;
+  if (PRINTS >= 1)
+    std::cout << "Got action " << actionIn->action << " at state: "
+              << sr.state[0] << ", " << sr.state[1] << ", reward: "
+              << sr.reward << std::endl;
 
   out_env_sr.publish(sr);
 
@@ -73,7 +80,10 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
 
 void processEpisodeInfo(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn){
   /** Process end-of-episode reward info. Mostly to start new episode. */
-  if (PRINTS >= 2) std::cout << "Episode " << infoIn->episode_number << " terminated with reward: " << infoIn->episode_reward << ", start new episode " << endl;
+  if (PRINTS >= 2)
+    std::cout << "Episode " << infoIn->episode_number <<" terminated with "
+              << "reward: " << infoIn->episode_reward << ", start new episode "
+              << std::endl;
 
   e->reset();
 
@@ -103,7 +113,7 @@ void initEnvironment(){
     desc.title = "Environment: HectorQuad\n";
     e = new HectorQuad(rng);
   } else {
-    std::cerr << "Invalid env type" << endl;
+    std::cerr << "Invalid env type" << std::endl;
     displayHelp();
     exit(-1);
   }
@@ -127,7 +137,7 @@ void initEnvironment(){
   desc.max_reward = maxReward;
   desc.reward_range = maxReward - minReward;
 
-  std::cout << desc.title << endl;
+  std::cout << desc.title << std::endl;
 
   // publish environment description
   out_env_desc.publish(desc);
@@ -163,7 +173,7 @@ int main(int argc, char *argv[])
   ros::NodeHandle node;
 
   if (argc < 2){
-    std::cout << "--env type  option is required" << endl;
+    std::cout << "--env type  option is required" << std::endl;
     displayHelp();
     exit(-1);
   }
@@ -187,7 +197,7 @@ int main(int argc, char *argv[])
     }
   }
   if (!gotEnv) {
-    std::cout << "--env type  option is required" << endl;
+    std::cout << "--env type  option is required" << std::endl;
     displayHelp();
   }
 
@@ -210,38 +220,27 @@ int main(int argc, char *argv[])
 
     case 'x':
       seed = std::atoi(optarg);
-      std::cout << "seed: " << seed << endl;
+      std::cout << "seed: " << seed << std::endl;
       break;
 
     case 'd':
       stochastic = false;
-      std::cout << "stochastic: " << stochastic << endl;
+      std::cout << "stochastic: " << stochastic << std::endl;
       break;
-
-    case 'v':
-      {
-        if (strcmp(envType, "fuelworld") == 0){
-          highvar = true;
-          std::cout << "fuel world fuel cost variation: " << highvar << endl;
-        } else {
-          std::cout << "--highvar is only a valid option for the fuelworld domain." << endl;
-          exit(-1);
-        }
-        break;
-      }
 
     case 's':
       stochastic = true;
-      std::cout << "stochastic: " << stochastic << endl;
+      std::cout << "stochastic: " << stochastic << std::endl;
       break;
 
     case 'a':
       {
         if (strcmp(envType, "mcar") == 0 || strcmp(envType, "tworooms") == 0){
           delay = std::atoi(optarg);
-          std::cout << "delay steps: " << delay << endl;
+          std::cout << "delay steps: " << delay << std::endl;
         } else {
-          std::cout << "--delay option is only valid for the mcar and tworooms domains" << endl;
+          std::cout << "--delay option is only valid for the mcar and "
+                       "tworooms domains" << std::endl;
           exit(-1);
         }
         break;
@@ -249,7 +248,7 @@ int main(int argc, char *argv[])
 
     case 'e':
       // already processed this one
-      std::cout << "env: " << envType << endl;
+      std::cout << "env: " << envType << std::endl;
       break;
 
     case 'p':
@@ -269,23 +268,37 @@ int main(int argc, char *argv[])
   int qDepth = 1;
 
   // Set up Publishers
-  std::cout << NODE << " Initializing ROS ...\n";
+  std::cout << NODE << " Initializing ROS ..." << std::endl;
   ros::init(argc, argv, "my_tf_broadcaster");
   tf::Transform transform;
 
-  std::cout << NODE << " Setting up publishers ...\n";
-  out_env_desc = node.advertise<rl_msgs::RLEnvDescription>("rl_env/rl_env_description",qDepth,true);
-  out_env_sr = node.advertise<rl_msgs::RLStateReward>("rl_env/rl_state_reward",qDepth,false);
-  out_seed = node.advertise<rl_msgs::RLEnvSeedExperience>("rl_env/rl_seed",20,false);
+  std::cout << NODE << " Setting up publishers ..." << std::endl;
+  out_env_desc = node.advertise<rl_msgs::RLEnvDescription>(
+    "rl_env/rl_env_description",
+    qDepth,
+    true);
+  out_env_sr = node.advertise<rl_msgs::RLStateReward>(
+    "rl_env/rl_state_reward",
+    qDepth,
+    false);
+  out_seed = node.advertise<rl_msgs::RLEnvSeedExperience>(
+    "rl_env/rl_seed",
+    20,
+    false);
 
   std::cout << NODE << " Setting up subscribers ...\n";
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
-  ros::Subscriber rl_action =  node.subscribe("rl_agent/rl_action", qDepth, processAction, noDelay);
-  ros::Subscriber rl_exp_info =  node.subscribe("rl_agent/rl_experiment_info", qDepth, processEpisodeInfo, noDelay);
-  // ros::Subscriber quadrotor_state = node.subscribe("/ground_truth/state", qDepth, &gazeboStateCallback, noDelay);
+  ros::Subscriber rl_action =  node.subscribe("rl_agent/rl_action",
+                                              qDepth,
+                                              processAction,
+                                              noDelay);
+  ros::Subscriber rl_exp_info =  node.subscribe("rl_agent/rl_experiment_info",
+                                                qDepth,
+                                                processEpisodeInfo,
+                                                noDelay);
 
   // publish env description, first state
-  std::cout << NODE << " Initializing the environment ...\n";
+  std::cout << NODE << " Initializing the environment ..." << std::endl;
   rng = Random(1+seed);
   initEnvironment();
 

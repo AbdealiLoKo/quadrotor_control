@@ -133,7 +133,7 @@ float Taxi::apply(int action) {
     } else
       return -10;
   }
-  std::cerr << "Unreachable point reached in Taxi::apply!!!\n";
+  std::cerr << "Unreachable point reached in Taxi::apply!!!" << std::endl;
   return 0; // unreachable, I hope
 }
 
@@ -229,7 +229,7 @@ void Taxi::randomize_landmarks_to_corners() {
 
 void Taxi::setSensation(std::vector<float> newS){
   if (s.size() != newS.size()){
-    cerr << "Error in sensation sizes" << endl;
+    std::cerr << "Error in sensation sizes" << std::endl;
   }
 
   for (unsigned i = 0; i < newS.size(); i++){

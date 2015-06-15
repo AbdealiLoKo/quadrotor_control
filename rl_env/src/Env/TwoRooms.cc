@@ -29,14 +29,15 @@ TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType,
 TwoRooms::~TwoRooms() { delete grid; }
 
 const std::vector<float> &TwoRooms::sensation() {
-  //cout << "At state " << s[0] << ", " << s[1] << endl;
+  //std::cout << "At state " << s[0] << ", " << s[1] << std::endl;
 
   return s;
 }
 
 float TwoRooms::apply(int action) {
 
-  //cout << "Taking action " << static_cast<room_action_t>(action) << endl;
+  // std::cout << "Taking action " << static_cast<room_action_t>(action)
+  //           << std::endl;
 
   int actUsed = action;
 
@@ -98,9 +99,9 @@ float TwoRooms::reward() {
 
   /*
   if (coord_t(ns,ew) == goal2)
-    cout << "At goal 2, " << useGoal2 << endl;
+    std::cout << "At goal 2, " << useGoal2 << std::endl;
   if (coord_t(ns,ew) == goal)
-    cout << "At goal 1, " << !useGoal2 << endl;
+    std::cout << "At goal 1, " << !useGoal2 << std::endl;
   */
 
   if (negReward){
@@ -142,14 +143,14 @@ void TwoRooms::reset() {
 
   if (multiGoal){
     useGoal2 = rng.bernoulli(0.5);
-    //cout << "goal2? " << useGoal2 << endl;
+    // std::cout << "goal2? " << useGoal2 << std::endl;
   }
   else {
     useGoal2 = false;
   }
 
-  //ns = 4;
-  //ew = 9;
+  // ns = 4;
+  // ew = 9;
 }
 
 
@@ -277,10 +278,8 @@ experience TwoRooms::getExp(float s0, float s1, int a){
   e.terminal = terminal();
   e.next = sensation();
 
-  /*
-  cout << "Seed from " << e.s[0] << "," << e.s[1] << " a: " << e.act
-       << " r: " << e.reward << " term: " << e.terminal << endl;
-  */
+  // std::cout << "Seed from " << e.s[0] << "," << e.s[1] << " a: " << e.act
+  //           << " r: " << e.reward << " term: " << e.terminal << std::endl;
 
   reset();
 

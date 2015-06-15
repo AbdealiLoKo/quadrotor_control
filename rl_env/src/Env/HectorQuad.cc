@@ -35,7 +35,7 @@ void HectorQuad::gazeboGroundTruth(const nav_msgs::Odometry::ConstPtr& msg) {
   last_vel = vel;
   pos(2) = msg->pose.pose.position.z;
   vel(2) = msg->twist.twist.linear.z;
-  // std::cout << "Pos: " << pos(2) << " Vel: " << vel(2) << endl;
+  // std::cout << "Pos: " << pos(2) << " Vel: " << vel(2) << std::endl;
 }
 
 void HectorQuad::refreshState() {
@@ -78,7 +78,9 @@ float HectorQuad::apply(int action) {
       action_vel.linear.z = 0;
       break;
   }
-  // std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << "," << s[1] << " Pos:" << pos(2) << " Targ:" << target_pos(2) << " Reward:" << reward() << endl;
+  // std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << ","
+  //           << s[1] << " Pos:" << pos(2) << " Targ:" << target_pos(2)
+  //           << " Reward:" << reward() << std::endl;
 
   cmd_vel.publish(action_vel);
 
@@ -96,7 +98,7 @@ float HectorQuad::reward() {
 
 void HectorQuad::setSensation(std::vector<float> newS){
   if (s.size() != newS.size()){
-    cerr << "Error in sensation sizes" << endl;
+    std::cerr << "Error in sensation sizes" << std::endl;
   }
 
   for (unsigned i = 0; i < newS.size(); i++){

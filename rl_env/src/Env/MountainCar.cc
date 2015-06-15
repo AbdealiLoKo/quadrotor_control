@@ -17,7 +17,7 @@ MountainCar::MountainCar(Random &rand):
   delay(0)
 {
   reset();
-  //cout << *this << endl;
+  //std::cout << *this << std::endl;
 }
 
 
@@ -37,14 +37,14 @@ MountainCar::MountainCar(Random &rand, bool stochastic, bool lin, int delay):
 MountainCar::~MountainCar() { }
 
 const std::vector<float> &MountainCar::sensation() {
-  //cout << "At state " << s[0] << ", " << s[1] << endl;
+  //std::cout << "At state " << s[0] << ", " << s[1] << std::endl;
 
   return s;
 }
 
 float MountainCar::apply(int action) {
 
-  //cout << "Taking action " << action << endl;
+  //std::cout << "Taking action " << action << std::endl;
 
   float actVal = ((float)action-1.0);
   if (noisy){
@@ -76,8 +76,8 @@ float MountainCar::apply(int action) {
     velHistory.push_back(newVel);
     vel = velHistory.front();
     velHistory.pop_front();
-    //    cout << "new pos: " << newPos << " observed: " << pos << endl;
-    //cout << "new vel: " << newVel << " observed: " << vel << endl;
+    // std::cout << "new pos: " << newPos << " observed: " << pos << std::endl;
+    // std::cout << "new vel: " << newVel << " observed: " << vel << std::endl;
   }
 
   return reward();
@@ -143,7 +143,7 @@ int MountainCar::getNumActions(){
 
 void MountainCar::setSensation(std::vector<float> newS){
   if (s.size() != newS.size()){
-    cerr << "Error in sensation sizes" << endl;
+    std::cerr << "Error in sensation sizes" << std::endl;
   }
 
   for (unsigned i = 0; i < newS.size(); i++){

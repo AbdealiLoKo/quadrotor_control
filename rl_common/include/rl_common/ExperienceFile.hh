@@ -14,7 +14,7 @@ public:
   /** Standard constructor
    */
 
-  ofstream vectorFile;
+  std::ofstream vectorFile;
   int expNum;
 
   ExperienceFile(){
@@ -27,7 +27,7 @@ public:
   }
 
   void initFile(const char* filename, int nfeats){
-    vectorFile.open(filename, ios::out | ios::binary);
+    vectorFile.open(filename, std::ios::out | std::ios::binary);
 
     // first part, save the vector size
     vectorFile.write((char*)&nfeats, sizeof(int));
@@ -50,30 +50,30 @@ public:
     vectorFile.write((char*)&e.reward, sizeof(float));
     vectorFile.write((char*)&e.terminal, sizeof(bool));
 
-    //cout << "Experience " << expNum << endl;
+    //std::cout << "Experience " << expNum << std::endl;
     expNum++;
     //printExperience(e);
   }
 
   void printExperience(experience e){
 
-    cout << "State s: ";
+    std::cout << "State s: ";
     for(unsigned i = 0; i < e.s.size(); i++){
-      cout << e.s[i] << ", ";
+      std::cout << e.s[i] << ", ";
     }
-    cout << endl << " Next: ";
+    std::cout << std::endl << " Next: ";
     for(unsigned i = 0; i < e.next.size(); i++){
-      cout << e.next[i] << ", ";
+      std::cout << e.next[i] << ", ";
     }
-    cout << endl;
-    cout << "action: " << e.act << " reward: " << e.reward << endl;
+    std::cout << std::endl;
+    std::cout << "action: " << e.act << " reward: " << e.reward << std::endl;
 
   }
 
 
 
   std::vector<experience> loadExperiences(const char* filename){
-    ifstream inFile (filename, ios::in | ios::binary);
+    std::ifstream inFile (filename, std::ios::in | std::ios::binary);
 
     int numFeats;
     inFile.read((char*)&numFeats, sizeof(int));
@@ -94,7 +94,7 @@ public:
       inFile.read((char*)&e.reward, sizeof(float));
       inFile.read((char*)&e.terminal, sizeof(bool));
 
-      //cout << "Experience " << seeds.size() << endl;
+      //std::cout << "Experience " << seeds.size() << std::endl;
       //printExperience(e);
 
       seeds.push_back(e);
