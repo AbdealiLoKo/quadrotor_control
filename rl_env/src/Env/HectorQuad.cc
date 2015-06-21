@@ -1,6 +1,5 @@
 #include <geometry_msgs/Twist.h>
 #include <rl_env/HectorQuad.hh>
-#include <std_srvs/Empty.h>
 
 // Random initialization of position
 HectorQuad::HectorQuad(Random &rand, Eigen::Vector3d target/* = Eigen::Vector3d(0, 0, 0)*/):
@@ -142,6 +141,5 @@ void HectorQuad::getMinMaxReward(float* minR, float* maxR) {
 void HectorQuad::reset() {
   terminal_count = 0;
   // Reset the world
-  std_srvs::Empty msg;
-  reset_world.call(msg);
+  reset_world.call(empty_msg);
 }

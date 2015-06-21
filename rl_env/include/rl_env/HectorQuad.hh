@@ -6,6 +6,7 @@
 #include <rl_common/core.hh>
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
+#include <std_srvs/Empty.h>
 
 class HectorQuad: public Environment {
 public:
@@ -45,6 +46,7 @@ protected:
   ros::Publisher cmd_vel;
   ros::Subscriber ground_truth;
   ros::ServiceClient reset_world;
+  std_srvs::Empty empty_msg;
   // Stochasticity related variables
   Random &rng;
   // State and positions
