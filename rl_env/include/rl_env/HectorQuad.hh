@@ -8,9 +8,12 @@
 #include <ros/ros.h>
 #include <std_srvs/Empty.h>
 
+
 class HectorQuad: public Environment {
 public:
-  HectorQuad(Random &rand, Eigen::Vector3d target = Eigen::Vector3d(0, 0, 5));
+  HectorQuad(Random &rand,
+             Eigen::Vector3d target = Eigen::Vector3d(0, 0, 5),
+             int time_step_in_ms = 1000);
 
   // Not implemented
   // HectorQuad(Random &rand, bool stochastic);
@@ -44,16 +47,15 @@ protected:
   int num_actions;
   // Publishers, subscribers and services
   ros::Publisher cmd_vel;
-  ros::Subscriber ground_truth;
-  ros::ServiceClient reset_world;
+  ros::ServiceClient reset_world, pause_physics, unpause_physics, get_model_state;
   std_srvs::Empty empty_msg;
   // Stochasticity related variables
   Random &rng;
   // State and positions
   std::vector<float> s;
   Eigen::Vector3d pos, last_pos, vel, last_vel, target_pos;
-  // Terminal checker
-  int terminal_count;
+  // Other variables
+  int terminal_count, time_step;
 
 private:
   float reward();
