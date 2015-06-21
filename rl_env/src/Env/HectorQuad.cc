@@ -1,8 +1,5 @@
-#include <ros/ros.h>
-#include <math.h>
 #include <geometry_msgs/Twist.h>
 #include <rl_env/HectorQuad.hh>
-#include <nav_msgs/Odometry.h>
 #include <std_srvs/Empty.h>
 
 // Random initialization of position

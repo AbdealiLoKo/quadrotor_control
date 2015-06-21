@@ -1,7 +1,6 @@
 #ifndef _HECTORQUAD_H_
 #define _HECTORQUAD_H_
 
-#include <set>
 #include <Eigen/Geometry>
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
