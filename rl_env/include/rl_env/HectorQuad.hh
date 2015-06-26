@@ -7,6 +7,7 @@
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
 #include <std_srvs/Empty.h>
+#include <gazebo_msgs/GetPhysicsProperties.h>
 
 
 class HectorQuad: public Environment {
@@ -47,8 +48,10 @@ protected:
   int num_actions;
   // Publishers, subscribers and services
   ros::Publisher cmd_vel;
-  ros::ServiceClient reset_world, pause_physics, unpause_physics, get_model_state;
+  ros::ServiceClient reset_world, pause_physics, unpause_physics, get_model_state,
+                     get_physics_properties;
   std_srvs::Empty empty_msg;
+  gazebo_msgs::GetPhysicsProperties getphysicsproperties_msg;
   // Stochasticity related variables
   Random &rng;
   // State and positions

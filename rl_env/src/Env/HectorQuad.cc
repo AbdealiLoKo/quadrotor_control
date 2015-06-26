@@ -28,6 +28,7 @@ HectorQuad::HectorQuad(Random &rand,
   pause_physics = node.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
   unpause_physics = node.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
   get_model_state = node.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
+  get_physics_properties = node.serviceClient<gazebo_msgs::GetPhysicsProperties>("/gazebo/get_physics_properties");
 
   // Wait for gazebo's services
   std::cout << "Waiting for gazebo ..." << std::endl;
@@ -35,6 +36,7 @@ HectorQuad::HectorQuad(Random &rand,
   ros::service::waitForService("/gazebo/pause_physics", -1);
   ros::service::waitForService("/gazebo/unpause_physics", -1);
   ros::service::waitForService("/gazebo/get_model_state", -1);
+  ros::service::waitForService("/gazebo/get_physics_properties", -1);
 
   reset();
 }
@@ -166,4 +168,5 @@ void HectorQuad::reset() {
   // Reset the world
   reset_world.call(empty_msg);
   pause_physics.call(empty_msg);
+  get_physics_properties.call(getphysicsproperties_msg);
 }
