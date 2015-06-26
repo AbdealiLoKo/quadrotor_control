@@ -51,7 +51,7 @@ protected:
   ros::ServiceClient reset_world, pause_physics, unpause_physics, get_model_state,
                      get_physics_properties;
   std_srvs::Empty empty_msg;
-  gazebo_msgs::GetPhysicsProperties getphysicsproperties_msg;
+  gazebo_msgs::GetPhysicsProperties get_physics_properties_msg;
   // Stochasticity related variables
   Random &rng;
   // State and positions

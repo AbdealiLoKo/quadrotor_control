@@ -50,13 +50,13 @@ void HectorQuad::refreshState() {
   pause_physics.call(empty_msg);
 
   // Get the final state from gazebo
-  gazebo_msgs::GetModelState getmodelstate_msg;
-  getmodelstate_msg.request.model_name = "quadrotor";
-  get_model_state.call(getmodelstate_msg);
+  gazebo_msgs::GetModelState get_model_state_msg;
+  get_model_state_msg.request.model_name = "quadrotor";
+  get_model_state.call(get_model_state_msg);
 
-  pos(0) = getmodelstate_msg.response.pose.position.x;
-  pos(1) = getmodelstate_msg.response.pose.position.y;
-  pos(2) = getmodelstate_msg.response.pose.position.z;
+  pos(0) = get_model_state_msg.response.pose.position.x;
+  pos(1) = get_model_state_msg.response.pose.position.y;
+  pos(2) = get_model_state_msg.response.pose.position.z;
 
   // Save state
   s[0] = (pos(2)-target_pos(2) >= 0)?1:0;
@@ -168,5 +168,5 @@ void HectorQuad::reset() {
   // Reset the world
   reset_world.call(empty_msg);
   pause_physics.call(empty_msg);
-  get_physics_properties.call(getphysicsproperties_msg);
+  get_physics_properties.call(get_physics_properties_msg);
 }
