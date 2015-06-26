@@ -11,6 +11,11 @@
 
 
 class HectorQuad: public Environment {
+  // Note: Useful params in quad.world
+  //       max_step_size is for physics loop time difference in seconds
+  //       real_time_update_rate is the no. of physics updates attempted / second
+  //       real_time_factor = max_step * real_time_update_rate = % speed in real-time
+
 public:
   HectorQuad(Random &rand,
              Eigen::Vector3d target = Eigen::Vector3d(0, 0, 5),
@@ -49,7 +54,7 @@ protected:
   // Publishers, subscribers and services
   ros::Publisher cmd_vel;
   ros::ServiceClient reset_world, pause_physics, unpause_physics, get_model_state,
-                     get_physics_properties;
+                     get_physics_properties, set_physics_properties;
   std_srvs::Empty empty_msg;
   gazebo_msgs::GetPhysicsProperties get_physics_properties_msg;
   // Stochasticity related variables
