@@ -1,16 +1,25 @@
 #ifndef _HECTORQUAD_H_
 #define _HECTORQUAD_H_
 
-#include <set>
 #include <Eigen/Geometry>
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
 #include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
+#include <std_srvs/Empty.h>
+#include <gazebo_msgs/GetPhysicsProperties.h>
+
 
 class HectorQuad: public Environment {
+  // Note: Useful params in quad.world
+  //       max_step_size is for physics loop time difference in seconds
+  //       real_time_update_rate is the no. of physics updates attempted / second
+  //       real_time_factor = max_step * real_time_update_rate = % speed in real-time
+
 public:
-  HectorQuad(Random &rand, Eigen::Vector3d target = Eigen::Vector3d(0, 0, 5));
+  HectorQuad(Random &rand,
+             Eigen::Vector3d target = Eigen::Vector3d(0, 0, 5),
+             int time_step_in_ms = 1000);
 
   // Not implemented
   // HectorQuad(Random &rand, bool stochastic);
@@ -44,15 +53,17 @@ protected:
   int num_actions;
   // Publishers, subscribers and services
   ros::Publisher cmd_vel;
-  ros::Subscriber ground_truth;
-  ros::ServiceClient reset_world;
+  ros::ServiceClient reset_world, pause_physics, unpause_physics, get_model_state,
+                     get_physics_properties, set_physics_properties;
+  std_srvs::Empty empty_msg;
+  gazebo_msgs::GetPhysicsProperties get_physics_properties_msg;
   // Stochasticity related variables
   Random &rng;
   // State and positions
   std::vector<float> s;
   Eigen::Vector3d pos, last_pos, vel, last_vel, target_pos;
-  // Terminal checker
-  int terminal_count;
+  // Other variables
+  int terminal_count, time_step;
 
 private:
   float reward();
