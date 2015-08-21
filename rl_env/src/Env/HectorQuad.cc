@@ -41,9 +41,13 @@ HectorQuad::HectorQuad(Random &rand,
   reset();
 }
 
-HectorQuad::~HectorQuad() { }
+HectorQuad::~HectorQuad() { 
+}
 
 void HectorQuad::refreshState() {
+  // Save the last state
+  last_pos(2) = s[0];
+
   // Let gazebo run for some time
   unpause_physics.call(empty_msg);
   usleep(time_step);
@@ -57,10 +61,14 @@ void HectorQuad::refreshState() {
   pos(0) = get_model_state_msg.response.pose.position.x;
   pos(1) = get_model_state_msg.response.pose.position.y;
   pos(2) = get_model_state_msg.response.pose.position.z;
+  float p = get_model_state_msg.response.twist.linear.z;
 
   // Save state
   s[0] = (pos(2)-target_pos(2) >= 0)?1:0;
   s[1] = (pos(2)-target_pos(2) <= 0)?1:0;
+
+  s[0] = pos(2)-target_pos(2);
+  s[1] = p;
 }
 
 const std::vector<float> &HectorQuad::sensation() {
@@ -74,7 +82,7 @@ int HectorQuad::getNumActions() {
 }
 
 bool HectorQuad::terminal() {
-  if (abs(target_pos(2) - pos(2)) < 0.2) {
+  if (fabs(target_pos(2) - s[0]) < 0.2) {
     terminal_count += 1;
     if (terminal_count >= 1000) {
       return(true);
@@ -88,19 +96,21 @@ bool HectorQuad::terminal() {
 // Called by env.cpp for next action
 float HectorQuad::apply(int action) {
   geometry_msgs::Twist action_vel;
-  switch(action) {
-    case UP:
-      action_vel.linear.z = +2;
-      break;
-    case DOWN:
-      action_vel.linear.z = -2;
-      break;
-    case STAY:
-      action_vel.linear.z = 0;
-      break;
-  }
+  action_vel.linear.z = action;
+  
+  // switch(action) {
+  //   case UP:
+  //     action_vel.linear.z = +2;
+  //     break;
+  //   case DOWN:
+  //     action_vel.linear.z = -2;
+  //     break;
+  //   case STAY:
+  //     action_vel.linear.z = 0;
+  //     break;
+  // }
   // std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << ","
-  //           << s[1] << " Pos:" << pos(2) << " Targ:" << target_pos(2)
+  //           << s[1] << " Pos:" << pos(2) << " Target:" << target_pos(2)
   //           << " Reward:" << reward() << std::endl;
 
   cmd_vel.publish(action_vel);
@@ -110,9 +120,12 @@ float HectorQuad::apply(int action) {
 
 // Reward policy function
 float HectorQuad::reward() {
-  if ( abs(target_pos(2) - pos(2)) < abs(target_pos(2) - last_pos(2)) ) {
+  // std::cout<<"New position "<<s[0]<<" Last position "<<last_pos(2)<<" Target position "<<target_pos(2)<<std::endl;
+  // std::cout<<"New error "<<fabs(target_pos(2) - pos(2))<<" Last error "<<fabs(target_pos(2) - last_pos(2))<<std::endl;
+  return -fabs(target_pos(2) - s[0]);
+  if ( fabs(target_pos(2) - s[0]) < fabs(target_pos(2) - last_pos(2)) ) {
     return 1;
-  } else if ( abs(target_pos(2) - pos(2)) > abs(target_pos(2) - last_pos(2)) ) {
+  } else if ( fabs(target_pos(2) - s[0]) > fabs(target_pos(2) - last_pos(2)) ) {
     return -1;
   }
 }

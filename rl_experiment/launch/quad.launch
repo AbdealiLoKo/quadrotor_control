@@ -53,7 +53,7 @@
   <arg name="debug_rl_arg" default="0" />
 
   <!-- Start RLAgent and RLEnv -->
-  <node name="RLAgent" pkg="rl_agent" type="agent" args="--agent sarsa --prints $(arg debug_rl_arg)" output="screen" />
+  <node name="RLAgent" pkg="rl_agent" type="agent" args="--agent pegasus --prints $(arg debug_rl_arg)" output="screen" />
 
   <node name="RLEnvironment" pkg="rl_env" type="env" args="--env hectorquad --prints $(arg debug_rl_arg)" output="screen" />
 </launch>
