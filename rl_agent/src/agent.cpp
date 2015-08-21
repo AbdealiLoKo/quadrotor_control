@@ -14,6 +14,7 @@
 #include <rl_common/ExperienceFile.hh>
 // Agents
 #include <rl_agent/DiscretizationAgent.hh>
+#include <rl_agent/Pegasus.hh>
 #include <rl_agent/QLearner.hh>
 #include <rl_agent/SavedPolicy.hh>
 #include <rl_agent/Sarsa.hh>
@@ -28,6 +29,7 @@ int seed = 1;
 
 Agent* agent = NULL;
 bool PRINTS = 0;
+int counttotal = 0;
 
 rl_msgs::RLExperimentInfo info;
 char* agentType;
@@ -42,10 +44,9 @@ int nstates = 0;
 char *filename = NULL;
 // possibly over-written by command line arguments
 
-
 void displayHelp(){
   std::cout << std::endl << " Call agent --agent type [options]" << std::endl;
-  std::cout << "Agent types: qlearner sarsa savedpolicy" << std::endl;
+  std::cout << "Agent types: qlearner sarsa savedpolicy pegasus" << std::endl;
   std::cout << std::endl << " Options:" << std::endl;
   std::cout << "--seed value (integer seed for random number generator)"
             << std::endl;
@@ -85,7 +86,8 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
   } else {
     info.episode_reward += stateIn->reward;
     // if terminal, no action, but calculate reward sum
-    if (stateIn->terminal){
+    if (stateIn->terminal || counttotal>1000){
+      counttotal=0;
       agent->last_action(stateIn->reward);
       std::cout << NODE << " Episode " << info.episode_number << ", Last "
                    "Action (" << info.number_actions << "), reward: "
@@ -93,10 +95,9 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
       // publish episode reward message
       out_exp_info.publish(info);
       info.episode_number++;
-      info.episode_reward = 0;
       firstAction = true;
       return;
-    } else {
+    } else {  
       a.action = agent->next_action(stateIn->reward, stateIn->state);
       info.number_actions++;
       if (PRINTS >= 2)
@@ -106,7 +107,7 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
     }
   }
   firstAction = false;
-
+  counttotal++;
   // publish agent's action
   out_rl_action.publish(a);
 }
@@ -156,6 +157,9 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
   } else if (strcmp(agentType, "savedpolicy") == 0){
     std::cout << "Agent: Saved Policy" << std::endl;
     agent = new SavedPolicy(envIn->num_actions, filename);
+  } else if (strcmp(agentType, "pegasus") == 0){
+    std::cout << "Agent: Pegasus" << std::endl;
+    agent = new Pegasus(2, 1, 0.01, rng);
   } else {
     std::cout << "Invalid Agent!" << std::endl;
     displayHelp();
