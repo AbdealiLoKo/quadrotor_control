@@ -9,13 +9,13 @@ void print_vectorF(std::vector<float> &v) {
   std::cout<<std::endl;
 }
 
-Pegasus::Pegasus(int numinputs, int numoutputs, float alpha, Random rng):
-  numinputs(numinputs), numoutputs(numoutputs), alpha(alpha), rng(rng)
+Pegasus::Pegasus(int numinputs, int numoutputs, float alpha, float gamma, Random rng):
+  numinputs(numinputs), numoutputs(numoutputs), alpha(alpha), gamma(gamma), rng(rng)
 {
   ACTDEBUG = false; //true; //false;
 
   std::cout<<"Initializing Pegasus"<<std::endl;
-  N=init_policy(numinputs, numoutputs);
+  N=initPolicy(numinputs, numoutputs);
   // Parameters for processing multiple episodes
   parameter_no = 0;
   left_done = false;
@@ -35,7 +35,7 @@ Pegasus::~Pegasus() {}
 /***********getAction*******************************************************************/
 
 // Returns No of weights that can be altered
-int Pegasus::init_policy(int n_in, int n_out) {
+int Pegasus::initPolicy(int n_in, int n_out) {
   // Our initial policy is randomly initializing the neural network
   // Inputs, Outputs, No of hidden layers, No per hidden layer
 
@@ -85,7 +85,6 @@ std::vector<float> Pegasus::getAction(const std::vector<float> &s) {
   return action;
 }
 
-
 int Pegasus::first_action(const std::vector<float> &s) {
   // printState(s);
 
@@ -99,7 +98,6 @@ int Pegasus::first_action(const std::vector<float> &s) {
   std::vector<float> action = getAction(s);
   return int(action[0]);
 }
-
 
 int Pegasus::next_action(float r, const std::vector<float> &s) {
   // printState(s);
@@ -115,7 +113,6 @@ int Pegasus::next_action(float r, const std::vector<float> &s) {
   std::vector<float> action = getAction(s);
   return int(action[0]);
  }
-
 
 void Pegasus::last_action(float r) {
   // std::cout<<"Got last action"<<std::endl;
