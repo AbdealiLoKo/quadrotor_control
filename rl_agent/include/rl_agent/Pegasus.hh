@@ -3,7 +3,7 @@
 
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
-#include "NeuralNetwork.h"
+#include <rl_policy/NeuralNetwork.h>
 
 #include <map>
 #include <set>
@@ -12,9 +12,11 @@
 class Pegasus: public Agent {
 public:
   /** Standard constructor
-      \param numactions The number of possible actions
+      \param numinputs The number of possible inputs
+      \param numoutputs The number of possible outputs
   */
-  Pegasus(int numinputs, int numoutputs, float alpha, Random rng = Random());
+  Pegasus(int numinputs, int numoutputs, float alpha, float gamma, 
+          Random rng = Random());
 
   virtual ~Pegasus();
 
@@ -24,7 +26,7 @@ public:
   virtual void setDebug(bool d);
 
   void printState(const std::vector<float> &s);
-  int init_policy(int n_i, int n_o);
+  int initPolicy(int n_i, int n_o);
   float getValue(std::vector<float> state);
   void setValue(int val);
   void newPolicy();
@@ -35,14 +37,13 @@ protected:
 private:
   Random rng;
   int numoutputs, numinputs;
-  float alpha;
+  float alpha, gamma;
 
   int N, parameter_no;
   float episode_reward;
   float left_value, right_value;
   bool left_done, right_done;
   NeuralNetwork nn;
-  float gamma=0.9;
 
   std::vector<float> old_policy, new_policy;
   std::vector<float> policy;

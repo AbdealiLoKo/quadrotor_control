@@ -159,7 +159,7 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
     agent = new SavedPolicy(envIn->num_actions, filename);
   } else if (strcmp(agentType, "pegasus") == 0){
     std::cout << "Agent: Pegasus" << std::endl;
-    agent = new Pegasus(2, 1, 0.01, rng);
+    agent = new Pegasus(2, 1, 0.01, 0.9, rng);
   } else {
     std::cout << "Invalid Agent!" << std::endl;
     displayHelp();
