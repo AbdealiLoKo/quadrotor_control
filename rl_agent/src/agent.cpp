@@ -13,6 +13,7 @@
 #include <rl_common/Random.h>
 #include <rl_common/ExperienceFile.hh>
 // Agents
+#include <rl_agent/NullAgent.hh>
 #include <rl_agent/DiscretizationAgent.hh>
 #include <rl_agent/Pegasus.hh>
 #include <rl_agent/QLearner.hh>
@@ -146,7 +147,10 @@ void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
   agent = NULL;
 
 
-  if (strcmp(agentType, "qlearner") == 0){
+  if (strcmp(agentType, "null") == 0){
+    std::cout << "Agent: NullAgent" << std::endl;
+    agent = new NullAgent();
+  } else if (strcmp(agentType, "qlearner") == 0){
     std::cout << "Agent: QLearner" << std::endl;
     agent = new QLearner(envIn->num_actions, _gamma, initialvalue,
                          alpha, epsilon, rng);
