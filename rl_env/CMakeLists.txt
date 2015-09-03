@@ -10,11 +10,13 @@ endif()
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common gazebo_msgs std_srvs)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
-include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR})
+find_package(gazebo REQUIRED)
+
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${GAZEBO_INCLUDE_DIRS})
 
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES envlib
+    LIBRARIES envlib env_hectorquad_world
     CATKIN_DEPENDS roscpp std_msgs rl_msgs tf rl_common gazebo_msgs std_srvs
     DEPENDS
 )
@@ -31,8 +33,13 @@ add_executable(env
   src/env.cpp
 )
 
+add_library(env_hectorquad_world
+  src/Env/HectorQuad/world.cc
+)
+
 target_link_libraries(envlib ${catkin_LIBRARIES})
 target_link_libraries(env envlib ${catkin_LIBRARIES})
+target_link_libraries(env_hectorquad_world ${GAZEBO_LIBRARIES})
 
 ## Mark executables and/or libraries for installation
 install(TARGETS env envlib
