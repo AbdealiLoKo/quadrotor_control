@@ -39,7 +39,7 @@ public:
 protected:
   // Publishers, subscribers and services
   ros::Publisher cmd_vel;
-  ros::ServiceClient reset_world;
+  ros::ServiceClient reset_world, run_sim;
   std_srvs::Empty empty_msg;
   // Stochasticity related variables
   Random &rng;

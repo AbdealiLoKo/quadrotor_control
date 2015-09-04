@@ -18,7 +18,6 @@ namespace gazebo {
       run_sim = node.advertiseService("rl_env/run_sim",
                                       &EnvHectorQuadWorld::do_run_sim,
                                       this);
-      // world_ptr->SetPaused(true);
     }
 
     bool do_run_sim(rl_msgs::RLRunSim::Request &req,
