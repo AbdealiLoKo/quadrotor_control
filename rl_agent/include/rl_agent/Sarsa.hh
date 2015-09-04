@@ -1,7 +1,3 @@
-/** \File
-    Interface for an implementation of the canonical Sarsa lambda
-    algorithm. */
-
 #ifndef _SARSA_HH_
 #define _SARSA_HH_
 
@@ -31,23 +27,15 @@ public:
       copied. */
   Sarsa(const Sarsa &);
 
-  virtual ~Sarsa();
+  virtual ~Sarsa() {}
 
   virtual int first_action(const std::vector<float> &s);
   virtual int next_action(float r, const std::vector<float> &s);
   virtual void last_action(float r);
-  virtual void setDebug(bool d);
-  virtual void seedExp(std::vector<experience>);
-  virtual void savePolicy(const char* filename);
-
-  void printState(const std::vector<float> &s);
-  float getValue(std::vector<float> state);
 
   std::vector<float>::iterator random_max_element(
 						   std::vector<float>::iterator start,
 						   std::vector<float>::iterator end);
-
-  void logValues(std::ofstream *of, int xmin, int xmax, int ymin, int ymax);
 
 protected:
   /** The implementation maps all sensations to a set of canonical
@@ -74,18 +62,10 @@ private:
   std::map<state_t, std::vector<float> > eligibility;
 
   const int numactions;
-  const float gamma;
-
-  const float initialvalue;
-  const float alpha;
-  const float epsilon;
-  const float lambda;
+  const float initialvalue, alpha, epsilon, lambda, gamma;
 
   Random rng;
   float *currentq;
-
-  bool ACTDEBUG;
-  bool ELIGDEBUG;
 };
 
 #endif

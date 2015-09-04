@@ -9,29 +9,16 @@ Sarsa::Sarsa(int numactions, float gamma,
   epsilon(ep), lambda(lambda),
   rng(rng)
 {
-
   currentq = NULL;
-  ACTDEBUG = false; //true;
-  ELIGDEBUG = false;
-
 }
 
-Sarsa::~Sarsa() {}
-
 int Sarsa::first_action(const std::vector<float> &s) {
-
-  if (ACTDEBUG){
-    std::cout << "First - in state: ";
-    printState(s);
-    std::cout << std::endl;
-  }
-
   // clear all eligibility traces
   for (std::map<state_t, std::vector<float> >::iterator i = eligibility.begin();
-       i != eligibility.end(); i++){
+       i != eligibility.end(); i++) {
 
     std::vector<float> & elig_s = (*i).second;
-    for (int j = 0; j < numactions; j++){
+    for (int j = 0; j < numactions; j++) {
       elig_s[j] = 0.0;
     }
   }
@@ -50,27 +37,10 @@ int Sarsa::first_action(const std::vector<float> &s) {
   std::vector<float> &elig_s = eligibility[si];
   elig_s[a-Q_s.begin()] = 1.0;
 
-  if (ACTDEBUG){
-    std::cout << " act: " << (a-Q_s.begin()) << " val: " << *a << std::endl;
-    for (int iAct = 0; iAct < numactions; iAct++){
-      std::cout << " Action: " << iAct << " val: " << Q_s[iAct] << std::endl;
-    }
-    std::cout << "Took action " << (a-Q_s.begin()) << " from state ";
-    printState(s);
-    std::cout << std::endl;
-  }
-
   return a - Q_s.begin();
 }
 
 int Sarsa::next_action(float r, const std::vector<float> &s) {
-
-  if (ACTDEBUG){
-    std::cout << "Next: got reward " << r << " in state: ";
-    printState(s);
-    std::cout << std::endl;
-  }
-
   // Get action values
   state_t st = canonicalize(s);
   std::vector<float> &Q_s = Q[st];
@@ -85,17 +55,12 @@ int Sarsa::next_action(float r, const std::vector<float> &s) {
 
   // Update value for all with positive eligibility
   for (std::map<state_t, std::vector<float> >::iterator i = eligibility.begin();
-       i != eligibility.end(); i++){
+       i != eligibility.end(); i++) {
 
     state_t si = (*i).first;
     std::vector<float> & elig_s = (*i).second;
-    for (int j = 0; j < numactions; j++){
-      if (elig_s[j] > 0.0){
-        if (ELIGDEBUG) {
-          std::cout << "updating state " << (*((*i).first))[0] << ", "
-                    << (*((*i).first))[1] << " act: " << j << " with elig: "
-                    << elig_s[j] << std::endl;
-        }
+    for (int j = 0; j < numactions; j++) {
+      if (elig_s[j] > 0.0) {
         // update
         Q[si][j] += alpha * elig_s[j] * (r + gamma * (*a) - Q[si][j]);
         elig_s[j] *= lambda;
@@ -105,39 +70,18 @@ int Sarsa::next_action(float r, const std::vector<float> &s) {
 
   // Set elig to 1
   eligibility[st][a-Q_s.begin()] = 1.0;
-
-  if (ACTDEBUG){
-    std::cout << " act: " << (a-Q_s.begin()) << " val: " << *a << std::endl;
-    for (int iAct = 0; iAct < numactions; iAct++){
-      std::cout << " Action: " << iAct << " val: " << Q_s[iAct] << std::endl;
-    }
-    std::cout << "Took action " << (a-Q_s.begin()) << " from state ";
-    printState(s);
-    std::cout << std::endl;
-  }
-
   return a - Q_s.begin();
 }
 
 void Sarsa::last_action(float r) {
-
-  if (ACTDEBUG){
-    std::cout << "Last: got reward " << r << std::endl;
-  }
-
   // Update value for all with positive eligibility
   for (std::map<state_t, std::vector<float> >::iterator i = eligibility.begin();
-       i != eligibility.end(); i++){
+       i != eligibility.end(); i++) {
 
     state_t si = (*i).first;
     std::vector<float> & elig_s = (*i).second;
-    for (int j = 0; j < numactions; j++){
-      if (elig_s[j] > 0.0){
-        if (ELIGDEBUG){
-          std::cout << "updating state " << (*((*i).first))[0] << ", "
-                    << (*((*i).first))[1] << " act: " << j << " with elig: "
-                    << elig_s[j] << std::endl;
-        }
+    for (int j = 0; j < numactions; j++) {
+      if (elig_s[j] > 0.0) {
         // update
         Q[si][j] += alpha * elig_s[j] * (r - Q[si][j]);
         elig_s[j] = 0.0;
@@ -159,15 +103,10 @@ Sarsa::state_t Sarsa::canonicalize(const std::vector<float> &s) {
   return retval;
 }
 
-
-
-  std::vector<float>::iterator
-Sarsa::random_max_element(
-			     std::vector<float>::iterator start,
-			     std::vector<float>::iterator end) {
-
-  std::vector<float>::iterator max =
-    std::max_element(start, end);
+std::vector<float>::iterator
+Sarsa::random_max_element(std::vector<float>::iterator start,
+                          std::vector<float>::iterator end) {
+  std::vector<float>::iterator max = std::max_element(start, end);
   int n = std::count(max, end, *max);
   if (n > 1) {
     n = rng.uniformDiscrete(1, n);
@@ -178,131 +117,3 @@ Sarsa::random_max_element(
   }
   return max;
 }
-
-
-
-
-void Sarsa::setDebug(bool d){
-  ACTDEBUG = d;
-}
-
-
-void Sarsa::printState(const std::vector<float> &s){
-  for (unsigned j = 0; j < s.size(); j++){
-    std::cout << s[j] << ", ";
-  }
-}
-
-
-
-void Sarsa::seedExp(std::vector<experience> seeds){
-
-  // for each seeding experience, update our model
-  for (unsigned i = 0; i < seeds.size(); i++){
-    experience e = seeds[i];
-
-    std::vector<float> &Q_s = Q[canonicalize(e.s)];
-
-    // Get q value for action taken
-    const std::vector<float>::iterator a = Q_s.begin() + e.act;
-
-    // Update value of action just executed
-    Q_s[e.act] += alpha * (e.reward + gamma * (*a) - Q_s[e.act]);
-
-    /*
-    std::cout << "Seeding with experience " << i << std::endl;
-    std::cout << "last: " << (e.s)[0] << ", " << (e.s)[1] << ", "
-              << (e.s)[2] << std::endl;
-    std::cout << "act: " << e.act << " r: " << e.reward << std::endl;
-    std::cout << "next: " << (e.next)[0] << ", " << (e.next)[1] << ", "
-	            << (e.next)[2] << ", " << e.terminal << std::endl;
-    std::cout << "Q: " << *currentq << " max: " << *max << std::endl;
-    */
-
-  }
-
-
-}
-
-void Sarsa::logValues(std::ofstream *of, int xmin, int xmax, int ymin, int ymax){
-  std::vector<float> s;
-  s.resize(2, 0.0);
-  for (int i = xmin ; i < xmax; i++){
-    for (int j = ymin; j < ymax; j++){
-      s[0] = j;
-      s[1] = i;
-      std::vector<float> &Q_s = Q[canonicalize(s)];
-      const std::vector<float>::iterator max =
-        random_max_element(Q_s.begin(), Q_s.end());
-      *of << (*max) << ",";
-    }
-  }
-}
-
-
-float Sarsa::getValue(std::vector<float> state){
-
-  state_t s = canonicalize(state);
-
-  // Get Q values
-  std::vector<float> &Q_s = Q[s];
-
-  // Choose an action
-  const std::vector<float>::iterator a =
-    random_max_element(Q_s.begin(), Q_s.end()); // Choose maximum
-
-  // Get avg value
-  float valSum = 0.0;
-  float cnt = 0;
-  for (std::set<std::vector<float> >::iterator i = statespace.begin();
-       i != statespace.end(); i++){
-
-    state_t s = canonicalize(*i);
-
-    // get state's info
-    std::vector<float> &Q_s = Q[s];
-
-    for (int j = 0; j < numactions; j++){
-      valSum += Q_s[j];
-      cnt++;
-    }
-  }
-
-  std::cout << "Avg Value: " << (valSum / cnt) << std::endl;
-
-  return *a;
-}
-
-
-void Sarsa::savePolicy(const char* filename){
-
-  std::ofstream policyFile(filename,
-                           std::ios::out | std::ios::binary | std::ios::trunc);
-
-  // first part, save the vector size
-  std::set< std::vector<float> >::iterator i = statespace.begin();
-  int fsize = (*i).size();
-  policyFile.write((char*)&fsize, sizeof(int));
-
-  // save numactions
-  policyFile.write((char*)&numactions, sizeof(int));
-
-  // go through all states, and save Q values
-  for (std::set< std::vector<float> >::iterator i = statespace.begin();
-       i != statespace.end(); i++){
-
-    state_t s = canonicalize(*i);
-    std::vector<float> *Q_s = &(Q[s]);
-
-    // save state
-    policyFile.write((char*)&((*i)[0]), sizeof(float)*fsize);
-
-    // save q-values
-    policyFile.write((char*)&((*Q_s)[0]), sizeof(float)*numactions);
-
-  }
-
-  policyFile.close();
-}
-
-
