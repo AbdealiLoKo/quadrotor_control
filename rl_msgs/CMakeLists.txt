@@ -12,8 +12,6 @@ find_package(catkin REQUIRED COMPONENTS roscpp std_msgs message_generation geome
 add_message_files(
   FILES
   RLAction.msg
-  RLEnvDescription.msg
-  RLEnvSeedExperience.msg
   RLExperimentInfo.msg
   RLStateReward.msg
 )

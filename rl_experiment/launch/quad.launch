@@ -71,13 +71,11 @@
   </group>
 
   <!-- ################################################################### -->
-  <!-- Debug args for RLAgent and RLEnv -->
-  <arg name="debug" default="0" />
   <arg name="agent" default="pegasus" />
   <arg name="env" default="hectorquad" />
 
   <!-- Start RLAgent and RLEnv -->
-  <node name="RLAgent" pkg="rl_agent" type="agent" args="--agent $(arg agent) --prints $(arg debug)" output="screen" />
+  <node name="RLAgent" pkg="rl_agent" type="agent" args="--agent $(arg agent)" output="screen" />
 
   <node name="RLEnvironment" pkg="rl_env" type="env" args="--env $(arg env)" output="screen" />
 </launch>

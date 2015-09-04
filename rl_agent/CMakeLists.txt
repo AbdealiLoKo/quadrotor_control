@@ -18,10 +18,7 @@ catkin_package(
 )
 
 add_library(agentlib
-  src/Agent/DiscretizationAgent.cc
   src/Agent/Pegasus.cc
-  src/Agent/QLearner.cc
-  src/Agent/SavedPolicy.cc
   src/Agent/Sarsa.cc
 )
 
