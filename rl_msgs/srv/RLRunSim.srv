@@ -1,0 +1,9 @@
+# This service message takes in a number of steps and gives back the
+# state of the quadrotor after the stps are performed.
+
+int32 steps
+---
+time sim_time
+geometry_msgs/Pose pose
+geometry_msgs/Twist twist
+bool success

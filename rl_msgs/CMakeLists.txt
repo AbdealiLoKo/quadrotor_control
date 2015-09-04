@@ -7,7 +7,7 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs message_generation)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs message_generation geometry_msgs)
 
 add_message_files(
   FILES
@@ -18,14 +18,20 @@ add_message_files(
   RLStateReward.msg
 )
 
+add_service_files(
+  FILES
+  RLRunSim.srv
+)
+
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES rl_msgs
-  CATKIN_DEPENDS message_runtime std_msgs
+  CATKIN_DEPENDS message_runtime std_msgs geometry_msgs
 #  DEPENDS system_lib
 )
