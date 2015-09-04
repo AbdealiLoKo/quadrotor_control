@@ -22,9 +22,6 @@ catkin_package(
 )
 
 add_library(envlib
-  src/Env/TwoRooms.cc
-  src/Env/Taxi.cc
-  src/Env/MountainCar.cc
   src/Env/Gridworld.cc
   src/Env/HectorQuad.cc
 )
