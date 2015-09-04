@@ -1,16 +1,13 @@
-#include <unistd.h>
-
 #include <geometry_msgs/Twist.h>
 #include <rl_msgs/RLRunSim.h>
 #include <rl_env/HectorQuad.hh>
 
-
 // Random initialization of position
 HectorQuad::HectorQuad(Random &rand,
                        Eigen::Vector3d target/* = Eigen::Vector3d(0, 0, 5)*/):
-  s(2),
-  rng(rand),
-  target_pos(target)
+s(2),
+rng(rand),
+target_pos(target)
 {
   ros::NodeHandle node;
 
@@ -32,9 +29,6 @@ HectorQuad::HectorQuad(Random &rand,
   reset();
 }
 
-HectorQuad::~HectorQuad() {
-}
-
 const std::vector<float> &HectorQuad::sensation() {
   // Get state from gazebo
   rl_msgs::RLRunSim msg;
@@ -52,7 +46,7 @@ bool HectorQuad::terminal() {
   return(false);
 }
 
-float HectorQuad::apply(int action) {
+float HectorQuad::apply(float action) {
   geometry_msgs::Twist action_vel;
   action_vel.linear.z = action;
   cmd_vel.publish(action_vel);
@@ -61,33 +55,6 @@ float HectorQuad::apply(int action) {
 
 float HectorQuad::reward() {
   return -fabs(target_pos(2) - s[0]);
-}
-
-void HectorQuad::setSensation(std::vector<float> newS){
-  if (s.size() != newS.size()){
-    std::cerr << "Error in sensation sizes" << std::endl;
-  }
-
-  for (unsigned i = 0; i < newS.size(); i++){
-    s[i] = newS[i];
-  }
-}
-
-std::vector<experience> HectorQuad::getSeedings() {
-  std::vector<experience> seeds;
-  reset();
-  return seeds;
-}
-
-experience HectorQuad::getExp(float s0, float s1, int a){
-}
-
-void HectorQuad::getMinMaxFeatures(std::vector<float> *minFeat, std::vector<float> *maxFeat) {
-}
-
-void HectorQuad::getMinMaxReward(float* minR, float* maxR) {
-  *minR = -1;
-  *maxR = -1;
 }
 
 void HectorQuad::reset() {

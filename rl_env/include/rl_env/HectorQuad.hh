@@ -13,28 +13,11 @@ public:
   HectorQuad(Random &rand,
              Eigen::Vector3d target = Eigen::Vector3d(0, 0, 5));
 
-  // Not implemented
-  // HectorQuad(Random &rand, bool stochastic);
-
-  virtual ~HectorQuad();
-
   virtual const std::vector<float> &sensation();
-  virtual float apply(int action);
+  virtual float apply(float action);
 
   virtual bool terminal();
   virtual void reset();
-
-  virtual int getNumActions() { return -1; }
-  virtual void getMinMaxFeatures(std::vector<float> *minFeat, std::vector<float> *maxFeat);
-  virtual void getMinMaxReward(float* minR, float* maxR);
-
-  /** Set the state vector (for debug purposes) */
-  void setSensation(std::vector<float> newS);
-
-  virtual std::vector<experience> getSeedings();
-
-  /** Get an experience for the given state-action */
-  experience getExp(float s0, float s1, int a);
 
 protected:
   // Publishers, subscribers and services
@@ -47,7 +30,6 @@ protected:
   std::vector<float> s;
   Eigen::Vector3d target_pos;
 
-private:
   float reward();
   void refreshState();
 };

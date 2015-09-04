@@ -22,7 +22,6 @@ catkin_package(
 )
 
 add_library(envlib
-  src/Env/Gridworld.cc
   src/Env/HectorQuad.cc
 )
 

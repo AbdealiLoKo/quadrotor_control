@@ -4,15 +4,6 @@
 #include "Random.h"
 #include <vector>
 
-/** Experience <s,a,s',r> struct */
-struct experience {
-  std::vector<float> s;
-  int act;
-  float reward;
-  std::vector<float> next;
-  bool terminal;
-};
-
 /** Interface for an environment, whose states can be represented as
     vectors of floats and whose actions can be represented as ints.
     Implementations of the Environment interface determine how actions
@@ -29,7 +20,7 @@ public:
   /** Allows an agent to affect its environment.
       \param action The action the agent wishes to apply.
       \return The immediate one-step reward caused by the action. */
-  virtual float apply(int action) = 0;
+  virtual float apply(float action) = 0;
 
   /** Determines whether the environment has reached a terminal state.
       \return true iff the task is episodic and the present episode
@@ -42,31 +33,6 @@ public:
       for episodic tasks that have reached terminal states, but this
       usage is not required. */
   virtual void reset() = 0;
-
-  /** Returns the number of actions available in this environment.
-      \return The number of actions available */
-  virtual int getNumActions() = 0;
-
-  /** Gets the minimum and maximum of the features in the environment.
-   */
-  virtual void getMinMaxFeatures(std::vector<float> *minFeat,
-                                 std::vector<float> *maxFeat) = 0;
-
-  /** Gets the minimum and maximum one-step reward in the domain. */
-  virtual void getMinMaxReward(float *minR, float *maxR) = 0;
-
-  /** Returns if the domain is episodic (true by default). */
-  virtual bool isEpisodic(){ return true; };
-
-  /** Get seeding experiences for agent. */
-  virtual std::vector<experience> getSeedings()
-  {
-    std::vector<experience> e;
-    return e;
-  } ;
-
-  /** Set the current state for testing purposes. */
-  virtual void setSensation(std::vector<float> s){};
 
   virtual ~Environment() {};
 
