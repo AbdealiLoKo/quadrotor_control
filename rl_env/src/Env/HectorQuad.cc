@@ -2,132 +2,52 @@
 
 #include <geometry_msgs/Twist.h>
 #include <rl_env/HectorQuad.hh>
-#include <gazebo_msgs/GetModelState.h>
 
 
 // Random initialization of position
 HectorQuad::HectorQuad(Random &rand,
-                       Eigen::Vector3d target/* = Eigen::Vector3d(0, 0, 0)*/,
-                       int time_step_in_ms/* = 1000 */):
+                       Eigen::Vector3d target/* = Eigen::Vector3d(0, 0, 5)*/):
   s(2),
   rng(rand),
-  target_pos(target),
-  num_actions(3),
-  pos(0, 0, s[0]),
-  vel(0, 0, s[1]),
-  last_pos(0, 0, s[0]),
-  last_vel(0, 0, s[1]),
-  time_step(time_step_in_ms)
+  target_pos(target)
 {
   ros::NodeHandle node;
-  int qDepth = 1;
+
   // Publishers
   cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
-  // Services
-  reset_world = node.serviceClient<std_srvs::Empty>("/gazebo/reset_world");
-  pause_physics = node.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
-  unpause_physics = node.serviceClient<std_srvs::Empty>("/gazebo/unpause_physics");
-  get_model_state = node.serviceClient<gazebo_msgs::GetModelState>("/gazebo/get_model_state");
-  get_physics_properties = node.serviceClient<gazebo_msgs::GetPhysicsProperties>("/gazebo/get_physics_properties");
 
-  // Wait for gazebo's services
-  std::cout << "Waiting for gazebo ..." << std::endl;
+  // Services
   ros::service::waitForService("/gazebo/reset_world", -1);
-  ros::service::waitForService("/gazebo/pause_physics", -1);
-  ros::service::waitForService("/gazebo/unpause_physics", -1);
-  ros::service::waitForService("/gazebo/get_model_state", -1);
-  ros::service::waitForService("/gazebo/get_physics_properties", -1);
+  reset_world = node.serviceClient<std_srvs::Empty>("/gazebo/reset_world");
 
   reset();
 }
 
-HectorQuad::~HectorQuad() { 
-}
-
-void HectorQuad::refreshState() {
-  // Save the last state
-  last_pos(2) = s[0];
-
-  // Let gazebo run for some time
-  unpause_physics.call(empty_msg);
-  usleep(time_step);
-  pause_physics.call(empty_msg);
-
-  // Get the final state from gazebo
-  gazebo_msgs::GetModelState get_model_state_msg;
-  get_model_state_msg.request.model_name = "quadrotor";
-  get_model_state.call(get_model_state_msg);
-
-  pos(0) = get_model_state_msg.response.pose.position.x;
-  pos(1) = get_model_state_msg.response.pose.position.y;
-  pos(2) = get_model_state_msg.response.pose.position.z;
-  float p = get_model_state_msg.response.twist.linear.z;
-
-  // Save state
-  s[0] = (pos(2)-target_pos(2) >= 0)?1:0;
-  s[1] = (pos(2)-target_pos(2) <= 0)?1:0;
-
-  s[0] = pos(2)-target_pos(2);
-  s[1] = p;
+HectorQuad::~HectorQuad() {
 }
 
 const std::vector<float> &HectorQuad::sensation() {
-  refreshState();
-  // std::cout << "State: " << s[0] << s[1] << std::endl;
+  // Get state from gazebo
+
+  // Convert gazebo's state to internal representation
+
+
   return s;
 }
 
-int HectorQuad::getNumActions() {
-  return num_actions;
-}
-
 bool HectorQuad::terminal() {
-  if (fabs(target_pos(2) - s[0]) < 0.2) {
-    terminal_count += 1;
-    if (terminal_count >= 1000) {
-      return(true);
-    }
-  } else {
-    terminal_count = 0;
-  }
   return(false);
 }
 
-// Called by env.cpp for next action
 float HectorQuad::apply(int action) {
   geometry_msgs::Twist action_vel;
   action_vel.linear.z = action;
-  
-  // switch(action) {
-  //   case UP:
-  //     action_vel.linear.z = +2;
-  //     break;
-  //   case DOWN:
-  //     action_vel.linear.z = -2;
-  //     break;
-  //   case STAY:
-  //     action_vel.linear.z = 0;
-  //     break;
-  // }
-  // std::cout << "Action:" << action_vel.linear.z << " State:" << s[0] << ","
-  //           << s[1] << " Pos:" << pos(2) << " Target:" << target_pos(2)
-  //           << " Reward:" << reward() << std::endl;
-
   cmd_vel.publish(action_vel);
-
   return reward();
 }
 
-// Reward policy function
 float HectorQuad::reward() {
-  // std::cout<<"New position "<<s[0]<<" Last position "<<last_pos(2)<<" Target position "<<target_pos(2)<<std::endl;
-  // std::cout<<"New error "<<fabs(target_pos(2) - pos(2))<<" Last error "<<fabs(target_pos(2) - last_pos(2))<<std::endl;
   return -fabs(target_pos(2) - s[0]);
-  if ( fabs(target_pos(2) - s[0]) < fabs(target_pos(2) - last_pos(2)) ) {
-    return 1;
-  } else if ( fabs(target_pos(2) - s[0]) > fabs(target_pos(2) - last_pos(2)) ) {
-    return -1;
-  }
 }
 
 void HectorQuad::setSensation(std::vector<float> newS){
@@ -141,45 +61,22 @@ void HectorQuad::setSensation(std::vector<float> newS){
 }
 
 std::vector<experience> HectorQuad::getSeedings() {
-  // return seedings
   std::vector<experience> seeds;
   reset();
-
   return seeds;
 }
 
 experience HectorQuad::getExp(float s0, float s1, int a){
-  experience e;
-  e.s.resize(2, 0.0);
-  e.next.resize(2, 0.0);
-
-  pos(2) = s0;
-  vel(2) = s1;
-
-  e.act = a;
-  e.s = sensation();
-  e.reward = apply(e.act);
-
-  e.terminal = terminal();
-  e.next = sensation();
-
-  return e;
 }
 
 void HectorQuad::getMinMaxFeatures(std::vector<float> *minFeat, std::vector<float> *maxFeat) {
-  // No clue what model to impleent here
 }
 
-
 void HectorQuad::getMinMaxReward(float* minR, float* maxR) {
-  *minR = -(num_actions-1)/2;
-  *maxR = (num_actions-1)/2;
+  *minR = -1;
+  *maxR = -1;
 }
 
 void HectorQuad::reset() {
-  terminal_count = 0;
-  // Reset the world
-  reset_world.call(empty_msg);
-  pause_physics.call(empty_msg);
-  get_physics_properties.call(get_physics_properties_msg);
+  reset_world.call(empty_msg); // Reset the world
 }
