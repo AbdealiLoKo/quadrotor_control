@@ -16,7 +16,6 @@ alpha(alpha),
 gamma(gamma),
 rng(rng)
 {
-  std::cout<<"Initializing Pegasus"<<std::endl;
   N = init_policy(numinputs, numoutputs);
   // Parameters for processing multiple episodes
   parameter_no = 0;

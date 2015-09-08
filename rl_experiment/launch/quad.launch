@@ -58,6 +58,14 @@
     <param name="tf_prefix" value="$(arg tf_prefix)/ground_truth" unless="$(arg use_ground_truth_for_tf)" />
   </node>
 
+  <!-- spawn controller -->
+  <param name="controller/state_topic" value="" />
+  <param name="controller/imu_topic" value="" />
+  <rosparam file="$(find rl_env)/src/Env/HectorQuad/controller.yaml" />
+  <!-- This node needs to be created in HectorEnv as otherwise we cannot
+  control when the controller will begin working.
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="controller/twist"/> -->
+
   <!-- Choose motors -->
   <arg name="motors" default="robbe_2827-34_epp1045" />
   <rosparam command="load" file="$(find hector_quadrotor_model)/param/quadrotor_aerodynamics.yaml" />

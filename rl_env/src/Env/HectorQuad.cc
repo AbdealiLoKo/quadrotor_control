@@ -1,5 +1,7 @@
 #include <geometry_msgs/Twist.h>
 #include <rl_msgs/RLRunSim.h>
+#include <hector_uav_msgs/MotorPWM.h>
+#include <controller_manager_msgs/LoadController.h>
 #include <rl_env/HectorQuad.hh>
 
 // Random initialization of position
@@ -13,19 +15,38 @@ target_pos(target)
 
   // Publishers
   cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
+  motor_pwm = node.advertise<hector_uav_msgs::MotorPWM>("/motor_pwm", 5);
 
   // Services
   ros::service::waitForService("/gazebo/reset_world", -1);
   reset_world = node.serviceClient<std_srvs::Empty>("/gazebo/reset_world");
   ros::service::waitForService("/rl_env/run_sim", -1);
   run_sim = node.serviceClient<rl_msgs::RLRunSim>("/rl_env/run_sim");
-  ros::service::waitForService("/gazebo/pause_physics", -1);
-  ros::ServiceClient pause_phy = node.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
+
+  // Load the controller needed. If this it done in launch file, it doesnt
+  // start on time. So, it needs to be done in sync.
+  ros::service::waitForService("/controller_manager/load_controller", -1);
+  ros::ServiceClient load_controller =
+    node.serviceClient<controller_manager_msgs::LoadController>(
+      "/controller_manager/load_controller");
+  controller_manager_msgs::LoadController msg;
+  msg.request.name = "controller/twist";
+  load_controller.call(msg);
+  assert(msg.response.ok);
+
+  // Engage motors so that controller can control them from the start
+  ros::service::waitForService("/engage", -1);
+  ros::ServiceClient engage = node.serviceClient<std_srvs::Empty>("/engage");
+  engage.call(empty_msg);
 
   // Pause the world and reset
   // Note: Pause has to be done only after `waitForService` finds the service.
   //       it cannot be done in gazebo as otherwise waitForService hangs.
+  ros::service::waitForService("/gazebo/pause_physics", -1);
+  ros::ServiceClient pause_phy = node.serviceClient<std_srvs::Empty>(
+    "/gazebo/pause_physics");
   pause_phy.call(empty_msg);
+
   reset();
 }
 
@@ -50,6 +71,11 @@ float HectorQuad::apply(float action) {
   geometry_msgs::Twist action_vel;
   action_vel.linear.z = action;
   cmd_vel.publish(action_vel);
+
+  // hector_uav_msgs::MotorPWM action_pwm;
+  // int pwms[4] = {action, action, action, action};
+  // action_pwm.pwm = pwms;
+  // motor_pwm.publish(action_pwm);
   return reward();
 }
 
