@@ -3,7 +3,6 @@
 
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
-#include <rl_policy/NeuralNetwork.h>
 
 #include <map>
 #include <set>
@@ -32,17 +31,12 @@ protected:
 
 private:
   Random rng;
-  int numoutputs, numinputs;
+  int num_outputs, num_inputs;
   float alpha, gamma;
 
-  int N, parameter_no;
-  float episode_reward;
-  float left_value, right_value;
-  bool left_done, right_done;
-  NeuralNetwork nn;
-
-  std::vector<float> old_policy, new_policy;
-  std::vector<float> policy;
+  int parameter, max_parameter;
+  float best_value, value;
+  std::vector<float> best_policy, policy, gradient;
 };
 
 #endif
