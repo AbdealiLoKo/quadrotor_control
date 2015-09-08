@@ -27,7 +27,13 @@ std::vector<float> Pegasus::next_action(float r, const std::vector<float> &s) {
 
 void Pegasus::last_action(float r) {
   value = gamma * value + r;
+  if (left_done)
+    right_value = value;
+  else
+    left_value = value;
+
   update_policy();
+  value = 0;
 }
 
 // --------------- POLICY ----------------------------
@@ -42,13 +48,16 @@ void Pegasus::last_action(float r) {
 
 // Returns No of weights that can be altered
 int Pegasus::init_policy(int n_in, int n_out) {
-  std::vector<float> i(2, 0.1), z(2, 0);
-  value = 0;
-  best_value = FLT_MIN;
+  std::vector<float> i(2, 0.1);
   policy = i;
-  best_policy = i;
-  gradient = z;
-  parameter = max_parameter;
+  old_policy = policy;
+  new_policy = policy;
+
+  value = 0;
+  left_done = false;
+  right_done = false;
+  parameter = 0;
+
   return policy.size();
 }
 
@@ -60,22 +69,43 @@ std::vector<float> Pegasus::get_action(const std::vector<float> &s) {
 
 void Pegasus::update_policy() {
   float epsilon = 0.01;
-  if (parameter == max_parameter) {
-    best_value = value;
-    parameter = 0;
-  } else {
-    gradient[parameter] = (value - best_value) / epsilon;
-    parameter += 1;
+
+  // left_done and right_done are flags to indicate if an epsiode has run for which parameter value.
+  if (!left_done) {
+    left_done = true;
+    policy[parameter] = old_policy[parameter] + epsilon;
   }
-  if (parameter == max_parameter) {
-    // Update the policy with the gradient
-    for (int i = 0; i < policy.size(); i++) {
-      best_policy[i] = best_policy[i] - alpha * gradient[i];
+  else {
+    // Left is already completed, do for right
+    right_done = true;
+
+    float gradient = (right_value - left_value);
+    new_policy[parameter] = old_policy[parameter] + gradient * alpha;
+
+    // Settings for next parameter
+    left_done = false;
+    right_done = false;
+
+    // Restoring old policy value for particular parameter
+    policy[parameter] = old_policy[parameter];
+    parameter++;
+
+    // Finally processed for all the parameters
+    if(parameter == max_parameter) {
+      // Debug statements
+      std::cout << "Previous value " << left_value
+                << " , " << right_value << "\n";
+      std::cout << "Old policy " << old_policy << "\n";
+      std::cout << "New policy " << new_policy << "\n";
+
+      parameter = 0;
+      policy = new_policy;
+      old_policy = new_policy;
+    } else {
+      // Next policy param ready to be updated
+      policy[parameter] = old_policy[parameter] - alpha;
     }
-    policy = best_policy;
-  } else {
-    // This block finds the gradient by making a slight change in each param
-    policy = best_policy;
-    policy[parameter] = policy[parameter] + epsilon;
   }
+
+  // Do a set_weights(policy) call if using an external policy class
 }

@@ -36,7 +36,9 @@ private:
 
   int parameter, max_parameter;
   float best_value, value;
-  std::vector<float> best_policy, policy, gradient;
+  float left_value, right_value;
+  bool left_done, right_done;
+  std::vector<float> policy, old_policy, new_policy;
 };
 
 #endif

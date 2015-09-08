@@ -1,4 +1,5 @@
 #include <rl_policy/NeuralNetwork.h>
+#include <rl_common/core.hh>
 
 Neuron::Neuron(int n) {
     n_inputs = n;
@@ -37,9 +38,9 @@ NeuralLayer::NeuralLayer(int n, int inp) {
 }
 
 std::vector<float> NeuralLayer::get_outputs(std::vector<float> inp) {
-    std::vector<float> v(n_neurons); 
+    std::vector<float> v(n_neurons);
     for(int i=0; i<n_neurons; ++i) {
-       v[i] = neurons[i].get_output(inp); 
+       v[i] = neurons[i].get_output(inp);
     }
     return v;
 }
@@ -51,9 +52,9 @@ NeuralNetwork::NeuralNetwork(int n_i, int n_o, int n_h, int n_per_h) {
     n_hidden_layers = n_h;
 
     // Initialize random seed generator
-    
+
     srand(time(NULL));
-  
+
     // Create the input layer
     NeuralLayer input_layer = NeuralLayer(n_inputs, 0);
     layers.push_back(input_layer);
@@ -85,7 +86,7 @@ void  NeuralNetwork::get_weights(std::vector<float> &weights) {
         if(it != layers.begin()) {
             std::vector<Neuron> neurons = it->neurons;
             for(std::vector<Neuron>::iterator itn=neurons.begin(); itn != neurons.end(); ++itn) {
-                Neuron n = *itn;                  
+                Neuron n = *itn;
                 for(int i=0; i<n.n_inputs+1; i++) {
                     weights[no++] = n.weights[i];
                 }
@@ -113,8 +114,7 @@ void  NeuralNetwork::set_weights(std::vector<float> w) {
 
 void  NeuralNetwork::get_value(std::vector<float> &input, std::vector<float> &output) {
     for(std::vector<NeuralLayer>::iterator it=layers.begin(); it != layers.end(); ++it) {
-        std::cout<<"Input at layer ";
-        print_vector(input);
+        std::cout<<"Input at layer " << input << "\n";
 
         output.clear();
         output = it->get_outputs(input);
@@ -122,7 +122,6 @@ void  NeuralNetwork::get_value(std::vector<float> &input, std::vector<float> &ou
         // Next input comes from output of this layer
         input = output;
 
-        std::cout<<"Output at layer ";
-        print_vector(output);
+        std::cout<<"Output at layer " << output << "\n";
     }
-}       
+}
