@@ -8,7 +8,7 @@ alpha(alpha),
 gamma(gamma),
 rng(rng)
 {
-  N = init_policy(numinputs, numoutputs);
+  init_policy(numinputs, numoutputs);
   // Parameters for processing multiple episodes
   parameter_no = 0;
   left_done = false;
@@ -32,12 +32,10 @@ int Pegasus::init_policy(int n_in, int n_out) {
   old_policy.resize(2);
   old_policy[0] = 0.1;
   old_policy[1] = 0.1;
-  int N = 2;
-
   policy = old_policy;
   new_policy = old_policy;
 
-  return N;
+  return 2; // number of parameters
 }
 
 std::vector<float> Pegasus::get_action(const std::vector<float> &s) {
@@ -110,6 +108,4 @@ void Pegasus::update_policy() {
   } else if(left_done) {
     policy[parameter_no] += 2 * alpha;
   }
-
-  nn.set_weights(policy);
 }

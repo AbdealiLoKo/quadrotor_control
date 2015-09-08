@@ -7,7 +7,10 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common rl_policy)
+find_package(GSL REQUIRED)
 include_directories(include ${catkin_INCLUDE_DIRS})
 
 catkin_package(
@@ -25,7 +28,12 @@ add_executable(agent
   src/agent.cpp
 )
 
-target_link_libraries(agent agentlib ${catkin_LIBRARIES})
+target_link_libraries(agent
+  agentlib
+  ${catkin_LIBRARIES}
+  ${GSL_LIBRARIES}
+  ${GSLCBLAS_LIBRARIES}
+)
 
 ## Mark executables and/or libraries for installation
 install(TARGETS agent agentlib
