@@ -57,7 +57,7 @@ const std::vector<float> &HectorQuad::sensation() {
   run_sim.call(msg);
 
   // Convert gazebo's state to internal representation
-  s[0] = msg.response.pose.position.z;
+  s[0] = target_pos(2)-msg.response.pose.position.z;
   s[1] = msg.response.twist.linear.z;
 
   return s;
@@ -80,7 +80,7 @@ float HectorQuad::apply(std::vector<float> action) {
 }
 
 float HectorQuad::reward() {
-  return -fabs(target_pos(2) - s[0]);
+  return -fabs(s[0]);
 }
 
 void HectorQuad::reset() {
