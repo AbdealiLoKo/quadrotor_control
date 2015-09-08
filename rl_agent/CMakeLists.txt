@@ -19,7 +19,6 @@ catkin_package(
 
 add_library(agentlib
   src/Agent/Pegasus.cc
-  src/Agent/Sarsa.cc
 )
 
 add_executable(agent

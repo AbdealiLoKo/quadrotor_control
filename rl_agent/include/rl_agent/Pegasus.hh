@@ -20,8 +20,8 @@ public:
 
   virtual ~Pegasus() {}
 
-  virtual int first_action(const std::vector<float> &s);
-  virtual int next_action(float r, const std::vector<float> &s);
+  virtual std::vector<float> first_action(const std::vector<float> &s);
+  virtual std::vector<float> next_action(float r, const std::vector<float> &s);
   virtual void last_action(float r);
 
   int init_policy(int n_i, int n_o);

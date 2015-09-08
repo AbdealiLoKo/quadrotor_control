@@ -67,9 +67,9 @@ bool HectorQuad::terminal() {
   return(false);
 }
 
-float HectorQuad::apply(float action) {
+float HectorQuad::apply(std::vector<float> action) {
   geometry_msgs::Twist action_vel;
-  action_vel.linear.z = action;
+  action_vel.linear.z = action[0];
   cmd_vel.publish(action_vel);
 
   // hector_uav_msgs::MotorPWM action_pwm;

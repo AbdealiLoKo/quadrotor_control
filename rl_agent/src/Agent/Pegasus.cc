@@ -79,18 +79,15 @@ std::vector<float> Pegasus::get_action(const std::vector<float> &s) {
   return action;
 }
 
-int Pegasus::first_action(const std::vector<float> &s) {
-  // Conversion from action back to the action values from the environment is painful for a generic case
-  std::vector<float> action = get_action(s);
-  return int(action[0]);
+std::vector<float> Pegasus::first_action(const std::vector<float> &s) {
+  return get_action(s);
 }
 
-int Pegasus::next_action(float r, const std::vector<float> &s) {
+std::vector<float> Pegasus::next_action(float r, const std::vector<float> &s) {
   // To us, only the final reward matters from the episode for finding the best policy
   episode_reward = gamma*episode_reward + r;
 
-  std::vector<float> action = get_action(s);
-  return int(action[0]);
+  return get_action(s);
  }
 
 void Pegasus::last_action(float r) {

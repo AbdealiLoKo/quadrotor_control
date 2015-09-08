@@ -11,7 +11,6 @@
 
 // Agents
 #include <rl_agent/Pegasus.hh>
-#include <rl_agent/Sarsa.hh>
 
 
 static ros::Publisher out_rl_action;
@@ -27,7 +26,7 @@ std::string agent_type = "";
 void display_help(){
   std::cout << "\n agent --agent type [options]\n";
   std::cout << "\n Options:\n";
-  std::cout << "--agent type (Agent types: sarsa pegasus)\n";
+  std::cout << "--agent type (Agent types: pegasus)\n";
   std::cout << "--seed value (integer seed for random number generator)\n";
   exit(-1);
 }
@@ -35,16 +34,7 @@ void display_help(){
 void init_agent() {
   agent = NULL;
 
-  if (agent_type == "sarsa"){
-    std::cout << "Agent: Sarsa" << std::endl;
-    agent = new Sarsa(3, // Num actions
-                      0.99, // gamma
-                      0.0, // initial value
-                      0.3, // alpha
-                      0.1, // epsilon
-                      0, // lambda
-                      rng);
-  } else if (agent_type == "pegasus"){
+  if (agent_type == "pegasus"){
     std::cout << "Agent: Pegasus" << std::endl;
     agent = new Pegasus(2, // Num inputs
                         1, // Num outputs

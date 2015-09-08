@@ -14,7 +14,7 @@ public:
              Eigen::Vector3d target = Eigen::Vector3d(0, 0, 5));
 
   virtual const std::vector<float> &sensation();
-  virtual float apply(float action);
+  virtual float apply(std::vector<float> action);
 
   virtual bool terminal();
   virtual void reset();

@@ -20,7 +20,7 @@ public:
   /** Allows an agent to affect its environment.
       \param action The action the agent wishes to apply.
       \return The immediate one-step reward caused by the action. */
-  virtual float apply(float action) = 0;
+  virtual float apply(std::vector<float> action) = 0;
 
   /** Determines whether the environment has reached a terminal state.
       \return true iff the task is episodic and the present episode
@@ -47,8 +47,8 @@ public:
       environment.  This method implies that the environment is
       currently in an initial state.
       \param s The initial sensation from the environment.
-      \return The action the agent wishes to take first. */
-  virtual int first_action(const std::vector<float> &s) = 0;
+      \return The action vector the agent wishes to take first. */
+  virtual std::vector<float> first_action(const std::vector<float> &s) = 0;
 
   /** Determines the next action that an agent takes in an environment
       and gives feedback for the previous action.  This method may
@@ -56,8 +56,8 @@ public:
       next_action.
       \param r The one-step reward resulting from the previous action.
       \param s The current sensation from the environment.
-      \return The action the agent wishes to take next. */
-  virtual int next_action(float r, const std::vector<float> &s) = 0;
+      \return The action vector the agent wishes to take next. */
+  virtual std::vector<float> next_action(float r, const std::vector<float> &s) = 0;
 
   /** Gives feedback for the last action taken.  This method may only
       be called if the last method called was first_action or
