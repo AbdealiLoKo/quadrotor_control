@@ -3,6 +3,7 @@
 #include <ros/ros.h>
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/Model.hh>
+#include <gazebo/physics/physics.hh>
 #include <rl_msgs/RLRunSim.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>

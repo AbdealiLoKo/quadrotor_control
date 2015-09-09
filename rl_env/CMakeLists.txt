@@ -38,7 +38,7 @@ target_link_libraries(env envlib ${catkin_LIBRARIES})
 target_link_libraries(env_hectorquad_world ${GAZEBO_LIBRARIES})
 
 ## Mark executables and/or libraries for installation
-install(TARGETS env envlib
+install(TARGETS env envlib env_hectorquad_world
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -56,5 +56,3 @@ install(FILES
   plugin.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-
-

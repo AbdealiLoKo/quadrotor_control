@@ -21,7 +21,7 @@ std::vector<float> Pegasus::next_action(float r, const std::vector<float> &s) {
   // To us, only the final reward matters from the episode for finding the best policy
   value = gamma * value + r;
   std::vector<float> action = get_action(s);
-  // std::cout << action[0] << "\n";
+  std::cout << action[0] << " " << value << " " << r << "\n";
   return action;
  }
 
@@ -103,7 +103,7 @@ void Pegasus::update_policy() {
       old_policy = new_policy;
     } else {
       // Next policy param ready to be updated
-      policy[parameter] = old_policy[parameter] - alpha;
+      policy[parameter] = old_policy[parameter] - epsilon;
     }
   }
 

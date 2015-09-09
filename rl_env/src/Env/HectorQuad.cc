@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include <geometry_msgs/Twist.h>
 #include <rl_msgs/RLRunSim.h>
 #include <hector_uav_msgs/MotorPWM.h>
@@ -34,11 +35,6 @@ target_pos(target)
   load_controller.call(msg);
   assert(msg.response.ok);
 
-  // Engage motors so that controller can control them from the start
-  ros::service::waitForService("/engage", -1);
-  ros::ServiceClient engage = node.serviceClient<std_srvs::Empty>("/engage");
-  engage.call(empty_msg);
-
   // Pause the world and reset
   // Note: Pause has to be done only after `waitForService` finds the service.
   //       it cannot be done in gazebo as otherwise waitForService hangs.
@@ -53,7 +49,7 @@ target_pos(target)
 const std::vector<float> &HectorQuad::sensation() {
   // Get state from gazebo
   rl_msgs::RLRunSim msg;
-  msg.request.steps = 1;
+  msg.request.steps = 10; // 1 step = 0.01 sec
   run_sim.call(msg);
 
   // Convert gazebo's state to internal representation
