@@ -1,5 +1,0 @@
-<launch>
-  <node name="RLAgent" pkg="rl_agent" type="agent" args="--agent sarsa" output="screen" />
-  <node name="RLEnvironment" pkg="rl_env" type="env" args="--env hectorquad" output="screen" />
-  <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot" args="/rl_agent/rl_experiment_info/episode_reward" />
-</launch>
