@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 
     case 'a':
       agent_type = optarg;
-      std::cout << "Uisng agent: " << agent_type << "\n";
+      std::cout << "Using agent: " << agent_type << "\n";
       break;
 
     default:

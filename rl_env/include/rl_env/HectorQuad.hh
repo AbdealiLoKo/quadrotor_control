@@ -22,7 +22,8 @@ public:
 protected:
   // Publishers, subscribers and services
   ros::Publisher cmd_vel, motor_pwm;
-  ros::ServiceClient reset_world, run_sim;
+  ros::ServiceClient reset_world, run_sim, pause_phy, engage, shutdown,
+                     list_controllers, load_controller;
   std_srvs::Empty empty_msg;
   // Stochasticity related variables
   Random &rng;
