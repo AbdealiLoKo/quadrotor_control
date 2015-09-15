@@ -19,6 +19,10 @@ public:
   virtual bool terminal();
   virtual void reset();
 
+  Eigen::Vector3d get_pos();
+  void set_vel(Eigen::Vector3d v);
+
+
 protected:
   // Publishers, subscribers and services
   ros::Publisher cmd_vel, motor_pwm;

@@ -128,3 +128,26 @@ void HectorQuad::reset() {
   pause_phy.call(empty_msg);
   reset_world.call(empty_msg); // Reset the world
 }
+
+Eigen::Vector3d HectorQuad::get_pos() {
+  // Get state from gazebo
+  rl_msgs::RLRunSim msg;
+  msg.request.steps = 10; // 1 step = 0.01 sec
+  run_sim.call(msg);
+
+  return Eigen::Vector3d(msg.response.pose.position.x, msg.response.pose.position.y, msg.response.pose.position.z);
+}
+
+void HectorQuad::set_vel(Eigen::Vector3d v) {
+  controller_manager_msgs::ListControllers list_msg;
+  list_controllers.call(list_msg);
+  assert(list_msg.response.controller[0].state == "running");
+
+  // Send action
+  geometry_msgs::Twist action_vel;
+  action_vel.linear.x = v[0];
+  action_vel.linear.y = v[1];
+  action_vel.linear.z = v[2];
+
+  cmd_vel.publish(action_vel);
+}
