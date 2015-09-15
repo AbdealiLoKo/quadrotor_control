@@ -1,0 +1,35 @@
+<package>
+  <name>demonstration_control</name>
+  <version>0.0.1</version>
+  <description> Empty
+  </description>
+  <maintainer email="kunalgrover05@gmail.com">Kunal Grover</maintainer>
+
+  <license>BSD</license>
+  <author email="kunalgrover05@gmail.com">Kunal Grover</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>rl_env</build_depend>
+  <build_depend>rl_common</build_depend>
+ 
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>rl_env</run_depend>
+  <run_depend>rl_common</run_depend>
+
+  <!-- Dependencies needed only for running tests. -->
+
+  <export>
+     <cpp cflags="-I${prefix}/include"
+         lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib"/>
+  </export>
+
+</package>
+
+
