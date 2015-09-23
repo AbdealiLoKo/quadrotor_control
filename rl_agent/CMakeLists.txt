@@ -10,7 +10,11 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common rl_policy)
-include_directories(include ${catkin_INCLUDE_DIRS})
+find_package(cmake_modules REQUIRED)
+find_package(Eigen REQUIRED)
+find_package(gazebo REQUIRED)
+
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${GAZEBO_INCLUDE_DIRS})
 
 catkin_package(
     INCLUDE_DIRS include
@@ -30,6 +34,7 @@ add_executable(agent
 target_link_libraries(agent
   agentlib
   ${catkin_LIBRARIES}
+  ${GAZEBO_LIBRARIES}
 )
 
 ## Mark executables and/or libraries for installation

@@ -7,12 +7,13 @@
 #include <rl_env/HectorQuad.hh>
 
 // Random initialization of position
-HectorQuad::HectorQuad(Random &rand,
-                       Eigen::Vector3d target/* = Eigen::Vector3d(0, 0, 5)*/):
+HectorQuad::HectorQuad(Random &rand):
 s(2),
-rng(rand),
-target_pos(target)
+rng(rand)
 {
+  phy_steps = 10;
+  cur_step = 0;
+
   ros::NodeHandle node;
 
   // Publishers
@@ -59,11 +60,13 @@ target_pos(target)
 const std::vector<float> &HectorQuad::sensation() {
   // Get state from gazebo
   rl_msgs::RLRunSim msg;
-  msg.request.steps = 10; // 1 step = 0.01 sec
+  msg.request.steps = phy_steps;
+  cur_step += phy_steps;
   run_sim.call(msg);
 
+  get_trajectory();
   // Convert gazebo's state to internal representation
-  s[0] = target_pos(2)-msg.response.pose.position.z;
+  s[0] = target_pos(2) - msg.response.pose.position.z;
   s[1] = msg.response.twist.linear.z;
 
   // std::cout << s << "\n";
@@ -101,17 +104,11 @@ float HectorQuad::reward() {
 void HectorQuad::reset() {
   shutdown.call(empty_msg); // shutdown motors
   geometry_msgs::Twist action_vel; // Set velocity to 0
-  action_vel.linear.x = 0;
-  action_vel.linear.y = 0;
-  action_vel.linear.z = 0;
-  action_vel.angular.x = 0;
-  action_vel.angular.y = 0;
-  action_vel.angular.z = 0;
 
   // Keep checking the status of controller. When it goes into "running"
   // we can start getting actions from the agent.
   // Until then, keep giving a vel of 0 so that it will auto engage.
-  std::cout << "HectorQuad : Waiting for controller to engage motors ...\n";
+  // std::cout << "HectorQuad : Waiting for controller to engage motors ...\n";
   while(1) {
     controller_manager_msgs::ListControllers list_msg;
     list_controllers.call(list_msg);
@@ -127,4 +124,11 @@ void HectorQuad::reset() {
   //       it cannot be done in gazebo as otherwise waitForService hangs.
   pause_phy.call(empty_msg);
   reset_world.call(empty_msg); // Reset the world
+}
+
+void HectorQuad::get_trajectory(long long time_in_steps /* = 0 */) {
+  if (time_in_steps == -1) time_in_steps = cur_step;
+
+  target_pos = Eigen::Vector3d(0, 0, 0);
+  target_pos(2) = 10;
 }

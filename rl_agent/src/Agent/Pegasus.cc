@@ -48,7 +48,9 @@ void Pegasus::last_action(float r) {
 
 // Returns No of weights that can be altered
 int Pegasus::init_policy(int n_in, int n_out) {
-  std::vector<float> i(2, 0.1);
+  std::vector<float> i(2);
+  i[0] = 0.00;
+  i[1] = 0.00;
   policy = i;
   old_policy = policy;
   new_policy = policy;
@@ -63,7 +65,8 @@ int Pegasus::init_policy(int n_in, int n_out) {
 
 std::vector<float> Pegasus::get_action(const std::vector<float> &s) {
   std::vector<float> action(num_outputs);
-  action[0] = policy[0] * s[0] + policy[1];
+  // action[0] = policy[0] * s[0] + policy[1];
+  action[0] = policy[0] * s[0] + policy[1] * s[1];
   return action;
 }
 
@@ -95,8 +98,8 @@ void Pegasus::update_policy() {
       // Debug statements
       std::cout << "Previous value " << left_value
                 << " , " << right_value << "\n";
-      std::cout << "Old policy " << old_policy << "\n";
-      std::cout << "New policy " << new_policy << "\n";
+      std::cout << "Old policy " << old_policy
+                << " New policy " << new_policy << "\n";
 
       parameter = 0;
       policy = new_policy;

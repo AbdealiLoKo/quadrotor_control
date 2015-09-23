@@ -16,6 +16,8 @@
 static ros::Publisher out_rl_action;
 static ros::Publisher out_exp_info;
 
+
+const int MAX_STEPS = 1000;
 Random rng;
 Agent* agent = NULL;
 int seed = 1;
@@ -63,7 +65,7 @@ void process_state(const rl_msgs::RLStateReward::ConstPtr &state_in){
     info.episode_reward = 0;
     info.number_actions += 1;
 
-  } else if (state_in->terminal || info.number_actions > 1000) {
+  } else if (state_in->terminal || info.number_actions > MAX_STEPS) {
     info.episode_reward += state_in->reward;
     info.episode_number += 1;
     agent->last_action(state_in->reward);

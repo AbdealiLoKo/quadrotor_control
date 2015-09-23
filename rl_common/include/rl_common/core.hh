@@ -4,6 +4,14 @@
 #include "Random.h"
 #include <vector>
 #include <iostream>
+#include <Eigen/Geometry>
+
+#define NINF INT_MIN
+#define INF INT_MAX
+
+std::ostream& operator<< (std::ostream& out, const Eigen::Vector3d& v) {
+  out << "[" << v(0) << ", " << v(1) << ", " << v(2) << "]";
+}
 
 template<typename T>
 std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {

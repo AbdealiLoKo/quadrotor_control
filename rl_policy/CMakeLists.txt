@@ -8,7 +8,11 @@ else()
 endif()
 
 find_package(catkin REQUIRED COMPONENTS rl_common)
-include_directories(include ${catkin_INCLUDE_DIRS})
+find_package(cmake_modules REQUIRED)
+find_package(Eigen REQUIRED)
+find_package(gazebo REQUIRED)
+
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${GAZEBO_INCLUDE_DIRS})
 
 catkin_package(
     INCLUDE_DIRS include
