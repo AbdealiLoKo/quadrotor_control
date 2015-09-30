@@ -39,6 +39,7 @@ private:
   float best_value, value;
   float left_value, right_value;
   bool left_done, right_done;
+  std::map<std::vector<float>, float> policy_values;
   std::vector<float> policy, old_policy, new_policy;
 };
 

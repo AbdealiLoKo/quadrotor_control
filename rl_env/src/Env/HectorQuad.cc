@@ -110,8 +110,8 @@ float HectorQuad::apply(std::vector<float> action) {
 float HectorQuad::reward() {
   return (
     -fabs(final.pose.position.z - current.pose.position.z)
-    // -fabs(final.pose.position.x - current.pose.position.x)
-    // -fabs(final.pose.position.y - current.pose.position.y)
+    -fabs(final.pose.position.x - current.pose.position.x)
+    -fabs(final.pose.position.y - current.pose.position.y)
   );
 }
 
@@ -139,7 +139,7 @@ void HectorQuad::reset() {
   initial.pose.orientation.x = 0;
   initial.pose.orientation.y = 0;
   initial.pose.orientation.z = 0;
-  initial.pose.orientation.w = 0;
+  initial.pose.orientation.w = 1;
 
   initial.twist.linear.x = 0;
   initial.twist.linear.y = 0;
@@ -170,7 +170,7 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = 0 */) {
   final.pose.orientation.x = 0;
   final.pose.orientation.y = 0;
   final.pose.orientation.z = 0;
-  final.pose.orientation.w = 0;
+  final.pose.orientation.w = 1;
 
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;

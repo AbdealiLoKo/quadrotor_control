@@ -9,7 +9,7 @@ rng(rng)
 {
   n_action = 2;
   n_state = 4;
-  policy_stepsize = 0.02;
+  policy_stepsize = 0.0001;
   discount_factor = 0.90;
   policy_change = 0.01;
 
@@ -31,11 +31,6 @@ std::vector<float> Pegasus::next_action(float r, const std::vector<float> &s) {
 
 void Pegasus::last_action(float r) {
   value = discount_factor * value + r;
-  if (left_done)
-    right_value = value;
-  else
-    left_value = value;
-
   update_policy();
   value = 0;
 }
@@ -63,7 +58,7 @@ int Pegasus::init_policy(int n_state, int n_action) {
   value = 0;
   left_done = false;
   right_done = false;
-  parameter = 0;
+  parameter = -1;
 
   return policy.size();
 }
@@ -76,14 +71,24 @@ std::vector<float> Pegasus::get_action(const std::vector<float> &s) {
 }
 
 void Pegasus::update_policy() {
-  // left_done and right_done are flags to indicate if an epsiode has run for which parameter value.
-  if (!left_done) {
+  policy_values[policy] = value;
+
+  if ( parameter == -1 ) {
+    // Finding the value of the new_policy first
+    std::cout << "Value for new policy = " << policy_values[policy] << "\n\n";
+    parameter++;
+    policy[parameter] = old_policy[parameter] - policy_change;
+
+  } else if (!left_done) {
+    // Left just got over, let's do right
     left_done = true;
+    left_value = policy_values[policy];
     policy[parameter] = old_policy[parameter] + policy_change;
-  }
-  else {
-    // Left is already completed, do for right
+
+  } else {
+    // Both (left and right) have completed
     right_done = true;
+    right_value = policy_values[policy];
 
     std::cout << "Value = (" << left_value << ", " << right_value << ")\n"
                 << "for Policy = " << policy << "\n";
@@ -105,12 +110,12 @@ void Pegasus::update_policy() {
       // Debug statements
       std::cout << "Switching policy -----------------------------------\n";
       std::cout << "Old policy " << old_policy << "\n"
-                << "New policy " << new_policy << "\n\n";
+                << "New policy " << new_policy << "\n";
       if ( old_policy == new_policy ) {
-        std::cout << "########## FINISHED ##########\n";
+        std::cout << "##### FINISHED (same policy got) #####\n";
         exit(0);
       }
-      parameter = 0;
+      parameter = -1;
       policy = new_policy;
       old_policy = new_policy;
     } else {
@@ -118,6 +123,14 @@ void Pegasus::update_policy() {
       policy[parameter] = old_policy[parameter] - policy_change;
     }
   }
-
-  // Do a set_weights(policy) call if using an external policy class
+  // int count = 0;
+  // while ( policy_values.count(policy_values) != 0 ) {
+  //   // if policy is already done, skip it.
+  //   update_policy();
+  //   count ++;
+  //   if ( count >= max_parameter * 100 ) {
+  //     std::cout << "##### FINISHED (looped policies) #####\n";
+  //     exit(0);
+  //   }
+  // }
 }
