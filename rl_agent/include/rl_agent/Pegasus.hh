@@ -14,8 +14,7 @@ public:
       \param numinputs The number of possible inputs
       \param numoutputs The number of possible outputs
   */
-  Pegasus(int numinputs, int numoutputs, float alpha, float gamma,
-          Random rng = Random());
+  Pegasus(int nstate, int naction, Random rng = Random());
 
   virtual ~Pegasus() {}
 
@@ -31,8 +30,10 @@ protected:
 
 private:
   Random rng;
-  int num_outputs, num_inputs;
-  float alpha, gamma;
+  int n_state, n_action;
+  float policy_stepsize, // The stepsize to update to the new policy
+        policy_change, // The epsilon to move to numerically find gradient
+        discount_factor;
 
   int parameter, max_parameter;
   float best_value, value;

@@ -8,17 +8,22 @@
 
 // Random initialization of position
 HectorQuad::HectorQuad(Random &rand):
-s(2),
+s(6),
 rng(rand)
 {
   phy_steps = 10;
   cur_step = 0;
 
+  // Set name of model
+  initial.model_name = "quadrotor";
+  final.model_name = "quadrotor";
+  current.model_name = "quadrotor";
+
   ros::NodeHandle node;
 
   // Publishers
   cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
-  motor_pwm = node.advertise<hector_uav_msgs::MotorPWM>("/motor_pwm", 5);
+  // motor_pwm = node.advertise<hector_uav_msgs::MotorPWM>("/motor_pwm", 5);
 
   // Services
   ros::service::waitForService("/gazebo/reset_world", -1);
@@ -27,6 +32,9 @@ rng(rand)
   run_sim = node.serviceClient<rl_msgs::RLRunSim>("/rl_env/run_sim");
   ros::service::waitForService("/gazebo/pause_physics", -1);
   pause_phy = node.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
+  ros::service::waitForService("/gazebo/set_model_state", -1);
+  set_model_state =
+    node.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
 
   // Load the controller needed. If this it done in launch file, it doesnt
   // start on time. So, it needs to be done in sync.
@@ -58,16 +66,21 @@ rng(rand)
 }
 
 const std::vector<float> &HectorQuad::sensation() {
-  // Get state from gazebo
+  // Get state from gazebo and save to "current" state
   rl_msgs::RLRunSim msg;
   msg.request.steps = phy_steps;
   cur_step += phy_steps;
   run_sim.call(msg);
+  current.pose = msg.response.pose;
+  current.twist = msg.response.twist;
 
   get_trajectory();
+
   // Convert gazebo's state to internal representation
-  s[0] = target_pos(2) - msg.response.pose.position.z;
-  s[1] = msg.response.twist.linear.z;
+  s[0] = final.pose.position.z - current.pose.position.z;
+  s[1] = current.twist.linear.z;
+  s[2] = final.pose.position.x - current.pose.position.x;
+  s[3] = current.twist.linear.x;
 
   // std::cout << s << "\n";
 
@@ -75,7 +88,8 @@ const std::vector<float> &HectorQuad::sensation() {
 }
 
 bool HectorQuad::terminal() {
-  return(false);
+  if (cur_step > 10000) return true;
+  return false;
 }
 
 float HectorQuad::apply(std::vector<float> action) {
@@ -88,17 +102,17 @@ float HectorQuad::apply(std::vector<float> action) {
   // Send action
   geometry_msgs::Twist action_vel;
   action_vel.linear.z = action[0];
+  action_vel.linear.x = action[1];
   cmd_vel.publish(action_vel);
-
-  // hector_uav_msgs::MotorPWM action_pwm;
-  // int pwms[4] = {action, action, action, action};
-  // action_pwm.pwm = pwms;
-  // motor_pwm.publish(action_pwm);
   return reward();
 }
 
 float HectorQuad::reward() {
-  return -fabs(s[0]);
+  return (
+    -fabs(final.pose.position.z - current.pose.position.z)
+    // -fabs(final.pose.position.x - current.pose.position.x)
+    // -fabs(final.pose.position.y - current.pose.position.y)
+  );
 }
 
 void HectorQuad::reset() {
@@ -119,16 +133,49 @@ void HectorQuad::reset() {
       break;
   }
 
+  initial.pose.position.x = 0;
+  initial.pose.position.y = 0;
+  initial.pose.position.z = 0;
+  initial.pose.orientation.x = 0;
+  initial.pose.orientation.y = 0;
+  initial.pose.orientation.z = 0;
+  initial.pose.orientation.w = 0;
+
+  initial.twist.linear.x = 0;
+  initial.twist.linear.y = 0;
+  initial.twist.linear.z = 0;
+  initial.twist.angular.x = 0;
+  initial.twist.angular.y = 0;
+  initial.twist.angular.z = 0;
+
   // Reset and pause the world
   // Note: Pause has to be done only after `waitForService` finds the service.
   //       it cannot be done in gazebo as otherwise waitForService hangs.
   pause_phy.call(empty_msg);
-  reset_world.call(empty_msg); // Reset the world
+  reset_world.call(empty_msg);
+  cur_step = 0;
+
+  // set initial position programmatically
+  gazebo_msgs::SetModelState msg;
+  msg.request.model_state = initial;
+  assert(set_model_state.call(msg));
 }
 
 void HectorQuad::get_trajectory(long long time_in_steps /* = 0 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
-  target_pos = Eigen::Vector3d(0, 0, 0);
-  target_pos(2) = 10;
+  final.pose.position.x = 0;
+  final.pose.position.y = 0;
+  final.pose.position.z = 5;
+  final.pose.orientation.x = 0;
+  final.pose.orientation.y = 0;
+  final.pose.orientation.z = 0;
+  final.pose.orientation.w = 0;
+
+  final.twist.linear.x = 0;
+  final.twist.linear.y = 0;
+  final.twist.linear.z = 0;
+  final.twist.angular.x = 0;
+  final.twist.angular.y = 0;
+  final.twist.angular.z = 0;
 }

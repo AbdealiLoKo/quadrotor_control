@@ -17,7 +17,7 @@ static ros::Publisher out_rl_action;
 static ros::Publisher out_exp_info;
 
 
-const int MAX_STEPS = 1000;
+const int MAX_STEPS = 10000;
 Random rng;
 Agent* agent = NULL;
 int seed = 1;
@@ -38,10 +38,9 @@ void init_agent() {
 
   if (agent_type == "pegasus"){
     std::cout << "Agent: Pegasus" << std::endl;
-    agent = new Pegasus(2, // Num inputs
-                        1, // Num outputs
-                        0.01, // alpha
-                        0.9, // gamma
+    // For now, we arent using these args. Theyre reset in the constructor
+    agent = new Pegasus(4, // Num state
+                        2, // Num action
                         rng);
   } else {
     std::cout << "Invalid Agent!" << std::endl;
@@ -71,9 +70,9 @@ void process_state(const rl_msgs::RLStateReward::ConstPtr &state_in){
     agent->last_action(state_in->reward);
     out_exp_info.publish(info); // Publish end of episode message
 
-    std::cout << "RL AGENT: Episode " << info.episode_number
-              << ", #Actions " << info.number_actions
-              << ", Episode Reward: " << info.episode_reward << "\n";
+    // std::cout << "RL AGENT: Episode " << info.episode_number
+    //           << ", #Actions " << info.number_actions
+    //           << ", Episode Reward: " << info.episode_reward << "\n";
 
     info.number_actions = 0;
     info.episode_reward = 0;

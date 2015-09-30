@@ -27,7 +27,7 @@
   <arg name="tf_prefix" default="$(optenv ROS_NAMESPACE)"/>
   <arg name="x" default="0.0"/>
   <arg name="y" default="0.0"/>
-  <arg name="z" default="5"/>
+  <arg name="z" default="0.0"/>
 
   <arg name="use_ground_truth_for_tf" default="true" />
 
@@ -83,7 +83,7 @@
   <arg name="env" default="hectorquad" />
 
   <!-- Start RLAgent and RLEnv -->
-  <node name="RLAgent" pkg="rl_agent" type="agent" args="--agent $(arg agent)" output="screen" />
+  <node name="RLAgent" pkg="rl_agent" type="agent" args="--agent $(arg agent)" output="screen" required="true" />
 
-  <node name="RLEnvironment" pkg="rl_env" type="env" args="--env $(arg env)" output="screen" />
+  <node name="RLEnvironment" pkg="rl_env" type="env" args="--env $(arg env)" output="screen" required="true" />
 </launch>
