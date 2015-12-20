@@ -4,9 +4,9 @@
 #include <rl_common/core.hh>
 
 // Messages
-#include <rl_msgs/RLStateReward.h>
-#include <rl_msgs/RLAction.h>
-#include <rl_msgs/RLExperimentInfo.h>
+#include <rl_common/RLStateReward.h>
+#include <rl_common/RLAction.h>
+#include <rl_common/RLExperimentInfo.h>
 
 // Agents
 #include <rl_agent/Pegasus.hh>
@@ -20,7 +20,7 @@ const int MAX_STEPS = 10000;
 Agent* agent = NULL;
 int seed = 1;
 
-rl_msgs::RLExperimentInfo info;
+rl_common::RLExperimentInfo info;
 std::string agent_type = "";
 
 void display_help(){
@@ -47,14 +47,14 @@ void init_agent() {
   info.number_actions = 0;
 }
 
-void process_state(const rl_msgs::RLStateReward::ConstPtr &state_in){
+void process_state(const rl_common::RLStateReward::ConstPtr &state_in){
   /** Process the state/reward message from the environment */
 
   if (agent == NULL) {
     init_agent();
   }
 
-  rl_msgs::RLAction msg;
+  rl_common::RLAction msg;
 
   if (info.number_actions == 0) {
     msg.action = agent->first_action(state_in->state);
@@ -122,10 +122,10 @@ int main(int argc, char *argv[]) {
 
   std::cout << "RL AGENT:  Initializing ROS ...\n";
   // Publishers
-  out_rl_action = node.advertise<rl_msgs::RLAction>("rl_agent/rl_action",
+  out_rl_action = node.advertise<rl_common::RLAction>("rl_agent/rl_action",
                                                     1,
                                                     false);
-  out_exp_info = node.advertise<rl_msgs::RLExperimentInfo>(
+  out_exp_info = node.advertise<rl_common::RLExperimentInfo>(
     "rl_agent/rl_experiment_info",
     1,
     false);

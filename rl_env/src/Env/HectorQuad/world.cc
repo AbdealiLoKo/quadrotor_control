@@ -4,7 +4,7 @@
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/Model.hh>
 #include <gazebo/physics/physics.hh>
-#include <rl_msgs/RLRunSim.h>
+#include <rl_common/RLRunSim.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
 
@@ -21,8 +21,8 @@ namespace gazebo {
                                       this);
     }
 
-    bool do_run_sim(rl_msgs::RLRunSim::Request &req,
-                    rl_msgs::RLRunSim::Response &res) {
+    bool do_run_sim(rl_common::RLRunSim::Request &req,
+                    rl_common::RLRunSim::Response &res) {
       int step_count = req.steps;
       world_ptr->StepWorld(step_count);
 

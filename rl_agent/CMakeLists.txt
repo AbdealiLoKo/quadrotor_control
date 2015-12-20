@@ -9,7 +9,7 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common rl_policy)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf rl_common rl_policy)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(gazebo REQUIRED)
@@ -19,7 +19,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${GAZEBO
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES agentlib
-    CATKIN_DEPENDS roscpp std_msgs rl_msgs tf rl_common rl_policy
+    CATKIN_DEPENDS roscpp std_msgs tf rl_common rl_policy
     DEPENDS
 )
 
@@ -37,8 +37,8 @@ target_link_libraries(agent
   ${GAZEBO_LIBRARIES}
 )
 
-add_dependencies(agent rl_msgs_generate_messages_cpp)
-add_dependencies(agentlib rl_msgs_generate_messages_cpp)
+add_dependencies(agent rl_common_generate_messages_cpp)
+add_dependencies(agentlib rl_common_generate_messages_cpp)
 
 ## Mark executables and/or libraries for installation
 install(TARGETS agent agentlib

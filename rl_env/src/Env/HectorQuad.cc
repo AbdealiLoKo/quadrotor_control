@@ -1,6 +1,6 @@
 #include <unistd.h>
 #include <geometry_msgs/Twist.h>
-#include <rl_msgs/RLRunSim.h>
+#include <rl_common/RLRunSim.h>
 #include <hector_uav_msgs/MotorPWM.h>
 #include <controller_manager_msgs/LoadController.h>
 #include <controller_manager_msgs/ListControllers.h>
@@ -27,7 +27,7 @@ s(6)
   ros::service::waitForService("/gazebo/reset_world", -1);
   reset_world = node.serviceClient<std_srvs::Empty>("/gazebo/reset_world");
   ros::service::waitForService("/rl_env/run_sim", -1);
-  run_sim = node.serviceClient<rl_msgs::RLRunSim>("/rl_env/run_sim");
+  run_sim = node.serviceClient<rl_common::RLRunSim>("/rl_env/run_sim");
   ros::service::waitForService("/gazebo/pause_physics", -1);
   pause_phy = node.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
   ros::service::waitForService("/gazebo/set_model_state", -1);
@@ -65,7 +65,7 @@ s(6)
 
 const std::vector<float> &HectorQuad::sensation() {
   // Get state from gazebo and save to "current" state
-  rl_msgs::RLRunSim msg;
+  rl_common::RLRunSim msg;
   msg.request.steps = phy_steps;
   cur_step += phy_steps;
   run_sim.call(msg);

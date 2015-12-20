@@ -1,9 +1,9 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
 
-#include <rl_msgs/RLStateReward.h>
-#include <rl_msgs/RLAction.h>
-#include <rl_msgs/RLExperimentInfo.h>
+#include <rl_common/RLStateReward.h>
+#include <rl_common/RLAction.h>
+#include <rl_common/RLExperimentInfo.h>
 
 #include <rl_common/core.hh>
 
@@ -27,9 +27,9 @@ void display_help() {
   exit(-1);
 }
 
-void process_action(const rl_msgs::RLAction::ConstPtr &actionIn) {
+void process_action(const rl_common::RLAction::ConstPtr &actionIn) {
   // Get action from agent and give back the next state
-  rl_msgs::RLStateReward sr;
+  rl_common::RLStateReward sr;
   sr.reward = environment->apply(actionIn->action);
   sr.state = environment->sensation();
   sr.terminal = environment->terminal();
@@ -37,11 +37,11 @@ void process_action(const rl_msgs::RLAction::ConstPtr &actionIn) {
   out_env_sr.publish(sr);
 }
 
-void process_episode(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn) {
+void process_episode(const rl_common::RLExperimentInfo::ConstPtr &infoIn) {
   // Process end-of-episode reward info. Mostly to start new episode.
   environment->reset();
 
-  rl_msgs::RLStateReward sr;
+  rl_common::RLStateReward sr;
   sr.reward = 0;
   sr.state = environment->sensation();
   sr.terminal = false;
@@ -62,7 +62,7 @@ void init_env() {
   }
 
   // Send first `state`
-  rl_msgs::RLStateReward sr;
+  rl_common::RLStateReward sr;
   sr.reward = 0;
   sr.state = environment->sensation();
   sr.terminal = false;
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
 
   std::cout << "RL ENV:  Initializing ROS ...\n";
   // Publishers
-  out_env_sr = node.advertise<rl_msgs::RLStateReward>("rl_env/rl_state_reward",
+  out_env_sr = node.advertise<rl_common::RLStateReward>("rl_env/rl_state_reward",
                                                       1,
                                                       false);
 

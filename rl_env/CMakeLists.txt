@@ -7,7 +7,8 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
 
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs rl_msgs tf rl_common gazebo_msgs std_srvs)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf gazebo_msgs std_srvs
+             rl_common)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(gazebo REQUIRED)
@@ -17,7 +18,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${GAZEBO
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES envlib env_hectorquad_world
-    CATKIN_DEPENDS roscpp std_msgs rl_msgs tf rl_common gazebo_msgs std_srvs
+    CATKIN_DEPENDS roscpp std_msgs tf rl_common gazebo_msgs std_srvs
     DEPENDS
 )
 
@@ -37,9 +38,9 @@ target_link_libraries(envlib ${catkin_LIBRARIES})
 target_link_libraries(env envlib ${catkin_LIBRARIES})
 target_link_libraries(env_hectorquad_world ${GAZEBO_LIBRARIES})
 
-add_dependencies(envlib rl_msgs_generate_messages_cpp)
-add_dependencies(env rl_msgs_generate_messages_cpp)
-add_dependencies(env_hectorquad_world rl_msgs_generate_messages_cpp)
+add_dependencies(envlib rl_common_generate_messages_cpp)
+add_dependencies(env rl_common_generate_messages_cpp)
+add_dependencies(env_hectorquad_world rl_common_generate_messages_cpp)
 
 
 ## Mark executables and/or libraries for installation
