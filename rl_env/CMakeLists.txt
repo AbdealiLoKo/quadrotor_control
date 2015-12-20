@@ -17,34 +17,30 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${GAZEBO
 
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES envlib env_hectorquad_world
+    LIBRARIES env_hectorquad_world
     CATKIN_DEPENDS roscpp std_msgs tf rl_common gazebo_msgs std_srvs
     DEPENDS
 )
 
-add_library(envlib
-  src/Env/HectorQuad.cc
-)
-
 add_executable(env
   src/env.cpp
+
+  src/Env/HectorQuad.cc
 )
 
 add_library(env_hectorquad_world
   src/Env/HectorQuad/world.cc
 )
 
-target_link_libraries(envlib ${catkin_LIBRARIES})
-target_link_libraries(env envlib ${catkin_LIBRARIES})
+target_link_libraries(env rlcommon ${catkin_LIBRARIES})
 target_link_libraries(env_hectorquad_world ${GAZEBO_LIBRARIES})
 
-add_dependencies(envlib rl_common_generate_messages_cpp)
 add_dependencies(env rl_common_generate_messages_cpp)
 add_dependencies(env_hectorquad_world rl_common_generate_messages_cpp)
 
 
 ## Mark executables and/or libraries for installation
-install(TARGETS env envlib env_hectorquad_world
+install(TARGETS env env_hectorquad_world
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
