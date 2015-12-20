@@ -2,7 +2,6 @@
 #include <ros/ros.h>
 
 #include <rl_common/core.hh>
-#include <rl_common/Random.h>
 
 // Messages
 #include <rl_msgs/RLStateReward.h>
@@ -18,7 +17,6 @@ static ros::Publisher out_exp_info;
 
 
 const int MAX_STEPS = 10000;
-Random rng;
 Agent* agent = NULL;
 int seed = 1;
 
@@ -29,7 +27,6 @@ void display_help(){
   std::cout << "\n agent --agent type [options]\n";
   std::cout << "\n Options:\n";
   std::cout << "--agent type (Agent types: pegasus)\n";
-  std::cout << "--seed value (integer seed for random number generator)\n";
   exit(-1);
 }
 
@@ -40,8 +37,8 @@ void init_agent() {
     std::cout << "Agent: Pegasus" << std::endl;
     // For now, we arent using these args. Theyre reset in the constructor
     agent = new Pegasus(4, // Num state
-                        2, // Num action
-                        rng);
+                        2 // Num action
+                        );
   } else {
     std::cout << "Invalid Agent!" << std::endl;
     display_help();
@@ -140,7 +137,6 @@ int main(int argc, char *argv[]) {
                                              process_state,
                                              no_delay);
 
-  Random rng(seed+1);
   ROS_INFO("RL AGENT: starting main loop");
   ros::spin(); // handle incoming data
 

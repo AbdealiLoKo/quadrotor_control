@@ -6,10 +6,8 @@
 #include <controller_manager_msgs/ListControllers.h>
 #include <rl_env/HectorQuad.hh>
 
-// Random initialization of position
-HectorQuad::HectorQuad(Random &rand):
-s(6),
-rng(rand)
+HectorQuad::HectorQuad():
+s(6)
 {
   phy_steps = 10;
   cur_step = 0;

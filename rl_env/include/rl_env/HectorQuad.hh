@@ -2,7 +2,6 @@
 #define _HECTORQUAD_H_
 
 #include <Eigen/Geometry>
-#include <rl_common/Random.h>
 #include <rl_common/core.hh>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
@@ -13,7 +12,7 @@
 
 class HectorQuad: public Environment {
 public:
-  HectorQuad(Random &rand);
+  HectorQuad();
 
   virtual const std::vector<float> &sensation();
   virtual float apply(std::vector<float> action);
@@ -30,9 +29,6 @@ protected:
   ros::ServiceClient reset_world, run_sim, pause_phy, engage, shutdown,
                      list_controllers, load_controller, set_model_state;
   std_srvs::Empty empty_msg;
-
-  // Stochasticity related variables
-  Random &rng;
 
   // State and positions
   std::vector<float> s;

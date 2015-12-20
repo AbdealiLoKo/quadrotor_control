@@ -1,7 +1,6 @@
 #ifndef _PEGASUS_HH_
 #define _PEGASUS_HH_
 
-#include <rl_common/Random.h>
 #include <rl_common/core.hh>
 
 #include <map>
@@ -14,7 +13,7 @@ public:
       \param numinputs The number of possible inputs
       \param numoutputs The number of possible outputs
   */
-  Pegasus(int nstate, int naction, Random rng = Random());
+  Pegasus(int nstate, int naction);
 
   virtual ~Pegasus() {}
 
@@ -29,7 +28,6 @@ public:
 protected:
 
 private:
-  Random rng;
   int n_state, n_action;
   float policy_stepsize, // The stepsize to update to the new policy
         policy_change, // The epsilon to move to numerically find gradient

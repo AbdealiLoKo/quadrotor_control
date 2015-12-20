@@ -1,7 +1,6 @@
 #ifndef _RLCORE_H_
 #define _RLCORE_H_
 
-#include "Random.h"
 #include <vector>
 #include <iostream>
 #include <Eigen/Geometry>

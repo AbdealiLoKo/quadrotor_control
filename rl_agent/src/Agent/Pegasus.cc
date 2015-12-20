@@ -2,10 +2,9 @@
 #include <algorithm>
 #include <cfloat>
 
-Pegasus::Pegasus(int nstate, int naction, Random rng):
+Pegasus::Pegasus(int nstate, int naction):
 n_state(nstate),
-n_action(naction),
-rng(rng)
+n_action(naction)
 {
   n_action = 2;
   n_state = 4;

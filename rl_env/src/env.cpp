@@ -6,7 +6,6 @@
 #include <rl_msgs/RLExperimentInfo.h>
 
 #include <rl_common/core.hh>
-#include <rl_common/Random.h>
 
 #include <rl_env/HectorQuad.hh>
 
@@ -18,7 +17,6 @@ static ros::Publisher out_env_sr;
 static ros::Publisher out_seed;
 
 Environment* environment;
-Random rng;
 int seed = 1;
 std::string env_type = "";
 
@@ -26,7 +24,6 @@ void display_help() {
   std::cout << "\n env --env type [options]\n";
   std::cout << "\n Options:\n";
   std::cout << "--env type (Env types: hectorquad)\n";
-  std::cout << "--seed value (integer seed for random number generator)\n";
   exit(-1);
 }
 
@@ -57,7 +54,7 @@ void init_env() {
   environment = NULL;
 
   if (env_type == "hectorquad"){
-    environment = new HectorQuad(rng);
+    environment = new HectorQuad();
   } else {
     std::cerr << "Invalid env type\n";
     display_help();
@@ -127,7 +124,6 @@ int main(int argc, char *argv[]) {
                                                 process_episode,
                                                 no_delay);
 
-  rng = Random(1+seed);
   init_env();
   ROS_INFO("RL ENV: starting main loop");
   ros::spin();
