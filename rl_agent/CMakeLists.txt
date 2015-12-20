@@ -37,6 +37,9 @@ target_link_libraries(agent
   ${GAZEBO_LIBRARIES}
 )
 
+add_dependencies(agent rl_msgs_generate_messages_cpp)
+add_dependencies(agentlib rl_msgs_generate_messages_cpp)
+
 ## Mark executables and/or libraries for installation
 install(TARGETS agent agentlib
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

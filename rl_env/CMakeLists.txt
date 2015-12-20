@@ -37,6 +37,11 @@ target_link_libraries(envlib ${catkin_LIBRARIES})
 target_link_libraries(env envlib ${catkin_LIBRARIES})
 target_link_libraries(env_hectorquad_world ${GAZEBO_LIBRARIES})
 
+add_dependencies(envlib rl_msgs_generate_messages_cpp)
+add_dependencies(env rl_msgs_generate_messages_cpp)
+add_dependencies(env_hectorquad_world rl_msgs_generate_messages_cpp)
+
+
 ## Mark executables and/or libraries for installation
 install(TARGETS env envlib env_hectorquad_world
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
