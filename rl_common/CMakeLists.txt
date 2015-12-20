@@ -13,7 +13,8 @@ find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(gazebo REQUIRED)
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${GAZEBO_INCLUDE_DIRS})
+include_directories(include ${catkin_INCLUDE_DIRS}
+                    ${EIGEN_INCLUDE_DIR} ${GAZEBO_INCLUDE_DIRS})
 
 add_message_files(
   FILES
@@ -33,8 +34,13 @@ generate_messages(
   geometry_msgs
 )
 
+add_library(rlcommon
+  src/core.cc
+)
+
 catkin_package(
   INCLUDE_DIRS include
+  LIBRARIES rlcommon
   CATKIN_DEPENDS roscpp message_runtime std_msgs geometry_msgs
 )
 

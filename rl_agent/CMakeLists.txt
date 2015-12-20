@@ -7,9 +7,7 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf rl_common rl_policy)
+find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf rl_common)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(gazebo REQUIRED)
@@ -18,30 +16,29 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN_INCLUDE_DIR} ${GAZEBO
 
 catkin_package(
     INCLUDE_DIRS include
-    LIBRARIES agentlib
-    CATKIN_DEPENDS roscpp std_msgs tf rl_common rl_policy
+    LIBRARIES
+    CATKIN_DEPENDS roscpp std_msgs tf rl_common
     DEPENDS
-)
-
-add_library(agentlib
-  src/Agent/Pegasus.cc
 )
 
 add_executable(agent
   src/agent.cpp
+  # Agents
+  src/Agent/Pegasus.cc
+  # Policies
+  src/Policy/NeuralNetwork.cpp
 )
 
 target_link_libraries(agent
-  agentlib
+  rlcommon
   ${catkin_LIBRARIES}
   ${GAZEBO_LIBRARIES}
 )
 
 add_dependencies(agent rl_common_generate_messages_cpp)
-add_dependencies(agentlib rl_common_generate_messages_cpp)
 
 ## Mark executables and/or libraries for installation
-install(TARGETS agent agentlib
+install(TARGETS agent
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

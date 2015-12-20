@@ -1,5 +1,4 @@
-#include <rl_policy/NeuralNetwork.h>
-#include <rl_common/core.hh>
+#include <rl_agent/policy/NeuralNetwork.h>
 
 Neuron::Neuron(int n) {
     n_inputs = n;

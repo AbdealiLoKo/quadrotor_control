@@ -1,6 +1,4 @@
 #include <rl_agent/Pegasus.hh>
-#include <algorithm>
-#include <cfloat>
 
 Pegasus::Pegasus(int nstate, int naction):
 n_state(nstate),

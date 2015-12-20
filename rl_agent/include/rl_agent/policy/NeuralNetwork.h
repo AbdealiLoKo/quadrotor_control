@@ -3,7 +3,8 @@
 #include <math.h>
 #include <stdlib.h> 
 #include <time.h>
-#include "utils.cpp"
+#include <rl_agent/policy/utils.cpp>
+#include <rl_common/core.hh>
 
 class Neuron {
 public:
