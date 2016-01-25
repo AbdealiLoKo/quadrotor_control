@@ -77,8 +77,8 @@ const std::vector<float> &HectorQuad::sensation() {
   // Convert gazebo's state to internal representation
   s[0] = final.pose.position.z - current.pose.position.z;
   s[1] = current.twist.linear.z;
-  s[2] = final.pose.position.x - current.pose.position.x;
-  s[3] = current.twist.linear.x;
+  s[2] = final.pose.position.y - current.pose.position.y;
+  s[3] = current.twist.linear.y;
 
   // std::cout << s << "\n";
 
@@ -100,7 +100,7 @@ float HectorQuad::apply(std::vector<float> action) {
   // Send action
   geometry_msgs::Twist action_vel;
   action_vel.linear.z = action[0];
-  action_vel.linear.x = action[1];
+  action_vel.linear.y = action[1];
   cmd_vel.publish(action_vel);
   return reward();
 }
@@ -163,7 +163,7 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = 0 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
   final.pose.position.x = 0;
-  final.pose.position.y = 0;
+  final.pose.position.y = 5;
   final.pose.position.z = 5;
   final.pose.orientation.x = 0;
   final.pose.orientation.y = 0;

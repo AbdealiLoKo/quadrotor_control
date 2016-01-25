@@ -1,7 +1,13 @@
 #ifndef _RLCORE_H_
 #define _RLCORE_H_
 
+#include <cfloat>
+#include <algorithm>
+#include <fstream>
+#include <iterator>
 #include <vector>
+#include <map>
+#include <set>
 #include <iostream>
 #include <Eigen/Geometry>
 

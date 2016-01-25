@@ -1,13 +1,13 @@
 #ifndef _HECTORQUAD_H_
 #define _HECTORQUAD_H_
 
-#include <Eigen/Geometry>
 #include <rl_common/core.hh>
+
+#include <ros/ros.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
 #include <gazebo_msgs/ModelState.h>
 #include <gazebo_msgs/SetModelState.h>
-#include <ros/ros.h>
 #include <std_srvs/Empty.h>
 
 class HectorQuad: public Environment {

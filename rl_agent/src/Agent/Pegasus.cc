@@ -1,16 +1,16 @@
 #include <rl_agent/Pegasus.hh>
 
-Pegasus::Pegasus(int nstate, int naction):
-n_state(nstate),
-n_action(naction)
-{
+Pegasus::Pegasus() {
   n_action = 2;
   n_state = 4;
+  n_policy = 4;
+
   policy_stepsize = 0.0001;
   discount_factor = 0.90;
   policy_change = 0.01;
+  policy_file_name = "policy.txt";
 
-  max_parameter = init_policy(n_state, n_action);
+  init_policy();
 }
 
 std::vector<float> Pegasus::first_action(const std::vector<float> &s) {
@@ -43,11 +43,18 @@ void Pegasus::last_action(float r) {
 // simply modify the state using the random numbers
 
 // Returns No of weights that can be altered
-int Pegasus::init_policy(int n_state, int n_action) {
-  std::vector<float> v_init(n_state);
-  for (int i = 0; i < v_init.size(); i++) {
-    v_init[i] = 0.00;
+int Pegasus::init_policy() {
+  std::vector<float> v_init(n_policy, 0.0);
+
+  std::ifstream f(policy_file_name.c_str());
+  if ( f.good() && policy_file_name != "" ) {
+    std::istream_iterator<float> start(f), end;
+    std::vector<float> file_policy(start, end);
+    assert(file_policy.size() == n_policy); // Ensure that the vector is correct size
+    v_init = file_policy;
   }
+  f.close();
+
   policy = v_init;
   old_policy = policy;
   new_policy = policy;
@@ -57,7 +64,7 @@ int Pegasus::init_policy(int n_state, int n_action) {
   right_done = false;
   parameter = -1;
 
-  return policy.size();
+  std::cout << "Initialized policy = " << policy << "\n";
 }
 
 std::vector<float> Pegasus::get_action(const std::vector<float> &s) {
@@ -88,8 +95,7 @@ void Pegasus::update_policy() {
     right_value = policy_values[policy];
 
     std::cout << "Value = (" << left_value << ", " << right_value << ")\n"
-                << "for Policy = " << policy << "\n";
-
+              << "for Policy = " << policy << "\n";
 
     float gradient = (right_value - left_value);
     new_policy[parameter] = old_policy[parameter] + gradient * policy_stepsize;
@@ -103,7 +109,7 @@ void Pegasus::update_policy() {
     parameter++;
 
     // Finally processed for all the parameters
-    if(parameter == max_parameter) {
+    if ( parameter == n_policy ) {
       // Debug statements
       std::cout << "Switching policy -----------------------------------\n";
       std::cout << "Old policy " << old_policy << "\n"
@@ -115,19 +121,29 @@ void Pegasus::update_policy() {
       parameter = -1;
       policy = new_policy;
       old_policy = new_policy;
+
+      if ( policy_file_name != "" ) { // Save the current best policy to file
+        std::ofstream f(policy_file_name.c_str());
+        if ( f.good() ) {
+          std::ostream_iterator<float> output_iterator(f, " ");
+          std::copy(policy.begin(), policy.end(), output_iterator);
+        }
+        f.close();
+      }
+
     } else {
       // Next policy param ready to be updated
       policy[parameter] = old_policy[parameter] - policy_change;
     }
   }
-  // int count = 0;
-  // while ( policy_values.count(policy_values) != 0 ) {
-  //   // if policy is already done, skip it.
-  //   update_policy();
-  //   count ++;
-  //   if ( count >= max_parameter * 100 ) {
-  //     std::cout << "##### FINISHED (looped policies) #####\n";
-  //     exit(0);
-  //   }
-  // }
+  int count = 0;
+  while ( policy_values.count(policy) != 0 ) {
+    // if policy is already done, skip it.
+    update_policy();
+    count ++;
+    if ( count >= n_policy * 100 ) {
+      std::cout << "##### FINISHED (looped policies) #####\n";
+      exit(0);
+    }
+  }
 }

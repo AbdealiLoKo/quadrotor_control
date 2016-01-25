@@ -36,9 +36,7 @@ void init_agent() {
   if (agent_type == "pegasus"){
     std::cout << "Agent: Pegasus" << std::endl;
     // For now, we arent using these args. Theyre reset in the constructor
-    agent = new Pegasus(4, // Num state
-                        2 // Num action
-                        );
+    agent = new Pegasus();
   } else {
     std::cout << "Invalid Agent!" << std::endl;
     display_help();
