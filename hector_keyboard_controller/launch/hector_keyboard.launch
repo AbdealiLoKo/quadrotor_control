@@ -15,5 +15,6 @@
 
   </include>
 
-  <node name="controller" pkg="quadrotor_controller" type="keyboard.py" />
+  <node name="keyboard_controller" pkg="hector_keyboard_controller"
+    type="keyboard.py" required="true" />
 </launch>
