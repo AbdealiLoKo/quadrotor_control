@@ -9,6 +9,7 @@
 #include <gazebo_msgs/ModelState.h>
 #include <gazebo_msgs/SetModelState.h>
 #include <std_srvs/Empty.h>
+#include <tf/transform_datatypes.h>
 
 class HectorQuad: public Environment {
 public:
@@ -21,6 +22,7 @@ public:
   virtual void reset();
 
 protected:
+  int n_policy, n_state, n_action;
   int phy_steps;
   long long cur_step; // each step is 0.01 sec
 
@@ -35,7 +37,7 @@ protected:
   gazebo_msgs::ModelState initial, final, current;
 
   float reward();
-  void get_trajectory(long long steps = -1);
+  void get_trajectory(long long time_in_steps = -1);
 };
 
 #endif

@@ -6,9 +6,13 @@
 #include <controller_manager_msgs/ListControllers.h>
 #include <rl_env/HectorQuad.hh>
 
-HectorQuad::HectorQuad():
-s(6)
+HectorQuad::HectorQuad()
 {
+  n_action = 4;
+  n_state = 8;
+  n_policy = 8;
+
+  s.resize(n_state);
   phy_steps = 10;
   cur_step = 0;
 
@@ -79,6 +83,10 @@ const std::vector<float> &HectorQuad::sensation() {
   s[1] = current.twist.linear.z;
   s[2] = final.pose.position.y - current.pose.position.y;
   s[3] = current.twist.linear.y;
+  s[4] = final.pose.position.x - current.pose.position.x;
+  s[5] = current.twist.linear.x;
+  s[6] = tf::getYaw(final.pose.orientation) - tf::getYaw(current.pose.orientation);
+  s[7] = current.twist.angular.z;
 
   // std::cout << s << "\n";
 
@@ -98,18 +106,24 @@ float HectorQuad::apply(std::vector<float> action) {
   assert(list_msg.response.controller[0].state == "running");
 
   // Send action
+  assert(action.size() == n_action);
   geometry_msgs::Twist action_vel;
   action_vel.linear.z = action[0];
   action_vel.linear.y = action[1];
+  action_vel.linear.x = action[2];
+  action_vel.angular.z = action[3];
   cmd_vel.publish(action_vel);
   return reward();
 }
 
 float HectorQuad::reward() {
+  float curr_yaw = tf::getYaw(current.pose.orientation);
+  float final_yaw = tf::getYaw(final.pose.orientation);
   return (
     -fabs(final.pose.position.z - current.pose.position.z)
-    -fabs(final.pose.position.x - current.pose.position.x)
     -fabs(final.pose.position.y - current.pose.position.y)
+    -fabs(final.pose.position.x - current.pose.position.x)
+    -fabs(curr_yaw - final_yaw)
   );
 }
 
@@ -126,7 +140,7 @@ void HectorQuad::reset() {
     list_controllers.call(list_msg);
     cmd_vel.publish(action_vel);
 
-    usleep(1000);
+    usleep(50);
     if (list_msg.response.controller[0].state == "running")
       break;
   }
@@ -134,10 +148,7 @@ void HectorQuad::reset() {
   initial.pose.position.x = 0;
   initial.pose.position.y = 0;
   initial.pose.position.z = 0;
-  initial.pose.orientation.x = 0;
-  initial.pose.orientation.y = 0;
-  initial.pose.orientation.z = 0;
-  initial.pose.orientation.w = 1;
+  initial.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0, 0, 0);
 
   initial.twist.linear.x = 0;
   initial.twist.linear.y = 0;
@@ -159,16 +170,14 @@ void HectorQuad::reset() {
   assert(set_model_state.call(msg));
 }
 
-void HectorQuad::get_trajectory(long long time_in_steps /* = 0 */) {
+void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
-  final.pose.position.x = 0;
+  final.pose.position.x = 5;
   final.pose.position.y = 5;
   final.pose.position.z = 5;
-  final.pose.orientation.x = 0;
-  final.pose.orientation.y = 0;
-  final.pose.orientation.z = 0;
-  final.pose.orientation.w = 1;
+
+  final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0, 0, 0);
 
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;

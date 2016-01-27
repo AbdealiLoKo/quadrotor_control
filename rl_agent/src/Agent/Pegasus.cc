@@ -1,11 +1,11 @@
 #include <rl_agent/Pegasus.hh>
 
 Pegasus::Pegasus() {
-  n_action = 2;
-  n_state = 4;
-  n_policy = 4;
+  n_action = 4;
+  n_state = 8;
+  n_policy = 8;
 
-  policy_stepsize = 0.0001;
+  policy_stepsize = 0.001;
   discount_factor = 0.90;
   policy_change = 0.01;
   policy_file_name = "policy.txt";
@@ -68,9 +68,12 @@ int Pegasus::init_policy() {
 }
 
 std::vector<float> Pegasus::get_action(const std::vector<float> &s) {
+  assert(s.size() == n_state);
   std::vector<float> action(n_action);
   action[0] = policy[0] * s[0] + policy[1] * s[1];
   action[1] = policy[2] * s[2] + policy[3] * s[3];
+  action[2] = policy[4] * s[4] + policy[5] * s[5];
+  action[3] = policy[6] * s[6] + policy[7] * s[7];
   return action;
 }
 
