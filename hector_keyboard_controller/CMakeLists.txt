@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(hector_keyboard_controller)
 
-find_package(catkin REQUIRED COMPONENTS geometry_msgs gazebo_msgs rospy)
+find_package(catkin REQUIRED COMPONENTS geometry_msgs gazebo_msgs tf rospy)
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
 catkin_package(
-  CATKIN_DEPENDS rospy geometry_msgs gazebo_msgs
+  CATKIN_DEPENDS rospy geometry_msgs gazebo_msgs tf
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
