@@ -18,7 +18,8 @@ HectorQuad::HectorQuad()
   ros::NodeHandle node;
 
   // Publishers
-  cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
+  // cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
+  command_twist = node.advertise<geometry_msgs::TwistStamped>("/command/twist", 5);
   // motor_pwm = node.advertise<hector_uav_msgs::MotorPWM>("/motor_pwm", 5);
 
   // Services
@@ -94,19 +95,19 @@ bool HectorQuad::terminal() {
 
 float HectorQuad::apply(std::vector<float> action) {
   // The below assert is an "in case" - to check whether the controller
-  // is actually engaged before giving the cmd_vel.
+  // is actually engaged before giving the action.
   controller_manager_msgs::ListControllers list_msg;
   list_controllers.call(list_msg);
   assert(list_msg.response.controller[0].state == "running");
 
   // Send action
   assert(action.size() == n_action);
-  geometry_msgs::Twist action_vel;
-  action_vel.linear.z = action[0];
-  action_vel.linear.y = action[1];
-  action_vel.linear.x = action[2];
-  action_vel.angular.z = action[3];
-  cmd_vel.publish(action_vel);
+  geometry_msgs::TwistStamped action_vel;
+  action_vel.twist.linear.z = action[0];
+  action_vel.twist.linear.y = action[1];
+  action_vel.twist.linear.x = action[2];
+  action_vel.twist.angular.z = action[3];
+  command_twist.publish(action_vel);
   return reward();
 }
 
@@ -123,7 +124,7 @@ float HectorQuad::reward() {
 
 void HectorQuad::reset() {
   shutdown.call(empty_msg); // shutdown motors
-  geometry_msgs::Twist action_vel; // Set velocity to 0
+  geometry_msgs::TwistStamped action_vel; // Set velocity to 0
 
   // Keep checking the status of controller. When it goes into "running"
   // we can start getting actions from the agent.
@@ -132,7 +133,7 @@ void HectorQuad::reset() {
   while(1) {
     controller_manager_msgs::ListControllers list_msg;
     list_controllers.call(list_msg);
-    cmd_vel.publish(action_vel);
+    command_twist.publish(action_vel);
 
     usleep(50);
     if (list_msg.response.controller[0].state == "running")
@@ -167,9 +168,9 @@ void HectorQuad::reset() {
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
-  final.pose.position.x = 0;
-  final.pose.position.y = 0;
-  final.pose.position.z = 0;
+  final.pose.position.x = 5;
+  final.pose.position.y = 5;
+  final.pose.position.z = 5;
 
   final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
     0, 0, angles::from_degrees(180));

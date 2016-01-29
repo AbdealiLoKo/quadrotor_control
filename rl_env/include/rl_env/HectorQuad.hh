@@ -9,6 +9,7 @@
 // Messages
 #include <std_srvs/Empty.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/Pose.h>
 #include <gazebo_msgs/ModelState.h>
 #include <gazebo_msgs/SetModelState.h>
@@ -34,7 +35,7 @@ protected:
   long long cur_step; // each step is 0.01 sec
 
   // Publishers, subscribers and services
-  ros::Publisher cmd_vel, motor_pwm;
+  ros::Publisher cmd_vel, motor_pwm, command_twist;
   ros::ServiceClient reset_world, run_sim, pause_phy, engage, shutdown,
                      list_controllers, load_controller, set_model_state;
   std_srvs::Empty empty_msg;
