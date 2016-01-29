@@ -1,15 +1,22 @@
 #ifndef _HECTORQUAD_H_
 #define _HECTORQUAD_H_
 
+#include <unistd.h>
+#include <ros/ros.h>
+
 #include <rl_common/core.hh>
 
-#include <ros/ros.h>
+// Messages
+#include <std_srvs/Empty.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
 #include <gazebo_msgs/ModelState.h>
 #include <gazebo_msgs/SetModelState.h>
-#include <std_srvs/Empty.h>
-#include <tf/transform_datatypes.h>
+#include <controller_manager_msgs/LoadController.h>
+#include <controller_manager_msgs/ListControllers.h>
+#include <hector_uav_msgs/MotorPWM.h>
+// Services
+#include <rl_common/RLRunSim.h>
 
 class HectorQuad: public Environment {
 public:

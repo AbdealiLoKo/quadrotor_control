@@ -1,9 +1,3 @@
-#include <unistd.h>
-#include <geometry_msgs/Twist.h>
-#include <rl_common/RLRunSim.h>
-#include <hector_uav_msgs/MotorPWM.h>
-#include <controller_manager_msgs/LoadController.h>
-#include <controller_manager_msgs/ListControllers.h>
 #include <rl_env/HectorQuad.hh>
 
 HectorQuad::HectorQuad()
@@ -123,7 +117,7 @@ float HectorQuad::reward() {
     -fabs(final.pose.position.z - current.pose.position.z)
     -fabs(final.pose.position.y - current.pose.position.y)
     -fabs(final.pose.position.x - current.pose.position.x)
-    -fabs(curr_yaw - final_yaw)
+    -fabs(curr_yaw - final_yaw) * 10.0
   );
 }
 
@@ -173,11 +167,12 @@ void HectorQuad::reset() {
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
-  final.pose.position.x = 5;
-  final.pose.position.y = 5;
-  final.pose.position.z = 5;
+  final.pose.position.x = 0;
+  final.pose.position.y = 0;
+  final.pose.position.z = 0;
 
-  final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(0, 0, 0);
+  final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
+    0, 0, angles::from_degrees(180));
 
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;

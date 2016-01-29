@@ -8,7 +8,7 @@ else()
 endif()
 
 find_package(catkin REQUIRED COMPONENTS roscpp
-             std_msgs message_generation geometry_msgs)
+             std_msgs message_generation geometry_msgs angles tf)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(gazebo REQUIRED)
@@ -41,6 +41,6 @@ add_library(rlcommon
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES rlcommon
-  CATKIN_DEPENDS roscpp message_runtime std_msgs geometry_msgs
+  CATKIN_DEPENDS roscpp message_runtime std_msgs geometry_msgs angles tf
   DEPENDS Eigen gazebo
 )

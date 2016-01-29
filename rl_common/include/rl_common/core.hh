@@ -10,9 +10,15 @@
 #include <set>
 #include <iostream>
 #include <Eigen/Geometry>
+#include <tf/transform_datatypes.h>
+#include <angles/angles.h>
 
 #define NINF INT_MIN
 #define INF INT_MAX
+
+#ifndef M_PI
+#define M_PI 3.1415926535
+#endif
 
 std::ostream& operator<< (std::ostream&, const Eigen::Vector3d&);
 
