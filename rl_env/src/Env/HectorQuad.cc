@@ -15,6 +15,10 @@ HectorQuad::HectorQuad()
   final.model_name = "quadrotor";
   current.model_name = "quadrotor";
 
+  // initial.model_name = "";
+  // final.model_name = "";
+  // current.model_name = "";
+  
   ros::NodeHandle node;
 
   // Publishers
@@ -170,10 +174,10 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
 
   final.pose.position.x = 5;
   final.pose.position.y = 5;
-  final.pose.position.z = 5;
+  final.pose.position.z = 0;
 
   final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-    0, 0, angles::from_degrees(180));
+    0, 0, angles::from_degrees(0));
 
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;

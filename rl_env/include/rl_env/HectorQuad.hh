@@ -43,6 +43,7 @@ protected:
   // State and positions
   std::vector<float> s;
   gazebo_msgs::ModelState initial, final, current;
+  gazebo_msgs::ModelState payload_initial, payload_final, payload_current;
 
   float reward();
   void get_trajectory(long long time_in_steps = -1);

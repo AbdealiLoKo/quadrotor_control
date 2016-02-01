@@ -30,6 +30,36 @@
     </collision>
   </link>
 
+  <link name="payload">
+    <visual>
+      <origin xyz="0 0 -1" rpy="0 0 0" />
+
+      <geometry>
+        <sphere radius="0.2"/>
+      </geometry>
+      <material name="blue">
+        <color rgba="0 0 .8 1"/>
+      </material>
+    </visual>
+ 
+    <inertial>
+      <mass value="1" />
+      <origin xyz="0 0 -1" />
+      <inertia ixx="1" iyy="1" izz="1" ixy="0" iyz="0" ixz="0" />
+    </inertial>
+
+    <collision>
+      <origin xyz="0 0 -1" rpy="0 0 0" />
+      <geometry>
+        <sphere radius="0.2"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="payload_connector" type="fixed">
+    <parent link="base_link"/>
+    <child link="payload"/>
+  </joint>
   <!-- Sonar height sensor -->
   <!-- <xacro:sonar_sensor name="sonar" parent="base_link" ros_topic="sonar_height" update_rate="10" min_range="0.03" max_range="3.0" field_of_view="${40*pi/180}" ray_count="3">
     <origin xyz="-0.16 0.0 -0.012" rpy="0 ${90*pi/180} 0"/>
