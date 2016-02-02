@@ -11,13 +11,9 @@ HectorQuad::HectorQuad()
   cur_step = 0;
 
   // Set name of model
-  initial.model_name = "quadrotor";
-  final.model_name = "quadrotor";
-  current.model_name = "quadrotor";
-
-  // initial.model_name = "";
-  // final.model_name = "";
-  // current.model_name = "";
+  initial.link_name = "base_link";
+  final.link_name = "base_link";
+  current.link_name = "base_link";
   
   ros::NodeHandle node;
 
@@ -33,9 +29,9 @@ HectorQuad::HectorQuad()
   run_sim = node.serviceClient<rl_common::RLRunSim>("/rl_env/run_sim");
   ros::service::waitForService("/gazebo/pause_physics", -1);
   pause_phy = node.serviceClient<std_srvs::Empty>("/gazebo/pause_physics");
-  ros::service::waitForService("/gazebo/set_model_state", -1);
-  set_model_state =
-    node.serviceClient<gazebo_msgs::SetModelState>("/gazebo/set_model_state");
+  ros::service::waitForService("/gazebo/set_link_state", -1);
+  set_link_state =
+    node.serviceClient<gazebo_msgs::SetLinkState>("/gazebo/set_link_state");
 
   // Load the controller needed. If this it done in launch file, it doesnt
   // start on time. So, it needs to be done in sync.
@@ -164,9 +160,9 @@ void HectorQuad::reset() {
   cur_step = 0;
 
   // set initial position programmatically
-  gazebo_msgs::SetModelState msg;
-  msg.request.model_state = initial;
-  assert(set_model_state.call(msg));
+  gazebo_msgs::SetLinkState msg;
+  msg.request.link_state = initial;
+  assert(set_link_state.call(msg));
 }
 
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {

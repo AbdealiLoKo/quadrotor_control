@@ -11,8 +11,8 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/Pose.h>
-#include <gazebo_msgs/ModelState.h>
-#include <gazebo_msgs/SetModelState.h>
+#include <gazebo_msgs/LinkState.h>
+#include <gazebo_msgs/SetLinkState.h>
 #include <controller_manager_msgs/LoadController.h>
 #include <controller_manager_msgs/ListControllers.h>
 #include <hector_uav_msgs/MotorPWM.h>
@@ -37,13 +37,13 @@ protected:
   // Publishers, subscribers and services
   ros::Publisher cmd_vel, motor_pwm, command_twist;
   ros::ServiceClient reset_world, run_sim, pause_phy, engage, shutdown,
-                     list_controllers, load_controller, set_model_state;
+                     list_controllers, load_controller, set_model_state,
+                     set_link_state;
   std_srvs::Empty empty_msg;
 
   // State and positions
   std::vector<float> s;
-  gazebo_msgs::ModelState initial, final, current;
-  gazebo_msgs::ModelState payload_initial, payload_final, payload_current;
+  gazebo_msgs::LinkState initial, final, current;
 
   float reward();
   void get_trajectory(long long time_in_steps = -1);
