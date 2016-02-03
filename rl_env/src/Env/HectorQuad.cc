@@ -89,7 +89,7 @@ const std::vector<float> &HectorQuad::sensation() {
 }
 
 bool HectorQuad::terminal() {
-  if (cur_step > 10000) return true;
+  if (cur_step > 20000) return true;
   return false;
 }
 
@@ -112,12 +112,22 @@ float HectorQuad::apply(std::vector<float> action) {
 }
 
 float HectorQuad::reward() {
-  float curr_yaw = tf::getYaw(current.pose.orientation);
-  float final_yaw = tf::getYaw(final.pose.orientation);
+  tf::Quaternion curr_quat;
+  double curr_roll, curr_pitch, curr_yaw;
+  tf::quaternionMsgToTF(current.pose.orientation, curr_quat);
+  tf::Matrix3x3(curr_quat).getRPY(curr_roll, curr_pitch, curr_yaw);
+
+  tf::Quaternion final_quat;
+  double final_roll, final_pitch, final_yaw;
+  tf::quaternionMsgToTF(final.pose.orientation, final_quat);
+  tf::Matrix3x3(final_quat).getRPY(final_roll, final_pitch, final_yaw);
+
   return (
     -fabs(final.pose.position.z - current.pose.position.z)
     -fabs(final.pose.position.y - current.pose.position.y)
     -fabs(final.pose.position.x - current.pose.position.x)
+    -fabs(final_roll - final_roll) * 10.0
+    -fabs(final_pitch - final_pitch) * 10.0
     -fabs(curr_yaw - final_yaw) * 10.0
   );
 }
@@ -168,12 +178,16 @@ void HectorQuad::reset() {
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
-  final.pose.position.x = 5;
-  final.pose.position.y = 5;
+  final.pose.position.x = 0;
+  final.pose.position.y = 0;
   final.pose.position.z = 5;
-
-  final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-    0, 0, angles::from_degrees(180));
+  if ( time_in_steps < 5000 ) {
+    final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
+      0, 0, angles::from_degrees(0));
+  } else {
+    final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
+      0, angles::from_degrees(30), 0);
+  }
 
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;
