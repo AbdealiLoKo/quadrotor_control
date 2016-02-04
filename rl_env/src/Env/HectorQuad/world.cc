@@ -27,6 +27,11 @@ namespace gazebo {
       world_ptr->StepWorld(step_count);
 
       physics::ModelPtr model_ptr = world_ptr->GetModel("quadrotor");
+      physics::LinkPtr base_link_ptr = model_ptr->GetLink("base_link");
+      physics::LinkPtr payload_ptr = model_ptr->GetLink("payload");
+      // std::cout << "Pose: " << payload_ptr->GetWorldPose().pos.x << ","
+      //                       << payload_ptr->GetWorldPose().pos.y << ","
+      //                       << payload_ptr->GetWorldPose().pos.z << "\n";
       if ( model_ptr == NULL ) {
         res.success = false;
         return true;

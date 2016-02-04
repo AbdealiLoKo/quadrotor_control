@@ -41,7 +41,7 @@
         <color rgba="0 0 .8 1"/>
       </material>
     </visual>
- 
+
     <inertial>
       <mass value="1" />
       <origin xyz="0 0 -1" />
@@ -56,9 +56,11 @@
     </collision>
   </link>
 
-  <joint name="payload_connector" type="fixed">
+  <joint name="payload_connector" type="floating">
     <parent link="base_link"/>
     <child link="payload"/>
+    <origin xyz="0 0 0" />
+    <limit lower="-0.01" upper="0.01" velocity="0.01" effort="1000" />
   </joint>
   <!-- Sonar height sensor -->
   <!-- <xacro:sonar_sensor name="sonar" parent="base_link" ros_topic="sonar_height" update_rate="10" min_range="0.03" max_range="3.0" field_of_view="${40*pi/180}" ray_count="3">

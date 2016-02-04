@@ -6,7 +6,7 @@
   <!-- Use this argument to set which world file to open -->
   <arg name="world" value="$(find rl_env)/src/Env/HectorQuad/quad.world"/>
   <!-- Use this argument to decide whether gui should be enabled or not -->
-  <arg name="gazebo_gui" value="false" />
+  <arg name="gazebo_gui" default="false" />
   <!-- Extra args to gazebo -->
   <arg name="args" value="" />
 
