@@ -32,7 +32,8 @@ namespace gazebo {
       // std::cout << "Pose: " << payload_ptr->GetWorldPose().pos.x << ","
       //                       << payload_ptr->GetWorldPose().pos.y << ","
       //                       << payload_ptr->GetWorldPose().pos.z << "\n";
-      if ( model_ptr == NULL ) {
+      // Use the payload's position and orientation
+      if ( payload_ptr == NULL ) {
         res.success = false;
         return true;
       } else {
@@ -44,7 +45,7 @@ namespace gazebo {
         res.sim_time.nsec = sim_time.nsec;
 
         // Set pose
-        math::Pose pose = model_ptr->GetWorldPose();
+        math::Pose pose = payload_ptr->GetWorldPose();
         res.pose.position.x = pose.pos.x;
         res.pose.position.y = pose.pos.y;
         res.pose.position.z = pose.pos.z;
@@ -54,11 +55,11 @@ namespace gazebo {
         res.pose.orientation.w = pose.rot.w;
 
         // Set twist
-        math::Vector3 lin_vel = model_ptr->GetWorldLinearVel();
+        math::Vector3 lin_vel = payload_ptr->GetWorldLinearVel();
         res.twist.linear.x = lin_vel.x;
         res.twist.linear.y = lin_vel.y;
         res.twist.linear.z = lin_vel.z;
-        math::Vector3 ang_vel = model_ptr->GetWorldAngularVel();
+        math::Vector3 ang_vel = payload_ptr->GetWorldAngularVel();
         res.twist.angular.x = ang_vel.x;
         res.twist.angular.y = ang_vel.y;
         res.twist.angular.z = ang_vel.z;

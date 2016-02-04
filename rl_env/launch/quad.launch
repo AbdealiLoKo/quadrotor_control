@@ -26,12 +26,15 @@
   <arg name="model" default="$(find rl_env)/src/Env/HectorQuad/quad.gazebo.xacro"/>
   <arg name="tf_prefix" default="$(optenv ROS_NAMESPACE)"/>
   <arg name="base_link_frame" default="$(arg tf_prefix)/base_link"/>
+  <node pkg="tf2" type="static_transform_publisher" name="link1_broadcaster" args="1 0 0 0 0 0 1 /world /map 100" />
   <arg name="world_frame" default="world"/> <!-- This should actually be "/world". See https://github.com/ros-simulation/gazebo_ros_pkgs/pull/324 -->
   <arg name="x" default="0.0"/>
   <arg name="y" default="0.0"/>
   <arg name="z" default="0.0"/>
 
   <arg name="use_ground_truth_for_tf" default="true" />
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" ></node>
 
   <!-- send the robot XML to param server -->
   <param name="robot_description" command="$(find xacro)/xacro '$(arg model)' base_link_frame:=$(arg base_link_frame) world_frame:=$(arg world_frame)" />

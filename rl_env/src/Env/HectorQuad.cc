@@ -86,9 +86,7 @@ const std::vector<float> &HectorQuad::sensation() {
   s[5] = current.twist.linear.x;
   s[6] = tf::getYaw(final.pose.orientation) - tf::getYaw(current.pose.orientation);
   s[7] = current.twist.angular.z;
-
-  // std::cout << s << "\n";
-
+  // std::cout << s << std::endl;
   return s;
 }
 
@@ -174,10 +172,10 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
 
   final.pose.position.x = 5;
   final.pose.position.y = 5;
-  final.pose.position.z = 0;
+  final.pose.position.z = 5;
 
   final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-    0, 0, angles::from_degrees(0));
+    0, 0, angles::from_degrees(180));
 
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;
