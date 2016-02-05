@@ -147,7 +147,7 @@ class KeyboardController:
 
         old_draw_y = self._draw_y
         self._draw_x = width * 5 / 8
-        roll, pitch, yaw = tf.transformations.euler_from_quaternion(
+        yaw, pitch, roll  = tf.transformations.euler_from_quaternion(
             self.msg_to_quaternion(self.quad_pose.orientation))
         self._draw_text("R : %.3f" % math.degrees(roll))
         self._draw_text("P : %.3f" % math.degrees(pitch))
