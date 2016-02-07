@@ -116,11 +116,27 @@ float HectorQuad::apply(std::vector<float> action) {
 float HectorQuad::reward() {
   float curr_yaw = tf::getYaw(current.pose.orientation);
   float final_yaw = tf::getYaw(final.pose.orientation);
+
+  tf::Quaternion orientation = tf::Quaternion(
+    current.pose.orientation.x,
+    current.pose.orientation.y,
+    current.pose.orientation.z,
+    current.pose.orientation.w
+  );
+
+  tf::Matrix3x3 mat = tf::Matrix3x3(orientation);
+  tfScalar yaw, pitch, roll;
+  mat.getEulerYPR(yaw, pitch, roll);
+  std::cout << angles::to_degrees(yaw) << " "
+            << angles::to_degrees(pitch) << " "
+            << angles::to_degrees(roll) << " " << std::endl;
   return (
     -fabs(final.pose.position.z - current.pose.position.z)
     -fabs(final.pose.position.y - current.pose.position.y)
     -fabs(final.pose.position.x - current.pose.position.x)
     -fabs(curr_yaw - final_yaw) * 10.0
+    // -fabs(pitch) * 10.0
+    // -fabs(roll) * 10.0
   );
 }
 
@@ -175,7 +191,7 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   final.pose.position.z = 5;
 
   final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-    0, 0, angles::from_degrees(180));
+    0, 0, angles::from_degrees(10));
 
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;
