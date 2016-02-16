@@ -64,6 +64,13 @@ HectorQuad::HectorQuad()
   shutdown = node.serviceClient<std_srvs::Empty>("/shutdown");
 
   reset();
+  for ( double i = 0; i < 4; i+=0.1 ) {
+    double r=0, p=0, y=i, ny;
+    tf::Matrix3x3 m = tf::Matrix3x3();
+    m.setRPY(r, p, y);
+    m.getRPY(r, p, ny);
+    std::cout << y << "  -  " << ny << "\n";
+  }
 }
 
 const std::vector<float> &HectorQuad::sensation() {
@@ -91,7 +98,7 @@ const std::vector<float> &HectorQuad::sensation() {
 }
 
 bool HectorQuad::terminal() {
-  if (cur_step > 10000) return true;
+  if (cur_step > 10000000) return true;
   return false;
 }
 
@@ -114,26 +121,24 @@ float HectorQuad::apply(std::vector<float> action) {
 }
 
 float HectorQuad::reward() {
-  float curr_yaw = tf::getYaw(current.pose.orientation);
-  float final_yaw = tf::getYaw(final.pose.orientation);
+  tf::Quaternion curr_quat;
+  double curr_roll, curr_pitch, curr_yaw;
+  tf::quaternionMsgToTF(current.pose.orientation, curr_quat);
+  tf::Matrix3x3(curr_quat).getRPY(curr_roll, curr_pitch, curr_yaw);
 
-  tf::Quaternion orientation = tf::Quaternion(
-    current.pose.orientation.x,
-    current.pose.orientation.y,
-    current.pose.orientation.z,
-    current.pose.orientation.w
-  );
+  tf::Quaternion final_quat;
+  double final_roll, final_pitch, final_yaw;
+  tf::quaternionMsgToTF(final.pose.orientation, final_quat);
+  tf::Matrix3x3(final_quat).getRPY(final_roll, final_pitch, final_yaw);
 
-  tf::Matrix3x3 mat = tf::Matrix3x3(orientation);
-  tfScalar yaw, pitch, roll;
-  mat.getEulerYPR(yaw, pitch, roll);
-  std::cout << angles::to_degrees(yaw) << " "
-            << angles::to_degrees(pitch) << " "
-            << angles::to_degrees(roll) << " " << std::endl;
+  // std::cout << "Yaw : " << curr_yaw << " - " << final_yaw << "\n";
+
   return (
     -fabs(final.pose.position.z - current.pose.position.z)
     -fabs(final.pose.position.y - current.pose.position.y)
     -fabs(final.pose.position.x - current.pose.position.x)
+    // -fabs(final_roll - final_roll) * 10.0
+    // -fabs(final_pitch - final_pitch) * 10.0
     -fabs(curr_yaw - final_yaw) * 10.0
     // -fabs(pitch) * 10.0
     // -fabs(roll) * 10.0
@@ -186,12 +191,17 @@ void HectorQuad::reset() {
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
-  final.pose.position.x = 5;
-  final.pose.position.y = 5;
+  final.pose.position.x = 0;
+  final.pose.position.y = 0;
   final.pose.position.z = 5;
-
   final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
     0, 0, angles::from_degrees(10));
+  if ( time_in_steps < 5000 ) {
+  } else {
+    final.pose.position.x = 5 * sin(0.0001 * (time_in_steps - 5000));
+    final.pose.position.y = 5 * cos(0.0001 * (time_in_steps - 5000));
+    final.pose.position.z = 5;
+  }
 
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;

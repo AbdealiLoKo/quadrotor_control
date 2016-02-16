@@ -24,7 +24,7 @@ std::vector<float> Pegasus::next_action(float r, const std::vector<float> &s) {
   std::vector<float> action = get_action(s);
   // std::cout << action[0] << " " << value << " " << r << "\n";
   return action;
- }
+}
 
 void Pegasus::last_action(float r) {
   value = discount_factor * value + r;
