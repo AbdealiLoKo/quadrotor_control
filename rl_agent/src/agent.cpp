@@ -11,12 +11,11 @@
 // Agents
 #include <rl_agent/Pegasus.hh>
 
-
 static ros::Publisher out_rl_action;
 static ros::Publisher out_exp_info;
 
 
-const int MAX_STEPS = 10000000;
+const int MAX_STEPS = 10000;
 Agent* agent = NULL;
 int seed = 1;
 

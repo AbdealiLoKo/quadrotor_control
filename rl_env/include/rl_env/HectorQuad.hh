@@ -2,7 +2,10 @@
 #define _HECTORQUAD_H_
 
 #include <unistd.h>
+#include <utility>
 #include <ros/ros.h>
+#include <iostream>
+#include <fstream>
 
 #include <rl_common/core.hh>
 
@@ -18,6 +21,11 @@
 #include <hector_uav_msgs/MotorPWM.h>
 // Services
 #include <rl_common/RLRunSim.h>
+
+#define SIMPLE_WAYPOINTS 0 
+#define PURE_PURSUIT 1
+#define ALGORITHM PURE_PURSUIT
+#define NOTRAIN_PEGASUS true
 
 class HectorQuad: public Environment {
 public:
@@ -44,9 +52,16 @@ protected:
   std::vector<float> s;
   gazebo_msgs::ModelState initial, final, current;
   gazebo_msgs::ModelState payload_initial, payload_final, payload_current;
+  geometry_msgs::Twist prev_vel;
+
+  // Waypoints
+  std::vector<std::pair<float, float> > waypoints;
+  int curr;
 
   float reward();
   void get_trajectory(long long time_in_steps = -1);
+  int form_waypoints(int k);
+  int pure_pursuit(int k);
 };
 
 #endif

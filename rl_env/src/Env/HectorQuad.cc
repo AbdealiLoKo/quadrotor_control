@@ -64,16 +64,19 @@ HectorQuad::HectorQuad()
   shutdown = node.serviceClient<std_srvs::Empty>("/shutdown");
 
   reset();
-  for ( double i = 0; i < 4; i+=0.1 ) {
-    double r=0, p=0, y=i, ny;
-    tf::Matrix3x3 m = tf::Matrix3x3();
-    m.setRPY(r, p, y);
-    m.getRPY(r, p, ny);
-    std::cout << y << "  -  " << ny << "\n";
+
+  std::vector<std::pair<float, float> > wps;
+  for(int i=0; i<1000; ++i) {
+    std::pair<float, float> p = std::make_pair(5 * sin(i/50.0), 5 * cos(i/50.0));
+    // std::pair<float, float> p = std::make_pair(i/20.0, cos(i/20.0));
+    wps.push_back(p);
   }
+  waypoints = wps;
 }
 
 const std::vector<float> &HectorQuad::sensation() {
+  prev_vel = current.twist;
+
   // Get state from gazebo and save to "current" state
   rl_common::RLRunSim msg;
   msg.request.steps = phy_steps;
@@ -81,7 +84,6 @@ const std::vector<float> &HectorQuad::sensation() {
   run_sim.call(msg);
   current.pose = msg.response.pose;
   current.twist = msg.response.twist;
-
   get_trajectory();
 
   // Convert gazebo's state to internal representation
@@ -94,11 +96,27 @@ const std::vector<float> &HectorQuad::sensation() {
   s[6] = tf::getYaw(final.pose.orientation) - tf::getYaw(current.pose.orientation);
   s[7] = current.twist.angular.z;
   // std::cout << s << std::endl;
+  // std::cout << current.twist.linear.x - prev_vel.linear.x << " "
+  //           << current.twist.linear.y - prev_vel.linear.y << " "
+  //           << current.twist.linear.z - prev_vel.linear.z << "\n";
+
+  // Save the linear acceleration in a file for analysis
+  float total_acc = (current.twist.linear.x - prev_vel.linear.x) * (current.twist.linear.x - prev_vel.linear.x) 
+              + (current.twist.linear.y - prev_vel.linear.y) * (current.twist.linear.y - prev_vel.linear.y);
+  std::ofstream myfile;
+  myfile.open ("acceleration.txt", std::ios::app);
+  myfile << total_acc << "\n";
+  myfile.close();
+
   return s;
 }
 
 bool HectorQuad::terminal() {
-  if (cur_step > 10000000) return true;
+  #ifdef NOTRAIN_PEGASUS
+    return false;
+  #endif
+
+  if (cur_step > 10000) return true;
   return false;
 }
 
@@ -132,13 +150,13 @@ float HectorQuad::reward() {
   tf::Matrix3x3(final_quat).getRPY(final_roll, final_pitch, final_yaw);
 
   // std::cout << "Yaw : " << curr_yaw << " - " << final_yaw << "\n";
-
+  // std::cout<< final.pose.position.x << " " << current.pose.position.x << "\n";
   return (
     -fabs(final.pose.position.z - current.pose.position.z)
     -fabs(final.pose.position.y - current.pose.position.y)
     -fabs(final.pose.position.x - current.pose.position.x)
-    // -fabs(final_roll - final_roll) * 10.0
-    // -fabs(final_pitch - final_pitch) * 10.0
+    -fabs(final_roll - final_roll) * 10.0
+    -fabs(final_pitch - final_pitch) * 10.0
     -fabs(curr_yaw - final_yaw) * 10.0
     // -fabs(pitch) * 10.0
     // -fabs(roll) * 10.0
@@ -186,21 +204,97 @@ void HectorQuad::reset() {
   gazebo_msgs::SetModelState msg;
   msg.request.model_state = initial;
   assert(set_model_state.call(msg));
+
+  curr = 1;
+}
+
+int HectorQuad::pure_pursuit(int wp) {
+  /*
+   * Implement PurePursuit tracking
+   * Always lock on to a target at a distance LOOKAHEAD
+   * from the current position
+  */
+  float x1, y1;
+  float x = current.pose.position.x;
+  float y = current.pose.position.y;
+  float theta;
+  float LOOKAHEAD = 5;
+
+  float checkpoint_x;
+  float checkpoint_y;
+  int i = 0;
+
+  // Check which waypoint to use for following pursuit
+  // based on the current position of the point and LOOKAHEAD
+  while( sqrt( ( y - waypoints[wp+i].second ) * ( y - waypoints[wp+i].second )
+      + ( x - waypoints[wp+i].first ) * ( x - waypoints[wp+i].first ) ) < LOOKAHEAD ) {
+    i += 1;
+    // Check for overflow
+    assert(i<waypoints.size());
+  }
+
+  x1 = waypoints[wp+i].first;
+  y1 = waypoints[wp+i].second;
+  theta = atan(abs((y1-y)/(x1-x)));
+  
+  // Find the correct angle
+  if (y1-y < 0 && x1-x<0)
+    theta += 3.14;
+  else if (y1-y<0)
+    theta = -theta;
+  else if (x1-x<0)
+    theta = 3.14-theta;
+
+  // Add the lookahead based checkpoint(Linear interpolation)
+  checkpoint_x = x + LOOKAHEAD * cos(theta);
+  checkpoint_y = y + LOOKAHEAD * sin(theta);
+
+  final.pose.position.x = checkpoint_x;
+  final.pose.position.y = checkpoint_y;
+  return wp + i;
+ }
+
+int HectorQuad::form_waypoints(int wp) {
+  /*
+   * Checks whether a certain waypoint's plane has been crossed
+   * as coming from the previous waypoint
+  */
+  final.pose.position.x = waypoints[wp].first;
+  final.pose.position.y = waypoints[wp].second;
+
+  float d1 = waypoints[wp].first-waypoints[wp-1].first;
+  float d2 = waypoints[wp].second-waypoints[wp-1].second;
+  float slope = -d1/d2;
+  float c = waypoints[wp].second-slope*waypoints[wp].first;
+
+  float p = (waypoints[wp-1].second-slope*waypoints[wp-1].first-c)
+            *(current.pose.position.y-slope*current.pose.position.x-c);
+
+  if ( p < 0 ) {
+    return wp;
+  }
+
+  final.pose.position.x = waypoints[wp+1].first;
+  final.pose.position.y =  waypoints[wp+1].second;
+  return wp + 1;
 }
 
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
   final.pose.position.x = 0;
-  final.pose.position.y = 0;
+  final.pose.position.y = 5;
   final.pose.position.z = 5;
   final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-    0, 0, angles::from_degrees(10));
-  if ( time_in_steps < 5000 ) {
-  } else {
-    final.pose.position.x = 5 * sin(0.0001 * (time_in_steps - 5000));
-    final.pose.position.y = 5 * cos(0.0001 * (time_in_steps - 5000));
-    final.pose.position.z = 5;
+    0, 0, angles::from_degrees(60));
+
+  if ( time_in_steps < 1000 ) {
+  } else if (curr <= 1000) {
+    #if ( ALGORITHM == SIMPLE_WAYPOINTS )
+      curr = form_waypoints(curr);
+    #elif ( ALGORITHM == PURE_PURSUIT )
+      curr = pure_pursuit(curr);
+    #endif
   }
 
   final.twist.linear.x = 0;

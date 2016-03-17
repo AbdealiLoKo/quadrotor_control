@@ -63,7 +63,6 @@ namespace gazebo {
         res.twist.angular.x = ang_vel.x;
         res.twist.angular.y = ang_vel.y;
         res.twist.angular.z = ang_vel.z;
-
         // std::cout << "Time : " << sim_time.sec << "." << sim_time.nsec
         //           << "\t\tPos : " << pose.pos.z << "\n";
 
