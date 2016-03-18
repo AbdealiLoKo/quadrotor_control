@@ -101,8 +101,10 @@ const std::vector<float> &HectorQuad::sensation() {
   //           << current.twist.linear.z - prev_vel.linear.z << "\n";
 
   // Save the linear acceleration in a file for analysis
-  float total_acc = (current.twist.linear.x - prev_vel.linear.x) * (current.twist.linear.x - prev_vel.linear.x) 
-              + (current.twist.linear.y - prev_vel.linear.y) * (current.twist.linear.y - prev_vel.linear.y);
+  float total_acc = sqrt(current.twist.linear.x * current.twist.linear.x
+    + current.twist.linear.y * current.twist.linear.y) -
+  sqrt(prev_vel.linear.x * prev_vel.linear.x
+    + prev_vel.linear.y * prev_vel.linear.y);
   std::ofstream myfile;
   myfile.open ("acceleration.txt", std::ios::app);
   myfile << total_acc << "\n";
@@ -218,7 +220,7 @@ int HectorQuad::pure_pursuit(int wp) {
   float x = current.pose.position.x;
   float y = current.pose.position.y;
   float theta;
-  float LOOKAHEAD = 5;
+  float LOOKAHEAD = 1;
 
   float checkpoint_x;
   float checkpoint_y;

@@ -24,7 +24,7 @@
 
 #define SIMPLE_WAYPOINTS 0 
 #define PURE_PURSUIT 1
-#define ALGORITHM PURE_PURSUIT
+#define ALGORITHM 0
 #define NOTRAIN_PEGASUS true
 
 class HectorQuad: public Environment {
