@@ -105,6 +105,7 @@
 \RequirePackage[square,numbers]{natbib}
 %\RequirePackage[numbers,square]{natbib}
 %\bibliographystyle{iitm}
+\bibliographystyle{plain}
 
 %\newcommand{\bibstyle@iitm}{\bibpunct{(}{)}{;}{a}{,}{,}%
 %     \gdef\NAT@biblabel##1{##1. }}
