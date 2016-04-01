@@ -102,15 +102,15 @@
 %
 % natbib allows easy switching of citation style and using it along
 % with the iitm.bst makes things perfect.
-\RequirePackage[authoryear,round]{natbib}
+\RequirePackage[square,numbers]{natbib}
 %\RequirePackage[numbers,square]{natbib}
-\bibliographystyle{iitm}
+%\bibliographystyle{iitm}
 
-\newcommand{\bibstyle@iitm}{\bibpunct{(}{)}{;}{a}{,}{,}%
-     \gdef\NAT@biblabel##1{##1. }}
+%\newcommand{\bibstyle@iitm}{\bibpunct{(}{)}{;}{a}{,}{,}%
+%     \gdef\NAT@biblabel##1{##1. }}
 %
-\setlength{\bibhang}{0pt}
-\citestyle{iitm}
+%\setlength{\bibhang}{0pt}
+%\citestyle{iitm}
 %\citestyle{unsrt_newen}
 
 
