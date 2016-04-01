@@ -136,6 +136,270 @@ We would like to thank the Indian Institute of Technology, Madras for giving us 
 \pagenumbering{arabic}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Introduction.
+
+\chapter{Introduction}
+
+\section{Motivation}
+
+In robotics, there are many cases where the problem to solve is not known, is stochastic, has non-linear dynamics and has a large number of actions and states. In such cases, traditional control methods which require complete knowledge of the system may be difficult to model. Reinforcement learning is a method by which the robot does not need much knowledge about the environment, and can be used in such cases.
+
+Quad-rotors (or drones) are becoming common with commercial quad-rotors available in the market and are popular among hobbyists. Most commercial quad-rotors are not certified to be operated outside line of sight, let alone autonomously. The major issue for this is the unexpected noise from the environment which cannot be controlled in a real life environment. There has been a lot of research in this domain, and autonomous control of quad-rotors is becoming a reality.
+
+One of the major use cases for an autonomous quad-rotor is to carry payloads from one place to another. This could be used for something as simple as delivery or for reconnaissance. The payloads adds a new complexity and constraints to the earlier system. For example, a payload shouldn't hit obstacles on the course. And if the payload is attached using a non-rigid joint to the quad-rotor, the dynamics become even more complicated.
+
+As a reinforcement problem, this brings up further questions. In the original scenario, it was already difficult to define the reward as a "good flight" is not clearly defined. Now, we want to define a "good flight for the payload" also.
+
+\todo{Add picture of quadrotor and quadrotor with payload}
+
+\section{Outline}
+
+It is difficult to work with quad-rotors without good simulators. In reinforcement learning, where the quad-rotor learns the bad states and good states, collisions, flips, and unstable states are unavoidable. A real quad-rotor would break within a few trials of this learning procedure.
+
+Hence, the first step is to set-up a simulated environment where the quad-rotor can learn. Ideally, the simulated quad-rotor is as close to real as possible so that the learning can be directly transferred. We used the gazebo simulator with ROS to emulate this. This enables us to perform simulate wind, turbulence, motors, and even joints.
+
+Next, we need an algorithm which would be suitable for our specific use case. Here, we chose to use PEGASUS - a policy search method. It is capable of handling the stochastic nature of the environment and the continuous action and state space well. It has already been used to control helicopters and perform stunts with them.
+
+We initially use PEGASUS on the quad-rotor without any payload. This is a sanity check to ensure that PEGASUS can indeed handle the system. Then, we add the payload and learn a policy that can control the payload directly.
+
+\section{The Reinforcement Learning Problem}
+
+\section{Markov Decision Process}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Literature Review}
+
+\section{Reinforcement learning in control}
+
+There has been a lot of work done about control. The review[\citenum{ControlForQuads}] by Andrew Zulu and Samuel John gives an overview of techniques that have been formulated. It speaks of techniques that merge control theory and machine learning. For example, fuzzy logic, neural network based controls, and genetic algorithms. Fuzzy logic based controls to fuzzify control theory algorithms are frequently used. For example, Fuzzy logic to identify the constants required in PID and LQR were researched by E. Abbasi and J. Mahjoob.
+
+Reinforcement learning has been applied to control problems frequently. Reinforcement learning has been successful in all sorts of applications like marketing strategy selection and advertisement targeting, cell-phone network routing and multiplexing, bipedal to octapedal locomotion, and efficient web-page indexing.
+
+Value iteration and Policy iteration are the core concepts of control using reinforcement learning. In value iteration, the value function is updated in every iteration trying to update the estimated value using the Bellman equations. It can be shown that the values converge to the actual value of the state over time. Having found the value function of the system, we can create a policy. In policy iteration, the value function of the current policy is computed and then the policy is updated using the current value function.
+
+Policy search emerged as an alternative method to policy iterations or value iterations, which did not need to calculate the value function at all. This involved creating a set of policies that the objective can be achieved by and searching in this set for the optimal policy. Although it seems to be a difficult task which borders of brute force, techniques have been formulated to smartly converge to the optimal policy quickly.
+
+Policy search methods became popular due to the fact that the value function was not directly involved in the computation, and variations that use model free policy search and model based policy search were created. Model free methods include techniques like Policy gradients, Expectation maximization, and Stochastic search methods. As no model is assumed in these cases, they were slow but extremely generalized. Model based methods like Analytic policy gradients and Trajectory optimization estimate the model in every iteration and update a policy based on this estimated model.
+
+To optimize on data used, step based policy search was conceptualized and used. These attempt to evaluate the quality of a state, action pair using the reward that the pair generates rather than the parameters defining a policy. Step based policy search methods due to their nature of formulation are not favourable for smooth trajectories but provide uncorrelated exploration unlike episode based search. Examples of step based policy search include Reinforce, Policy gradient theorem, and Episodic natural Actor-Critic. Examples of episode based policy search are Episodic REPS, Cross-Entropy search, and PEGASUS.
+
+An episode based policy search method is well suited for our task. It fits easily into dynamic control tasks as the exploration is rarely uncorrelated in such cases. Also, the trajectories created from this are smooth - which is normally the case for robotic systems like an arm or a UAV. Hence, step-based policy search becomes complicated and gives un-natural solutions for a robotic task like autonomous flight.
+
+\section{Continuous states and actions}
+
+A dynamic control task like ours is a typical example of a continuous state and action variables. Many existing Reinforcement Learning techniques assume discrete sets for states and actions. Because of this continuous variables are frequently binned (mapped to discrete sets) to use these techniques. If the binning is done with very small bin widths, there is no concept of a generalized policy and over-fitting takes place. While, if the bin widths are too large hidden variables are created. A multi-dimensional state space complicates things even more.
+
+A more reasonable approach is to use function approximators. Function approximation provides an elegant solution to multi-dimensional spaces. And in most cases, using a function approximation reduces the space to a smaller subspace. And optimality conditions within this subspace still hold true. Hence, to achieve an optimal solution, even function approximation needs to be carried out carefully.
+
+In episode based policy search methods where the policy is directly found, it becomes even simpler. The policy itself can be function approximated as a function that takes in a continuous state and gives out a continuous action. Here, we only need to identify a single function basis for the approximation.
+
+In such cases, the policies that are searched (the policy class) are restricted due to this parametrization. If the function approximation and parametrization is not done correctly, the optimal policy may not lie in the class at all. In such cases, the result got from a typical policy search algorithm is simply the optimal solution in this subspace defined by the policy class.
+
+\todo{Add picture of quadrotor with all the angles and linear velocities to describe a "state"}
+
+\section{Payload control for UAVs}
+
+There has been some work to control the payloads directly using Control Theory[\citenum{PayloadControlTheory,PayloadControlTheory2}]. These approaches again require a lot of knowledge about the system, including the tension in the joint. Some even approximate the system to be linear to be able to solve the resulting differential equations.
+
+There has also been some work in controlling payloads of UAVs using Reinforcement Learning[\citenum{PayloadLSPI}]. In this, Least Square Policy Iteration (LSPI) is used. Three different LSPI are used to track the x, y, and z dimensions. This has the disadvantage of these three learning policy iterations that can clash with each other. In the case of a quadrotor, where the system is under actuated, the x and y dimensions are correlated.
+
+\todo{Add picture of quadrotor with payload explaining the variables}
+
+\section{Apprenticeship learning}
+
+In reinforcement learning we consider a reward function, which describes the task and the target that needs to be achieved. A dynamics model is implicit which describes how the agent and interaction with the environment and how the environment reacts to the action from the agent. Then we try to find an optimal policy that maximizes the expected return.
+
+Reinforcement learning can be applied to tasks as ill defined as "drive the car well". This is not clear and has many many inherent meanings like "drive to the destination quickly", "do not crash into anything", "stop at red signals" and even more subtle meanings like "change lanes as little as possible", "move in smooth trajectories" and so on. In such cases, which are not clearly defined it is even more difficult to quantify the expected task and create a reward function.
+
+Apprenticeship learning[\citenum{ApprenticeshipLearning}] helps to solve this issue by providing  learning a task from a mentor or teacher which already knows the target. The mentor is asked to perform the task and the trajectories and actions used by the mentor is stored in the memory of the agent. Then the agent uses this memory in some way to help itself to find a policy suitable for the task.
+
+The most common method of using the mentors information in the agent or the apprentice is to make a reward function based on the trajectories. The reward function can be derived by identifying which transitions occur frequently in the mentor's trajectories and which ones do not. The frequent transitions should give a larger reward while the transitions that do not occur give no or negative rewards. The mentor can even specify which trajectories are bad and should not occur for a more balanced reward function.
+
+In the case of the continuous rewards and states like ours, things are not as easy. Here, it is impossible to count transitions and so the above method is not possible. In such cases the trajectories need to be time normalized and then stitched to find the optimal trajectory for the task.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{PEGASUS}
+
+PEGASUS[\citenum{PEGASUS}] (Policy Evaluation-of-Goodness And Search Using Scenarios) is a technique devised by Andrew N. G. and Michael Jordan which finds a policy by searching through the whole policy space. It eliminates policies based on the "goodness" of it. Using the goodness quantification, it then attempts to find the next policy to check.
+
+\section{Value of the policy}
+
+In Reinforcement Learning we already have the notion of a policy as well as a value function. The policy is any function denoted by $\pi$ mapping:
+\begin{equation} \begin{split}
+  \pi :& \quad \mathbb{S} \rightarrow \mathbb{A} \qquad or \\
+  \pi :& \quad \mathbb{S} \times \mathbb{A} \rightarrow [0,1]
+\end{split} \end{equation}
+
+The value function of a policy is then defined as:
+\begin{equation}
+  V^{\pi} : \quad \mathbb{S} \rightarrow \mathbb{R}
+\end{equation}
+
+Here, we define the value of the policy or the "goodness" of the policy as the value of the initial state ($s_{0}$) in an episode. This can also be thought of the total return the policy is capable of getting. Extending it to multiple episodes, we can take the expectation over the distribution of initial states $\mathbb{D}$:
+\begin{equation}
+  V(\pi) = \mathbf{E}_{s_{0} \sim \mathbb{D}} [ V^{\pi} (s_{0})]
+\end{equation}
+
+As we don't really know the value of the policy before hand, to compute the value of the policy, we need to find the rewards for an episode and compute the return. We run this multiple times so that we can average out the effect of $\mathbb{D}$ - The distribution of initial states. If we run $m$ episodes to reduce the variance in the value of the policy, we can write:
+\begin{equation}
+  V(\pi) \approx \hat{V}(\pi) = \frac{1}{m} \sum_{i=1}^{m} V^{\pi} (s_{0}^{i})
+\end{equation}
+
+\section{Optimal policy}
+
+Now that we have a quantitative scalar for a policy, we can compare policies using it. So a policy $\pi_{1}$ is considered better than another policy $\pi_{2}$ if $V(\pi_{1}) > V(\pi_{2})$. Hence, we can now define an optimal policy as:
+\begin{equation}
+  \pi^{*} = {\arg \max}_{\pi \forall \mathbf{\Pi}} {V(\pi)}
+\end{equation}
+
+In a problem where the actions are discrete and an episode terminates after $H$ steps, a policy is simply a sequence of $H$ actions from the action space. As the actions space is discrete, there will be a discrete set of policies. To be specific, there will be $|\mathbb{A}|^{H}$ policies at maximum. Here, if we find the value of the policies, we can compare policies and eventually find the optimal policy.
+
+However, in a problem where the actions are continuous it is not feasible to find the values of all the policies. In such a case, we use function approximation and use a parametric function for the policy. This parametric function can be anything, as long as it is continuous and can be defined by finite parameters ($\mu$). Now, we can write the value of the policy as:
+\begin{equation}
+  V(\pi) = V(\pi_{\mu})
+\end{equation}
+
+Hence, the value now becomes a function of a finite set of continuous variables $\mu$. We can now imagine a $|\mu|+1$ dimensional graph which maps $\mu$ to $V$. In this multi-dimensional graph, we can use any method to find the maximum of a function. For example, gradient descent, stochastic gradient descent, BFGS algorithm, random search, etc. Using these techniques we can find the maximum $V$ and hence the optimal policy $\pi^{*}$.
+
+\todo{Add picture of a graph with the value of policy with gradient descent's lines to describe how the max can be found.}
+
+\section{Stochastic MDP to non-stochastic POMDP}
+
+The PEGASUS algorithm works for both MDPs and POMDPs. But, it involves running a specific scenario multiple times - and assumes the same transition function for the environment. If the transition function is not same, the value of the policy will have a large variance. Hence, it does not work well with stochastic transition functions.
+
+This can be tackled by simply converting stochastic MDPs or POMDPs into an appropriate POMDP with a random seed that is not observed. Hence we're creating a new MDP with the states from the original MDP along with the random variables that will be used by the transition function. This potentially makes the new POMDP's state space infinite dimensional.
+
+Let us take the original stochastic (PO)MDP as $MDP_{1}$ which has the state space $\mathbb{S}$. Now, we get an infinite set of random numbers generated from a true uniform random generator $[0,1]^{\infty}$. We now create a new POMDP $MDP_{2}$ which has the state space $\mathbb{S} \times [0,1]^{\infty}$. This new POMDP $MDP_{2}$ has a environment that uses these uniformly random variables in it's state for any non-stochastic calculations it has. It is trivial to convert a uniform random variable into any other distribution like Bernouilli, Binomial or others as required. Hence, the transition function in $MDP_{2}$ is deterministic based on it's state space.
+
+For implementation purposes, it is impossible to use state spaces with infinite dimensions, and this is not really needed. We already truncate our episodes after $H$ steps, so we need to only store random variables that would be used within $H$ steps. This reduces the state space to $\mathbb{S} \times [0,1]^{|H|}$. To reduce the memory complexity furthermore, only a seed needs to be added to the state space. This seed can initiate an appropriate random number generator for an episode.
+
+\section{Application to helicopters}
+
+PEGASUS has already been used in helicopters[\citenum{HelicopterPegasus}] by Andrew N. G, H. Jin Kim, Michael Jordan and Shankar Sastry. In their paper they describe using PEGASUS on a model they created of the helicopter which was used to learn. After the learning on this model, they implemented the policy learnt on the actual helicopter and obtained successful results.
+
+There, they created the Model of the helicopter by getting trajectories from a human pilot. This is not an ideal method as the human pilot is incapable of using the helicopter in certain states and the transition function would be biased to better scenarios rather than worse ones. This introduces a bit of the model of the helicopter into the model inherently.
+
+Next, they design a shallow neural network to make the policy class $\Pi$ that PEGASUS requires. The weights of the neural network are taken as the parameters of the policy that are learnt by PEGASUS. This neural network is specific for the helicopter and cannot be generalized to other UAVs with different dynamics.
+
+The reward function used in this paper is the L2 norm of the difference between the expected position and the original position. It includes the x, y, z position as well as the yaw. And the linear velocities are included in this too, with the target velocity being 0. As this is specifically for hovering, they also have a negative reward for large actions, as jerky behaviour is not wanted. With this system, they were able to make the quadrotor hover and move in lines successfully.
+
+\subsection{Aerobatics}
+
+There has also been some later work on using PEGASUS along with Apprenticeship learning in helicopters to do complex tasks like aerobatics[\citenum{ApprenticeshipHelicopterAerobatics}]. Apprenticeship learning provides an efficient method to create a reward function, and PEGASUS learns the policy based on the generated reward function.
+
+To complement this, there has also been work on using PEGASUS for outright unstable states that are difficult for most human pilots. The work by Andrew N. G. et. al. on Inverted helicopter flight[\cite{InvertedHelicopterFlight}] uses PEGASUS with an underlying controller. The underlying controller provides a flexibility to the system and generalizes it further.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{Simulation}
+
+As stressed earlier, a simulated environment is the most important to implement PEGASUS. To emulate the quad-rotor, we used ROS[\citenum{ROS}] - The well known open source Robot Operating System along with it's physics simulator Gazebo[\cite{Gazebo}].
+
+\section{ROS and Gazebo}
+
+ROS and gazebo provide a good API to modify parameters of a simulation, and are intended to provide a software layer on top of hardware. Hence, it is easy to replace the hardware with a simulated hardware. Along with this, it is possible to provide an interface to make controllers with easily configurable time steps and so on.
+
+ROS also provides a method to isolate pieces of code from one another (called nodes) which fits well with the Reinforcement Learning framework where an Agent and Environment need to be isolated. Nodes can then communicate with each other using services or topics.
+
+Topics are intended for continuous stream-like communication at specific intervals. Hence interrupts and streams are easy to create using topics. Topics provide only one way communication. Services provide a method to have 2 way communication. This is similar to calling a function from another node with specific arguments.
+
+Gazebo provides a multi-robot simulation environment. It wraps the ODE and bullet physics engines and provides kinematic and dynamic simulation also. Gazebo is capable of simulating gravity, contact forces, joints and frictions but ignores aerodynamics and propulsion systems which are important factors to consider for a quad-rotor. Gazebo is slow with fluid systems and hence simulating air flow is complicated.
+
+Hence, ROS and Gazebo do provide a good method of simulating
+
+\section{Hector Quadrotor}
+
+Hector Quad-rotor[\cite{HectorQuadrotor}] is a ROS package which helps to simulate quad-rotors in ROS and Gazebo. It is provided by Team Hector for Urban Search and Rescue (USAR) applications. Hector Quad-rotor was created specifically to path the issues that Gazebo has with simulating UAVs. It gives an easy method to import a quad-rotor model using the COLLADA format (exportable by Blender) while the collision model is modeled as a .stl mesh.
+
+The propellers are modelled as discs as a trade-off between visual accuracy, collision detection and dynamics modeling. Modelling it as fans proved troublesome due to the collision detection which gave varied results with different physics time steps.
+
+The dynamics of the quad-rotor are based on Samir Bouabdallah's work[\citenum{QuadrotorDynamics}]. It includes the flight dynamics, motor dynamics, and thrust calculations required for the system. Sensors have also been emulated using an error model like the Gauss Markov error model. Common sensors like IMU, barometric, ultrasonic, GPS and compass have been implemented in the package.
+
+Hector Quad-rotor also provides a basic controller. The controller is implemented by separate cascaded PID controllers controlling roll and pitch movement, yaw rate and linear z velocity. This assumes that each axis and the altitude can be controlled independently. This is a valid assumption for quad-rotors for moderate deviations from the hovering state.
+
+This controller is abstracted and has implementations to use any sort of input. The types of inputs that are possible are torque (wrench), position (pose), velocity (twist), and also motor velocity. This allows us to easily implement our own controller.
+
+\section{Reinforcement Learning framework}
+
+RL-Glue[\citenum{RLGlue}] is a well known Reinforcement Learning framework which helps to write Agents and Environments that are independent of each other. RL-Glue works by using sockets which is very similar to how ROS nodes are implemented. RL-Glue has a thin wrapper for ROS called ROS-Glue, but this has become unsupported and is old.
+
+Hester T. and Stone P. made a ROS package for their paper on TEXPLORE[\citenum{Texplore}]. The rl-texplore-ros-pkg\footnote{https://github.com/toddhester/rl-texplore-ros-pkg} provides topics and messages which help in communicating between an agent and an environment. It can also handle multiple agents and has some popular algorithms already implemented.
+
+This package however did not integrate gazebo into the environment, and we made our own package\footnote{https://github.com/AbdealiJK/quadrotor\_control} which could do this. The texplore package also did not implement Pegasus. This modified package is able to communicate with gazebo as part of the environment and can use the models of the gazebo simulator and converts it into a state. It also has the ability to run gazebo in finite time steps, pausing the simulator between them.
+
+\subsection*{Agent}
+
+The agent is a ROS node which implements from the abstract class provided in the texplore package \texttt{Agent}. It implements the functions first action, last action and next action which are intended to initiate the episode, end the episode and continue to the next time step of the episode respectively.
+
+The Agent automatically transmits the action using the RLAction message on the topic \texttt{rl\_agent/rl\_action}. The message is an array of any length of float32 type. Hence, it is possible to supply any number of actions for a complex agent.
+
+\subsection*{Environment}
+
+The environment is a ROS node which implements from the abstract class provided in texplore package \texttt{Environment}. It implements the function sensation, apply, terminal, and reset. The function sensation is the state or the observation from the environment that the agent is capable of observing. The function apply takes in the action given by an agent and applies that to the environment. The terminal and reset functions act as destructors and constructors to reuse the environment in various episodes.
+
+The environment transmits the state information using the RLEnv message on the topic \texttt{rl\_env/rl\_state\_reward}. The message has 3 variables. An array of any length which has float32 items which is the state or the observable state by the agent. A scalar of type float32 which is the reward obtained by the last step (In the start state, this is ignored). And finally a boolean which indicates whether the state is a terminal state or not.
+
+An environment named Hector Quad-rotor has been implemented which passes the action from the agent to the gazebo environment as a twist state. The sensation function is also implemented in such a way as to wait for gazebo to complete a transition step and return back the observable state from this. For all this a random seed can be set in gazebo to create the repeatable scenarios required by PEGASUS.
+
+\section{Variables and settings}
+\subsection{Agent variables}
+\subsection{Environment variables}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Quad-rotor dynamics}
+
+Quad-rotor dynamics can be controlled by controlling the rotor thrusts. This is used to change the altitude, pitch, roll, and yaw of the quad-rotor. We can compute how the rotor thrust affects the roll, pitch, yaw, and altitude using the model of the quad-rotor. Using this, we analyze how a quad-rotor is capable of moving in 6 degrees of freedom (linear directions and the Euler angles) with only 4 controllable inputs.
+
+\todo{Add pitch roll yaw picture}
+
+Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for the quad-rotor to turn, and move in various ways. The following configurations are possible:
+
+\todo{Add picture of quad from top with names for the rotors. (Check the rotor names from wikipedia https://en.wikipedia.org/wiki/Quadcopter}
+
+\begin{itemize}
+\item{{\bf Altitude (z)}: To change altitude (in the positive z direction) equal thrust is applied to all the rotors. Alternate rotors are given thrust in opposite directions so that the torque does not cause the quad-rotor to change it's pitch and roll. For example, if Rotors 1 and 3 are moving in the clockwise direction Rotors 2 and 4 need to move in anti-clockwise direction. This is also required for hovering as there is a constant gravitational force acting downward which needs to be countered.}
+\item{{\bf Yaw}: To change the yaw while hovering, the thrust applied to the rotors need to be different so that torque is not zero. But as we do not want a force in the z direction, alternate rotors have the same thrust. For example, Rotors 1 and 3 need the same thrust and Rotors 2 and 4 also need the same thrust. But one pair will have a lesser thrust than the other depending on the direction in which yaw needs to be changed.}
+\item{{\bf Pitch and Roll}: In a quad-rotor, it can be observed that the x and y directions (or the pitch and roll angles) are symmetric. This symmetric nature let's us use the similar control logic for both these directions. To change the pitch and roll, the alternate motors move in opposite directions to counter torque appropriately. Here, one pair of diametrically opposite motors have the same thrust while the other pair does not. This causes the quad-rotor to turn toward the direction of the lesser rotor. For example, if Rotors 2 and 4 have the same thrust, Rotor 1 would have more thrust than Rotor 3 (or vice-versa). Similarly, if Rotors 1 and 3 have the same thrust the quad-rotor would move in the other symmetric direction.}
+\end{itemize}
+
+\todo{Add subfigures of picture of quad from top with direction of motor rpm. (Check from wikipedia https://en.wikipedia.org/wiki/Quadcopter)}
+
+\section{System modelling}
+
+The quad-rotor dynamics have been documented by Samir Boubdallah and Roland Siegwart for the OS4 project[\citenum{QuadrotorDynamics}]. This is the same modelling that is used in the Hector Quad-rotor package.
+
+In the paper, each part of the quad-rotor is modelled, starting from the motors. The motor is taken to be a simple DC motor where the thrust $T$ is proportional to the vertical force acting on all the blade elements. The horizontal force (called Hub Force $H$ is found by calculating the resultant horizontal force and the drag $Q$. is found using a similar method.
+
+Once the basic linear forces have been accounter for, the angular forces are found. The angular forces include the Rolling moments, Pitching moments, and Yawing moments. They go on to find the dynamic equation of the BLDC rotors also, as this would contribute to the moments to a small extent. This is found using a simple first order transfer function - to recreate the dynamics the propeller would acheive between the set-point required and the actual speed.
+
+Using these individual forces, the net force on the quad-rotor can be calculated. This gives a set of equations defining the moments and forces [\citet[see equation 7][]{QuadrotorDynamics}]. Using this, it is now possible to define the the transition function as:
+
+\begin{equation} \begin{split}
+  f(\bar{S}, \bar{U}) = \left\{
+    \begin{array}{c}
+      \dot{\phi} \\
+      \dot{\theta} \dot{\psi} a_{1} + \dot{\theta} a_{2} \omega_{r} + b_{1} U_{2} \\
+      \dot{\theta} \\
+      \dot{\phi} \dot{\psi} a_{1} + \dot{\phi} a_{4} \omega_{r} + b_{2} U_{3} \\
+      \dot{\psi} \\
+      \dot{\theta} \dot{\phi} a_{5} + b_{3} U_{4} \\
+      \dot{z} \\
+      g  - (\cos{\phi} \cos{\theta})\frac{U_{1}}{m} \\
+      \dot{x} \\
+      u_{x} \frac{U_{1}}{m} \\
+      \dot{y} \\
+      u_{y} \frac{U_{1}}{m}
+    \end{array}
+  \right\}
+\end{split} \end{equation}
+
+Where $\bar{U}$ is the action which is a 4 dimensional vector (1 action per rotor). The constants $m$, $a_{i}$, and $b_{i}$ are system parameters that can be calculated from properties like moment of inertia, mass, etc. $u_{j}$ is the projection from Spherical co-ordinates to Cartesian of a unit vector in the $j$ dimension in Cartesian co-ordinates.
+
+This model is useful, as it helps to formulate the best policy class that can be used for this system in the case of PEGASUS.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography.
 
