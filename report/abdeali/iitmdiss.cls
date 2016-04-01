@@ -102,8 +102,8 @@
 %
 % natbib allows easy switching of citation style and using it along
 % with the iitm.bst makes things perfect.
-\RequirePackage[authoryear,square]{natbib}
-% \RequirePackage[numbers,square]{natbib}
+\RequirePackage[authoryear,round]{natbib}
+%\RequirePackage[numbers,square]{natbib}
 \bibliographystyle{iitm}
 
 \newcommand{\bibstyle@iitm}{\bibpunct{(}{)}{;}{a}{,}{,}%
@@ -283,7 +283,7 @@
          #1\par\nobreak
        \end{center}
        \vskip 20\p@
-    %   \thispagestyle{empty}
+       % \thispagestyle{empty}
      }}
 
    % Makes the chapter heading for \chapter* commands

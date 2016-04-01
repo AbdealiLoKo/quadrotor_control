@@ -7,7 +7,7 @@
 
 \usepackage{graphicx}
 % \usepackage{epstopdf}
-\usepackage[hypertex]{hyperref} % hyperlinks for references.
+\usepackage{hyperref} % hyperlinks for references.
 \usepackage{amsmath} % easier math formulae, align, subequations \ldots
 \usepackage{xcolor}
 \usepackage{amsfonts}
@@ -173,7 +173,7 @@ We initially use PEGASUS on the quad-rotor without any payload. This is a sanity
 
 \section{Reinforcement learning in control}
 
-There has been a lot of work done about control. The review[\citenum{ControlForQuads}] by Andrew Zulu and Samuel John gives an overview of techniques that have been formulated. It speaks of techniques that merge control theory and machine learning. For example, fuzzy logic, neural network based controls, and genetic algorithms. Fuzzy logic based controls to fuzzify control theory algorithms are frequently used. For example, Fuzzy logic to identify the constants required in PID and LQR were researched by E. Abbasi and J. Mahjoob.
+There has been a lot of work done about control. The review[\cite{ControlForQuads}] by Andrew Zulu and Samuel John gives an overview of techniques that have been formulated. It speaks of techniques that merge control theory and machine learning. For example, fuzzy logic, neural network based controls, and genetic algorithms. Fuzzy logic based controls to fuzzify control theory algorithms are frequently used. For example, Fuzzy logic to identify the constants required in PID and LQR were researched by E. Abbasi and J. Mahjoob.
 
 Reinforcement learning has been applied to control problems frequently. Reinforcement learning has been successful in all sorts of applications like marketing strategy selection and advertisement targeting, cell-phone network routing and multiplexing, bipedal to octapedal locomotion, and efficient web-page indexing.
 
@@ -201,9 +201,9 @@ In such cases, the policies that are searched (the policy class) are restricted 
 
 \section{Payload control for UAVs}
 
-There has been some work to control the payloads directly using Control Theory[\citenum{PayloadControlTheory,PayloadControlTheory2}]. These approaches again require a lot of knowledge about the system, including the tension in the joint. Some even approximate the system to be linear to be able to solve the resulting differential equations.
+There has been some work to control the payload of an UAV directly using Control Theory[\cite{PayloadControlTheory,PayloadControlTheory2}]. These approaches again require a lot of knowledge about the system, including the tension in the joint. Some even approximate the system to be linear to be able to solve the resulting differential equations.
 
-There has also been some work in controlling payloads of UAVs using Reinforcement Learning[\citenum{PayloadLSPI}]. In this, Least Square Policy Iteration (LSPI) is used. Three different LSPI are used to track the x, y, and z dimensions. This has the disadvantage of these three learning policy iterations that can clash with each other. In the case of a quadrotor, where the system is under actuated, the x and y dimensions are correlated.
+There has also been some work in controlling payloads of UAVs using Reinforcement Learning[\cite{PayloadLSPI}]. In this, Least Square Policy Iteration (LSPI) is used. Three different LSPI are used to track the x, y, and z dimensions. This has the disadvantage of these three learning policy iterations that can clash with each other. In the case of a quadrotor, where the system is under actuated, the x and y dimensions are correlated.
 
 \todo{Add picture of quadrotor with payload explaining the variables}
 
@@ -213,7 +213,7 @@ In reinforcement learning we consider a reward function, which describes the tas
 
 Reinforcement learning can be applied to tasks as ill defined as "drive the car well". This is not clear and has many many inherent meanings like "drive to the destination quickly", "do not crash into anything", "stop at red signals" and even more subtle meanings like "change lanes as little as possible", "move in smooth trajectories" and so on. In such cases, which are not clearly defined it is even more difficult to quantify the expected task and create a reward function.
 
-Apprenticeship learning[\citenum{ApprenticeshipLearning}] helps to solve this issue by providing  learning a task from a mentor or teacher which already knows the target. The mentor is asked to perform the task and the trajectories and actions used by the mentor is stored in the memory of the agent. Then the agent uses this memory in some way to help itself to find a policy suitable for the task.
+Apprenticeship learning[\cite{ApprenticeshipLearning}] helps to solve this issue by providing  learning a task from a mentor or teacher which already knows the target. The mentor is asked to perform the task and the trajectories and actions used by the mentor is stored in the memory of the agent. Then the agent uses this memory in some way to help itself to find a policy suitable for the task.
 
 The most common method of using the mentors information in the agent or the apprentice is to make a reward function based on the trajectories. The reward function can be derived by identifying which transitions occur frequently in the mentor's trajectories and which ones do not. The frequent transitions should give a larger reward while the transitions that do not occur give no or negative rewards. The mentor can even specify which trajectories are bad and should not occur for a more balanced reward function.
 
@@ -223,7 +223,7 @@ In the case of the continuous rewards and states like ours, things are not as ea
 
 \chapter{PEGASUS}
 
-PEGASUS[\citenum{PEGASUS}] (Policy Evaluation-of-Goodness And Search Using Scenarios) is a technique devised by Andrew N. G. and Michael Jordan which finds a policy by searching through the whole policy space. It eliminates policies based on the "goodness" of it. Using the goodness quantification, it then attempts to find the next policy to check.
+PEGASUS[\cite{PEGASUS}] (Policy Evaluation-of-Goodness And Search Using Scenarios) is a technique devised by Andrew N. G. and Michael Jordan which finds a policy by searching through the whole policy space. It eliminates policies based on the "goodness" of it. Using the goodness quantification, it then attempts to find the next policy to check.
 
 \section{Value of the policy}
 
@@ -278,7 +278,7 @@ For implementation purposes, it is impossible to use state spaces with infinite 
 
 \section{Application to helicopters}
 
-PEGASUS has already been used in helicopters[\citenum{HelicopterPegasus}] by Andrew N. G, H. Jin Kim, Michael Jordan and Shankar Sastry. In their paper they describe using PEGASUS on a model they created of the helicopter which was used to learn. After the learning on this model, they implemented the policy learnt on the actual helicopter and obtained successful results.
+PEGASUS has already been used in helicopters[\cite{HelicopterPegasus}] by Andrew N. G, H. Jin Kim, Michael Jordan and Shankar Sastry. In their paper they describe using PEGASUS on a model they created of the helicopter which was used to learn. After the learning on this model, they implemented the policy learnt on the actual helicopter and obtained successful results.
 
 There, they created the Model of the helicopter by getting trajectories from a human pilot. This is not an ideal method as the human pilot is incapable of using the helicopter in certain states and the transition function would be biased to better scenarios rather than worse ones. This introduces a bit of the model of the helicopter into the model inherently.
 
@@ -288,7 +288,7 @@ The reward function used in this paper is the L2 norm of the difference between 
 
 \subsection{Aerobatics}
 
-There has also been some later work on using PEGASUS along with Apprenticeship learning in helicopters to do complex tasks like aerobatics[\citenum{ApprenticeshipHelicopterAerobatics}]. Apprenticeship learning provides an efficient method to create a reward function, and PEGASUS learns the policy based on the generated reward function.
+There has also been some later work on using PEGASUS along with Apprenticeship learning in helicopters to do complex tasks like aerobatics[\cite{ApprenticeshipHelicopterAerobatics}]. Apprenticeship learning provides an efficient method to create a reward function, and PEGASUS learns the policy based on the generated reward function.
 
 To complement this, there has also been work on using PEGASUS for outright unstable states that are difficult for most human pilots. The work by Andrew N. G. et. al. on Inverted helicopter flight[\cite{InvertedHelicopterFlight}] uses PEGASUS with an underlying controller. The underlying controller provides a flexibility to the system and generalizes it further.
 
@@ -296,7 +296,7 @@ To complement this, there has also been work on using PEGASUS for outright unsta
 
 \chapter{Simulation}
 
-As stressed earlier, a simulated environment is the most important to implement PEGASUS. To emulate the quad-rotor, we used ROS[\citenum{ROS}] - The well known open source Robot Operating System along with it's physics simulator Gazebo[\cite{Gazebo}].
+As stressed earlier, a simulated environment is the most important to implement PEGASUS. To emulate the quad-rotor, we used ROS[\cite{ROS}] - The well known open source Robot Operating System along with the physics simulator Gazebo[\cite{Gazebo}].
 
 \section{ROS and Gazebo}
 
@@ -316,7 +316,7 @@ Hector Quad-rotor[\cite{HectorQuadrotor}] is a ROS package which helps to simula
 
 The propellers are modelled as discs as a trade-off between visual accuracy, collision detection and dynamics modeling. Modelling it as fans proved troublesome due to the collision detection which gave varied results with different physics time steps.
 
-The dynamics of the quad-rotor are based on Samir Bouabdallah's work[\citenum{QuadrotorDynamics}]. It includes the flight dynamics, motor dynamics, and thrust calculations required for the system. Sensors have also been emulated using an error model like the Gauss Markov error model. Common sensors like IMU, barometric, ultrasonic, GPS and compass have been implemented in the package.
+The dynamics of the quad-rotor are based on Samir Bouabdallah's work[\cite{QuadrotorDynamics}]. It includes the flight dynamics, motor dynamics, and thrust calculations required for the system. Sensors have also been emulated using an error model like the Gauss Markov error model. Common sensors like IMU, barometric, ultrasonic, GPS and compass have been implemented in the package.
 
 Hector Quad-rotor also provides a basic controller. The controller is implemented by separate cascaded PID controllers controlling roll and pitch movement, yaw rate and linear z velocity. This assumes that each axis and the altitude can be controlled independently. This is a valid assumption for quad-rotors for moderate deviations from the hovering state.
 
@@ -324,9 +324,9 @@ This controller is abstracted and has implementations to use any sort of input. 
 
 \section{Reinforcement Learning framework}
 
-RL-Glue[\citenum{RLGlue}] is a well known Reinforcement Learning framework which helps to write Agents and Environments that are independent of each other. RL-Glue works by using sockets which is very similar to how ROS nodes are implemented. RL-Glue has a thin wrapper for ROS called ROS-Glue, but this has become unsupported and is old.
+RL-Glue[\cite{RLGlue}] is a well known Reinforcement Learning framework which helps to write Agents and Environments that are independent of each other. RL-Glue works by using sockets which is very similar to how ROS nodes are implemented. RL-Glue has a thin wrapper for ROS called ROS-Glue, but this has become unsupported and is old.
 
-Hester T. and Stone P. made a ROS package for their paper on TEXPLORE[\citenum{Texplore}]. The rl-texplore-ros-pkg\footnote{https://github.com/toddhester/rl-texplore-ros-pkg} provides topics and messages which help in communicating between an agent and an environment. It can also handle multiple agents and has some popular algorithms already implemented.
+Hester T. and Stone P. made a ROS package for their paper on TEXPLORE[\cite{Texplore}]. The rl-texplore-ros-pkg\footnote{https://github.com/toddhester/rl-texplore-ros-pkg} provides topics and messages which help in communicating between an agent and an environment. It can also handle multiple agents and has some popular algorithms already implemented.
 
 This package however did not integrate gazebo into the environment, and we made our own package\footnote{https://github.com/AbdealiJK/quadrotor\_control} which could do this. The texplore package also did not implement Pegasus. This modified package is able to communicate with gazebo as part of the environment and can use the models of the gazebo simulator and converts it into a state. It also has the ability to run gazebo in finite time steps, pausing the simulator between them.
 
@@ -369,7 +369,7 @@ Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for
 
 \section{System modelling}
 
-The quad-rotor dynamics have been documented by Samir Boubdallah and Roland Siegwart for the OS4 project[\citenum{QuadrotorDynamics}]. This is the same modelling that is used in the Hector Quad-rotor package.
+The quad-rotor dynamics have been documented by Samir Boubdallah and Roland Siegwart for the OS4 project[\cite{QuadrotorDynamics}]. This is the same modelling that is used in the Hector Quad-rotor package.
 
 In the paper, each part of the quad-rotor is modelled, starting from the motors. The motor is taken to be a simple DC motor where the thrust $T$ is proportional to the vertical force acting on all the blade elements. The horizontal force (called Hub Force $H$ is found by calculating the resultant horizontal force and the drag $Q$. is found using a similar method.
 
