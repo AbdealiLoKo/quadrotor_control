@@ -18,7 +18,7 @@ HectorQuad::HectorQuad()
   // initial.model_name = "";
   // final.model_name = "";
   // current.model_name = "";
-  
+
   ros::NodeHandle node;
 
   // Publishers
@@ -238,7 +238,7 @@ int HectorQuad::pure_pursuit(int wp) {
   x1 = waypoints[wp+i].first;
   y1 = waypoints[wp+i].second;
   theta = atan(abs((y1-y)/(x1-x)));
-  
+
   // Find the correct angle
   if (y1-y < 0 && x1-x<0)
     theta += 3.14;

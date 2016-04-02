@@ -434,6 +434,8 @@ Hence, we again abstract the payload out from the learning. This enables us to t
 
 \section{Quad-rotor control}
 
+\todo{Add picture of quadrotor from simulations}
+
 A typical implementation of PEGASUS in our case would have atleast 4 paramters in our policy class (for roll, pitch, yaw, and altitude) that need to be trained. We used a gradient descent method to find the maimum valued policy in the PEGASUS algorithm.
 
 The {\bf state} has 8 terms, of which 4 are independent (they can be calculated from the other 4). It captures the absolute position of the robot from a given origin. This can be found using external sensors like a set of cameras pointing a the quad-rotor or onboard sensors like IMU and altimeter. The state vector is:
@@ -482,7 +484,7 @@ Unstable states like the ones seen in aerobatics have the problem that the mecha
 
 \todo{Add 3d schematic of learning with path trace}
 
-\subsection{Time improvement}
+\subsection{Time analysis}
 
 The gradient descent method attempts to move in small steps in various directions and approximates the gradient of this multi-dimensional function. Hence, if there are $P$ parameters in the policy class, it calcuates the value of the policy $2 \times P$ times. Now if we run the gradient descent $T$ times, the number of episodes that are run are $2 \times H \times P \times T$ where $H$ is the number of times we average the value of the policy in 1 scenario.
 
@@ -496,14 +498,13 @@ Currently, ODE does not have GPU capabilities and so is forced to run in the CPU
 
 \section{Payload control}
 
+\todo{Add picture of quadrotor with payload from simulations}
+
 The next step is to control the payload's position. Here, we add a payload with some freedom at the joint. This makes the payload move in it's own path, not fixed by the quad-rotor's path. Hence, the inertia the payload accumulates cannot be directly controlled.
 
 The state vector used in PEGASUS is again the same as above, but it uses the state of the payload rather than that of the quad-rotor. Also, the target state that needs to be acheived is the payload's state.
 
 The action is still the action of the quadrotor. There is no action that can be done directly on the payload as the joint is not actuated. Hence, the only control inputs that we have is the velocity of the quadrotor. It is interesting to note that when using the above reward and policy class the payload moves in a smooth trajectory without much deviation from the intended behaviour. This is without any state information of the quad-rotor. This is probably because the state information of the quadrotor is highly correlated to the state of the payload. If we wish to add more joints (like a chain for example), this would not hold true, and a better policy would need to be considered.
-
-\subsection{Payload model implementation}
-\todo{Add more info about the type of joint}. As the joint is a pin joint, there is stochasticity involved here also.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Trajectory control}
