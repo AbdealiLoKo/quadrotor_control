@@ -63,7 +63,7 @@
 
 \vspace*{0.25in}
 \noindent Place: Chennai\\
-Date: \todo{29 March 2016}
+Date: \todo{4 April 2016}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -151,7 +151,11 @@ One of the major use cases for an autonomous quad-rotor is to carry payloads fro
 
 As a reinforcement problem, this brings up further questions. In the original scenario, it was already difficult to define the reward as a "good flight" is not clearly defined. Now, we want to define a "good flight for the payload" also.
 
-\todo{Add picture of quad-rotor and quadrotor with payload}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.5\textwidth]{quadrotor.jpg}
+    \caption{Picture of a quadrotor flying.}
+\end{figure}
 
 \section{Outline}
 
@@ -197,7 +201,11 @@ In episode based policy search methods where the policy is directly found, it be
 
 In such cases, the policies that are searched (the policy class) are restricted due to this parametrization. If the function approximation and parametrization is not done correctly, the optimal policy may not lie in the class at all. In such cases, the result got from a typical policy search algorithm is simply the optimal solution in this subspace defined by the policy class.
 
-\todo{Add picture of quadrotor with all the angles and linear velocities to describe a "state"}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.75\textwidth]{quadrotor_states_actions.png}
+    \caption{Quadrotor schematic with states and actions depicted. All states and actions are continuous.}
+\end{figure}
 
 \section{Payload control for UAVs}
 
@@ -205,7 +213,11 @@ There has been some work to control the payload of an UAV directly using Control
 
 There has also been some work in controlling payloads of UAVs using Reinforcement Learning \cite{PayloadLSPI}. In this, Least Square Policy Iteration (LSPI) is used. Three different LSPI are used to track the x, y, and z dimensions. This has the disadvantage of these three learning policy iterations that can clash with each other. In the case of a quad-rotor, where the system is under actuated, the x and y dimensions are correlated.
 
-\todo{Add picture of quadrotor with payload explaining the variables}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.5\textwidth]{payload.png}
+    \caption{Quadrotor with a payload attached using a non rigid body. States (cartesian co-ordinates and euler angles) of the payload are shown.}
+\end{figure}
 
 \section{Apprenticeship learning}
 
@@ -264,7 +276,11 @@ However, in a problem where the actions are continuous it is not feasible to fin
 
 Hence, the value now becomes a function of a finite set of continuous variables $\mu$. We can now imagine a $|\mu|+1$ dimensional graph which maps $\mu$ to $V$. In this multi-dimensional graph, we can use any method to find the maximum of a function. For example, gradient descent, stochastic gradient descent, BFGS algorithm, random search, etc. Using these techniques we can find the maximum $V$ and hence the optimal policy $\pi^{*}$.
 
-\todo{Add picture of a graph with the value of policy with gradient descent's lines to describe how the max can be found.}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=\textwidth]{gradient_descent.png}
+    \caption{An example of a policy with 2 parameters. The value of the policy at these parameters has been plot. The optimal policy is marked at the maximum value. The maximum valuye can be found using maximization techniques like gradient descent, expectation maximization, BFGS, etc.}
+\end{figure}
 
 \section{Stochastic MDP to non-stochastic POMDP}
 
@@ -278,7 +294,7 @@ For implementation purposes, it is impossible to use state spaces with infinite 
 
 \section{Application to helicopters}
 
-PEGASUS has already been used in helicopters \cite{HelicopterPegasus}  by Andrew N. G, H. Jin Kim, Michael Jordan and Shankar Sastry. In their paper they describe using PEGASUS on a model they created of the helicopter which was used to learn. After the learning on this model, they implemented the policy learnt on the actual helicopter and obtained successful results.
+PEGASUS has already been used in helicopters \cite{HelicopterPegasus}  by Andrew Ng, Jin Kim, Michael Jordan and Shankar Sastry. In their paper they describe using PEGASUS on a model they created of the helicopter which was used to learn. After the learning on this model, they implemented the policy learnt on the actual helicopter and obtained successful results.
 
 There, they created the Model of the helicopter by getting trajectories from a human pilot. This is not an ideal method as the human pilot is incapable of using the helicopter in certain states and the transition function would be biased to better scenarios rather than worse ones. This introduces a bit of the model of the helicopter into the model inherently.
 
@@ -286,11 +302,24 @@ Next, they design a shallow neural network to make the policy class $\Pi$ that P
 
 The reward function used in this paper is the L2 norm of the difference between the expected position and the original position. It includes the x, y, z position as well as the yaw. And the linear velocities are included in this too, with the target velocity being 0. As this is specifically for hovering, they also have a negative reward for large actions, as jerky behaviour is not wanted. With this system, they were able to make the quad-rotor hover and move in lines successfully.
 
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.4\textwidth]{pegasus_helicopter.png}
+    \caption{Control of a helicopter using PEGASUS by Andrew Ng, Jin Kim, Michael Jordan and Shankar Sastry \cite{HelicopterPegasus}. A comparison of maneuver diagrams from RC helicopter competition\protect\footnotemark compared with actual trajectories from the model learnt by PEGASUS.}
+\end{figure}
+\footnotetext{Maneuver diagrams taken from www.modelaircraft.org}
+
 \subsection{Aerobatics}
 
 There has also been some later work on using PEGASUS along with Apprenticeship learning in helicopters to do complex tasks like aerobatics \cite{ApprenticeshipHelicopterAerobatics}. Apprenticeship learning provides an efficient method to create a reward function, and PEGASUS learns the policy based on the generated reward function.
 
-To complement this, there has also been work on using PEGASUS for outright unstable states that are difficult for most human pilots. The work by Andrew N. G. et. al. on Inverted helicopter flight \cite{InvertedHelicopterFlight} uses PEGASUS with an underlying controller. The underlying controller provides a flexibility to the system and generalizes it further.
+To complement this, there has also been work on using PEGASUS for outright unstable states that are difficult for most human pilots. The work by Andrew Ng, Jin Kim, Michael Jordan and Shankar Sastry on Inverted helicopter flight \cite{InvertedHelicopterFlight} uses PEGASUS with an underlying controller. The underlying controller provides a flexibility to the system and generalizes it further.
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.5\textwidth]{pegasus_inverted_helicopter.png}
+    \caption{Control of a helicopter to hover inverted using Apprenticeship Learning and PEGASUS by Andrew Ng, Jin Kim, Michael Jordan and Shankar Sastry \cite{InvertedHelicopterFlight}.}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -348,8 +377,6 @@ An environment named Hector Quad-rotor has been implemented which passes the act
 \chapter{Quad-rotor dynamics}
 
 Quad-rotor dynamics can be controlled by controlling the rotor thrusts. This is used to change the altitude, pitch, roll, and yaw of the quad-rotor. We can compute how the rotor thrust affects the roll, pitch, yaw, and altitude using the model of the quad-rotor. Using this, we analyze how a quad-rotor is capable of moving in 6 degrees of freedom (linear directions and the Euler angles) with only 4 controllable inputs.
-
-\todo{Add pitch roll yaw picture}
 
 Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for the quad-rotor to turn, and move in various ways. The following configurations are possible:
 
@@ -457,7 +484,7 @@ Unstable states like the ones seen in aerobatics have the problem that the mecha
 
 \subsection{Time improvement}
 
-The gradient descent method attempts to move in small steps in various directions and approximates the gradient of this multi-dimensional function. Hence, if there are $P$ parameters in the policy class, it calcuates the value of the policy $2 \times P$ times. Now if we run the gradient descent $T$ times, the number of episodes that are run are $2 \times H \times P \times T$ where $H$ is the number of times we average the value of the policy in 1 scenario. 
+The gradient descent method attempts to move in small steps in various directions and approximates the gradient of this multi-dimensional function. Hence, if there are $P$ parameters in the policy class, it calcuates the value of the policy $2 \times P$ times. Now if we run the gradient descent $T$ times, the number of episodes that are run are $2 \times H \times P \times T$ where $H$ is the number of times we average the value of the policy in 1 scenario.
 
 We notice that a few parameters are independent in the chosen policy class. For example, $c_1$ and $c_2$ can be learnt independent of $c_7$ and $c_8$. Hence by learning this piece by piece, we can increase the chance of converging faster. This basically means we would be running multiple policy gradient on various parameters independently.
 
