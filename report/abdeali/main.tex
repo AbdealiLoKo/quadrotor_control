@@ -4,13 +4,13 @@
 \documentclass[BTech]{iitmdiss}
 \usepackage{times}
 \usepackage{t1enc}
-
 \usepackage{graphicx}
 \usepackage{epstopdf}
 \usepackage{hyperref} % hyperlinks for references.
 \usepackage{amsmath} % easier math formulae, align, subequations \ldots
 \usepackage{xcolor}
 \usepackage{amsfonts}
+\usepackage{subcaption}
 
 \newcommand\todo[1]{\textcolor{red}{{\bf TODO}: #1}}
 
@@ -36,7 +36,7 @@
 
 \vspace*{0.5in}
 
-\noindent This is to certify that this thesis, submitted by {\bf Abdeali JK and Kunal Grover}, to the Indian Institute of Technology, Madras, for the award of the degree of {\bf B. Tech.}, is a bona fide record of the research work done by them under our supervision. The contents of this thesis, in full or in parts, have not been submitted to any other Institute or University for the award of any degree or diploma.
+\noindent This is to certify that this thesis, submitted by {\bf Abdeali JK}, to the Indian Institute of Technology, Madras, for the award of the degree of {\bf B. Tech.}, is a bona fide record of the research work done by them under our supervision. The contents of this thesis, in full or in parts, have not been submitted to any other Institute or University for the award of any degree or diploma.
 
 \vspace*{1.5in}
 
@@ -70,8 +70,7 @@ Date: \todo{4 April 2016}
 % Acknowledgements
 \acknowledgements
 
-We would like to thank the Indian Institute of Technology, Madras for giving us the opportunity to work on a project and our guide Dr. B. Ravindran, for allowing us to work with him and his invaluable help throughout the project, right from the identification of our project topic, to helping mould approaches and identifying new directions to work in when a line of thought had to be abandoned.
-
+I would like to thank my university Indian Institute of Technology, Madras for giving me the opportunity to work on this project. My guides for allowing me to work with them and their invaluable help throughout the project, right from the identification of the project topic to helping mould approaches and identifying new directions to work in when a line of thought had to be abandoned.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Abstract
@@ -82,7 +81,7 @@ We would like to thank the Indian Institute of Technology, Madras for giving us 
 
 \vspace*{24pt}
 
-\noindent Autonomous quad-rotor flight is a problem which is challenging because of complex dynamics and noise. In this thesis, we describe a method to control quad-rotors by applying policy search from reinforcement learning. We first set-up a simulated quad-rotor for testing purposes using gazebo and ROS. We then use the simulated model to learn basic control like hovering in place, and then moving in linear paths. Once a stable basic control is achieved the quad-rotor learns to move in various trajectories and paths. Finally, a payload is attached to the quad-rotor and we learn to move the payload in a specified trajectory.
+\noindent Autonomous quad-rotor flight is a problem which is challenging because of the complex dynamics and noise involved. A method to control quad-rotors is described by applying policy search from reinforcement learning. First a simulation is set-up training the quad-rotor using gazebo and ROS. The simulated model is used to learn position control like hovering in place, moving to a specific location, and also controlling the final yaw. Once a stable position control is achieved the quad-rotor learns to move in various trajectories and paths using a trajectory control technique. Finally, a payload is attached to the quad-rotor and the quad-rotor learns to move the payload using position and trajectory control.
 
 \pagebreak
 
@@ -279,7 +278,7 @@ Hence, the value now becomes a function of a finite set of continuous variables 
 \begin{figure}[h]
   \centering
     \includegraphics[width=\textwidth]{gradient_descent.png}
-    \caption{An example of a policy with 2 parameters. The value of the policy at these parameters has been plot. The optimal policy is marked at the maximum value. The maximum valuye can be found using maximization techniques like gradient descent, expectation maximization, BFGS, etc.}
+    \caption{An example of a policy with 2 parameters. The value of the policy at these parameters has been plot. The optimal policy is marked at the maximum value.}
 \end{figure}
 
 \section{Stochastic MDP to non-stochastic POMDP}
@@ -345,6 +344,21 @@ Hector Quad-rotor \cite{HectorQuadrotor} is a ROS package which helps to simulat
 
 The propellers are modelled as discs as a trade-off between visual accuracy, collision detection and dynamics modeling. Modelling it as fans proved troublesome due to the collision detection which gave varied results with different physics time steps.
 
+\begin{figure}[h]
+  \centering
+    \begin{subfigure}[c]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{quadrotor_sim.png}
+        \caption{\label{fig:fig1}}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{quadrotor_sim2.png}
+        \caption{\label{fig:fig2}}
+    \end{subfigure}
+    \caption{Quad-rotor simulated by Hector Quadrotor using ROS and gazebo.}
+\end{figure}
+
 The dynamics of the quad-rotor are based on Samir Bouabdallah's work \cite{QuadrotorDynamics}. It includes the flight dynamics, motor dynamics, and thrust calculations required for the system. Sensors have also been emulated using an error model like the Gauss Markov error model. Common sensors like IMU, barometric, ultrasonic, GPS and compass have been implemented in the package.
 
 Hector Quad-rotor also provides a basic controller. The controller is implemented by separate cascaded PID controllers controlling roll and pitch movement, yaw rate and linear z velocity. This assumes that each axis and the altitude can be controlled independently. This is a valid assumption for quad-rotors for moderate deviations from the hovering state.
@@ -380,15 +394,44 @@ Quad-rotor dynamics can be controlled by controlling the rotor thrusts. This is 
 
 Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for the quad-rotor to turn, and move in various ways. The following configurations are possible:
 
-\todo{Add picture of quad from top with names for the rotors. (Check the rotor names from wikipedia https://en.wikipedia.org/wiki/Quadcopter}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.5\textwidth]{quadrotor_rotors_names.png}
+    \caption{The four rotors of the quad-rotor which are used in different configurations for motion.}
+\end{figure}
 
 {\bf Altitude (z)}: To change altitude (in the positive z direction) equal thrust is applied to all the rotors. Alternate rotors are given thrust in opposite directions so that the torque does not cause the quad-rotor to change it's pitch and roll. For example, if Rotors 1 and 3 are moving in the clockwise direction Rotors 2 and 4 need to move in anti-clockwise direction. This is also required for hovering as there is a constant gravitational force acting downward which needs to be countered.
 
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.5\textwidth]{quadrotor_rotors_altitude.png}
+    \caption{The configuration of the 4 rotors of a quad-rotor to change altitude.}
+\end{figure}
+
 {\bf Yaw}: To change the yaw while hovering, the thrust applied to the rotors need to be different so that torque is not zero. But as we do not want a force in the z direction, alternate rotors have the same thrust. For example, Rotors 1 and 3 need the same thrust and Rotors 2 and 4 also need the same thrust. But one pair will have a lesser thrust than the other depending on the direction in which yaw needs to be changed.
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.5\textwidth]{quadrotor_rotors_yaw.png}
+    \caption{The configuration of the 4 rotors of a quad-rotor to change yaw.}
+\end{figure}
 
 {\bf Pitch and Roll}: In a quad-rotor, it can be observed that the x and y directions (or the pitch and roll angles) are symmetric. This symmetric nature let's us use the similar control logic for both these directions. To change the pitch and roll, the alternate motors move in opposite directions to counter torque appropriately. Here, one pair of diametrically opposite motors have the same thrust while the other pair does not. This causes the quad-rotor to turn toward the direction of the lesser rotor. For example, if Rotors 2 and 4 have the same thrust, Rotor 1 would have more thrust than Rotor 3 (or vice-versa). Similarly, if Rotors 1 and 3 have the same thrust the quad-rotor would move in the other symmetric direction.
 
-\todo{Add subfigures of picture of quad from top with direction of motor rpm. (Check from wikipedia https://en.wikipedia.org/wiki/Quadcopter)}
+\begin{figure}[h]
+  \centering
+    \begin{subfigure}[c]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{quadrotor_rotors_roll.png}
+        \caption{\label{fig:fig1}}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{quadrotor_rotors_pitch.png}
+        \caption{\label{fig:fig2}}
+    \end{subfigure}
+    \caption{The configuration of the 4 rotors of a quad-rotor to change roll and pitch.}
+\end{figure}
 
 \section{System modelling}
 
