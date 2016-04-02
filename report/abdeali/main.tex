@@ -151,7 +151,7 @@ One of the major use cases for an autonomous quad-rotor is to carry payloads fro
 
 As a reinforcement problem, this brings up further questions. In the original scenario, it was already difficult to define the reward as a "good flight" is not clearly defined. Now, we want to define a "good flight for the payload" also.
 
-\todo{Add picture of quadrotor and quadrotor with payload}
+\todo{Add picture of quad-rotor and quadrotor with payload}
 
 \section{Outline}
 
@@ -203,7 +203,7 @@ In such cases, the policies that are searched (the policy class) are restricted 
 
 There has been some work to control the payload of an UAV directly using Control Theory \cite{PayloadControlTheory,PayloadControlTheory2}. These approaches again require a lot of knowledge about the system, including the tension in the joint. Some even approximate the system to be linear to be able to solve the resulting differential equations.
 
-There has also been some work in controlling payloads of UAVs using Reinforcement Learning \cite{PayloadLSPI}. In this, Least Square Policy Iteration (LSPI) is used. Three different LSPI are used to track the x, y, and z dimensions. This has the disadvantage of these three learning policy iterations that can clash with each other. In the case of a quadrotor, where the system is under actuated, the x and y dimensions are correlated.
+There has also been some work in controlling payloads of UAVs using Reinforcement Learning \cite{PayloadLSPI}. In this, Least Square Policy Iteration (LSPI) is used. Three different LSPI are used to track the x, y, and z dimensions. This has the disadvantage of these three learning policy iterations that can clash with each other. In the case of a quad-rotor, where the system is under actuated, the x and y dimensions are correlated.
 
 \todo{Add picture of quadrotor with payload explaining the variables}
 
@@ -284,7 +284,7 @@ There, they created the Model of the helicopter by getting trajectories from a h
 
 Next, they design a shallow neural network to make the policy class $\Pi$ that PEGASUS requires. The weights of the neural network are taken as the parameters of the policy that are learnt by PEGASUS. This neural network is specific for the helicopter and cannot be generalized to other UAVs with different dynamics.
 
-The reward function used in this paper is the L2 norm of the difference between the expected position and the original position. It includes the x, y, z position as well as the yaw. And the linear velocities are included in this too, with the target velocity being 0. As this is specifically for hovering, they also have a negative reward for large actions, as jerky behaviour is not wanted. With this system, they were able to make the quadrotor hover and move in lines successfully.
+The reward function used in this paper is the L2 norm of the difference between the expected position and the original position. It includes the x, y, z position as well as the yaw. And the linear velocities are included in this too, with the target velocity being 0. As this is specifically for hovering, they also have a negative reward for large actions, as jerky behaviour is not wanted. With this system, they were able to make the quad-rotor hover and move in lines successfully.
 
 \subsection{Aerobatics}
 
@@ -344,10 +344,6 @@ The environment transmits the state information using the RLEnv message on the t
 
 An environment named Hector Quad-rotor has been implemented which passes the action from the agent to the gazebo environment as a twist state. The sensation function is also implemented in such a way as to wait for gazebo to complete a transition step and return back the observable state from this. For all this a random seed can be set in gazebo to create the repeatable scenarios required by PEGASUS.
 
-\section{Variables and settings}
-\subsection{Agent variables}
-\subsection{Environment variables}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Quad-rotor dynamics}
 
@@ -359,11 +355,11 @@ Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for
 
 \todo{Add picture of quad from top with names for the rotors. (Check the rotor names from wikipedia https://en.wikipedia.org/wiki/Quadcopter}
 
-\begin{itemize}
-\item{{\bf Altitude (z)}: To change altitude (in the positive z direction) equal thrust is applied to all the rotors. Alternate rotors are given thrust in opposite directions so that the torque does not cause the quad-rotor to change it's pitch and roll. For example, if Rotors 1 and 3 are moving in the clockwise direction Rotors 2 and 4 need to move in anti-clockwise direction. This is also required for hovering as there is a constant gravitational force acting downward which needs to be countered.}
-\item{{\bf Yaw}: To change the yaw while hovering, the thrust applied to the rotors need to be different so that torque is not zero. But as we do not want a force in the z direction, alternate rotors have the same thrust. For example, Rotors 1 and 3 need the same thrust and Rotors 2 and 4 also need the same thrust. But one pair will have a lesser thrust than the other depending on the direction in which yaw needs to be changed.}
-\item{{\bf Pitch and Roll}: In a quad-rotor, it can be observed that the x and y directions (or the pitch and roll angles) are symmetric. This symmetric nature let's us use the similar control logic for both these directions. To change the pitch and roll, the alternate motors move in opposite directions to counter torque appropriately. Here, one pair of diametrically opposite motors have the same thrust while the other pair does not. This causes the quad-rotor to turn toward the direction of the lesser rotor. For example, if Rotors 2 and 4 have the same thrust, Rotor 1 would have more thrust than Rotor 3 (or vice-versa). Similarly, if Rotors 1 and 3 have the same thrust the quad-rotor would move in the other symmetric direction.}
-\end{itemize}
+{\bf Altitude (z)}: To change altitude (in the positive z direction) equal thrust is applied to all the rotors. Alternate rotors are given thrust in opposite directions so that the torque does not cause the quad-rotor to change it's pitch and roll. For example, if Rotors 1 and 3 are moving in the clockwise direction Rotors 2 and 4 need to move in anti-clockwise direction. This is also required for hovering as there is a constant gravitational force acting downward which needs to be countered.
+
+{\bf Yaw}: To change the yaw while hovering, the thrust applied to the rotors need to be different so that torque is not zero. But as we do not want a force in the z direction, alternate rotors have the same thrust. For example, Rotors 1 and 3 need the same thrust and Rotors 2 and 4 also need the same thrust. But one pair will have a lesser thrust than the other depending on the direction in which yaw needs to be changed.
+
+{\bf Pitch and Roll}: In a quad-rotor, it can be observed that the x and y directions (or the pitch and roll angles) are symmetric. This symmetric nature let's us use the similar control logic for both these directions. To change the pitch and roll, the alternate motors move in opposite directions to counter torque appropriately. Here, one pair of diametrically opposite motors have the same thrust while the other pair does not. This causes the quad-rotor to turn toward the direction of the lesser rotor. For example, if Rotors 2 and 4 have the same thrust, Rotor 1 would have more thrust than Rotor 3 (or vice-versa). Similarly, if Rotors 1 and 3 have the same thrust the quad-rotor would move in the other symmetric direction.
 
 \todo{Add subfigures of picture of quad from top with direction of motor rpm. (Check from wikipedia https://en.wikipedia.org/wiki/Quadcopter)}
 
@@ -375,7 +371,7 @@ In the paper, each part of the quad-rotor is modelled, starting from the motors.
 
 Once the basic linear forces have been accounter for, the angular forces are found. The angular forces include the Rolling moments, Pitching moments, and Yawing moments. They go on to find the dynamic equation of the BLDC rotors also, as this would contribute to the moments to a small extent. This is found using a simple first order transfer function - to recreate the dynamics the propeller would acheive between the set-point required and the actual speed.
 
-Using these individual forces, the net force on the quad-rotor can be calculated. This gives a set of equations defining the moments and forces \citet[see equation 7][]{QuadrotorDynamics}. Using this, it is now possible to define the the transition function as:
+Using these individual forces, the net force on the quad-rotor can be calculated. This gives a set of equations defining the moments and forces (See equation 7 in Samir Boubdallah and Roland Siegwart's work \cite{QuadrotorDynamics}). Using this, it is now possible to define the the transition function as:
 
 \begin{equation} \begin{split}
   f(\bar{S}, \bar{U}) = \left\{
@@ -400,6 +396,153 @@ Where $\bar{U}$ is the action which is a 4 dimensional vector (1 action per roto
 
 This model is useful, as it helps to formulate the best policy class that can be used for this system in the case of PEGASUS.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Position control}
+
+As described earlier, velocity control has already been implemented in the Hector Quadrotor package. This is simply an abstraction from the motor to velocity of the quad-rotor itself. This is deterministic and is based on the model information of the quad-rotor. No learning takes place here.
+
+On top of velocity, the next step is to establish a position control using PEGASUS. Here, when doing the learning, we first train the quad-rotor to learn by itself. Then we use the learnt policy and fine tune it for a particular payload. This benefit of this system is that the learning for the payload is much faster because the initial policy there is close to the optimal policy.
+
+Hence, we again abstract the payload out from the learning. This enables us to train a model to learn multiple different payloads faster. And we transfer the knowledge learnt from the quad-rotor easily without excessive learning.
+
+\section{Quad-rotor control}
+
+A typical implementation of PEGASUS in our case would have atleast 4 paramters in our policy class (for roll, pitch, yaw, and altitude) that need to be trained. We used a gradient descent method to find the maimum valued policy in the PEGASUS algorithm.
+
+The {\bf state} has 8 terms, of which 4 are independent (they can be calculated from the other 4). It captures the absolute position of the robot from a given origin. This can be found using external sensors like a set of cameras pointing a the quad-rotor or onboard sensors like IMU and altimeter. The state vector is:
+\begin{equation}
+  State = s = [x, y, z, \omega, \dot{x}, \dot{y}, \dot{z}, \dot{w}]
+\end{equation}
+Where, $(x, y, z)$ is the position of the center of mass of the quad-rotor at any given time, and $\omega$ is the yaw of the quad-rotor. The state could potentially also include the roll and pitch of the quad-rotor - but we found that no significant improvement was found using those parameters. Also, theoretically the pitch and roll are correlated to the velocity $(\dot{x}, \dot{y}, \dot{z})$ and so offer no new data to learn using.
+
+For the origin, we use the relative position of the quad-rotor from the target position. This allows us to not be constrained in a specific area in space. This is bostered by the intuitive observation that the policy wouldn't change based on absolute position, rather it would change based on the relative position of the target and the robot. This reduces learing time drastically and makes the polciy generalized over space.
+
+The {\bf action} used in our implementation are the abstracted velocities after the velocity control. The action vector is:
+\begin{equation}
+  Action = a = [\dot{x}, \dot{y}, \dot{z}, \dot{\omega}]
+\end{equation}
+The action used is the abstract velocity, as this allows us to be flexible when choosing the system. This same PEGASUS formulation can be used if the robot is an octa-quad or similar UAVs, without any change in the position control. The benefit here, is that if a multi rotor UAV finds that there is a defect in one of it's motors, it is easy to switch over to another policy which does not use this motor. This enables the UAV to be smarter and control damage without affecting performance.
+
+The {\bf policy} class used for the PEGASUS is from the above mentioned state space to the action space $\pi: S \rightarrow A$. The policy is written as:
+\begin{equation}
+  Policy = \pi(s) = \left\{
+    \begin{array}{c}
+      c_1 \times x + c_2 \times \dot{x} \\
+      c_3 \times y + c_4 \times \dot{y} \\
+      c_5 \times z + c_6 \times \dot{z} \\
+      c_7 \times \omega + c_8 \times \dot{\omega} \\
+    \end{array}
+  \right\}
+\end{equation}
+
+
+The {\bf reward} used is the L1 norm of the deviation from the target. The reward is negative, and so the maximum reward that the quad-rotor can acheive is zero. A zero reward is got when it hovers exactly at the target. The reward function is written as:
+\begin{equation}
+  Reward = r(s) = - |x - x_0| - |y - y_0| - |z - z_0| - K \times |\omega - \omega_0|
+\end{equation}
+
+The roll and pitch are not considered in the target nor the state as a quadrotor cannot hover at a position with a non-zero roll and pitch. Hence, we alway assume the target roll and pitch to be zero. It is impossible to learn a policy which allows the quadrotor to maintain a specific roll and pitch as it would simply move to another orientation, and when returning back to the $(x, y, z, \omega)$ the roll and pitch will again change.
+
+Trying to maintain a roll and pitch is the specific case of unstable targets. In aerobatics, veteran human pilots attempt to maintain the quadrotor in an inverted state. Our method gives the quad-rotor a negative reward in such cases as this is a difficult method to learn. The policy is unable to handle a unstable like this, and things spiral out of control.
+
+Unstable states like the ones seen in aerobatics have the problem that the mechanism is too complex to model into simple closed form reward functions. Apprenticeship learning is something that would make this possible, as was done by Andrew Ng, Jin Kim, Michael Jordan, and Shankar Sastry in their work with inverted helicopters \cite{InvertedHelicopterFlight}.
+
+\todo{Add graph of value of the policy being found over time}
+
+\todo{Add 3d schematic of it going to a position with path trace}
+
+\todo{Add 3d schenatic of it going to a position with path trace and angle for yaw}
+
+\todo{Add 3d schematic of learning with path trace}
+
+\subsection{Time improvement}
+
+The gradient descent method attempts to move in small steps in various directions and approximates the gradient of this multi-dimensional function. Hence, if there are $P$ parameters in the policy class, it calcuates the value of the policy $2 \times P$ times. Now if we run the gradient descent $T$ times, the number of episodes that are run are $2 \times H \times P \times T$ where $H$ is the number of times we average the value of the policy in 1 scenario. 
+
+We notice that a few parameters are independent in the chosen policy class. For example, $c_1$ and $c_2$ can be learnt independent of $c_7$ and $c_8$. Hence by learning this piece by piece, we can increase the chance of converging faster. This basically means we would be running multiple policy gradient on various parameters independently.
+
+Currently, ODE does not have GPU capabilities and so is forced to run in the CPU. Because of the nature of physics simulations (where every time step depends on the last) it is not possible to parallelize the steps. Running gradient descent in smaller subsets of the policy also makes it possible to parallelize the learning over multiple computers, and hence faster.
+
+\todo{Add graph of value of the policy being found over time (compare with earlier time)}
+
+\todo{Add 3d schematic of learning with path trace for each component}
+
+\section{Payload control}
+
+The next step is to control the payload's position. Here, we add a payload with some freedom at the joint. This makes the payload move in it's own path, not fixed by the quad-rotor's path. Hence, the inertia the payload accumulates cannot be directly controlled.
+
+The state vector used in PEGASUS is again the same as above, but it uses the state of the payload rather than that of the quad-rotor. Also, the target state that needs to be acheived is the payload's state.
+
+The action is still the action of the quadrotor. There is no action that can be done directly on the payload as the joint is not actuated. Hence, the only control inputs that we have is the velocity of the quadrotor. It is interesting to note that when using the above reward and policy class the payload moves in a smooth trajectory without much deviation from the intended behaviour. This is without any state information of the quad-rotor. This is probably because the state information of the quadrotor is highly correlated to the state of the payload. If we wish to add more joints (like a chain for example), this would not hold true, and a better policy would need to be considered.
+
+\subsection{Payload model implementation}
+\todo{Add more info about the type of joint}. As the joint is a pin joint, there is stochasticity involved here also.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Trajectory control}
+
+Once the velocity and position control are established, we would want the payload and the quad-rotor or payload to move in trajectories. A trajectory is a spatial function which relates position and time. Hence, we now try to control the position the quad-rotor or payload attains at a specific time, introducing the new variable time.
+
+There are multiple different methods to trace a trajectory after position or velocity control are established. Each technique has it's strengths and weaknesses. So we analyze three methods which use a pre existing trajectory which is given before hand. This trajectory information is then used to find the optimal controls to give to the quad-rotor to acheive the trajectory.
+
+\section{Predator Prey}
+
+In predator prey, the complete trajectory function with time is known. Here, the target of the quad-rotor is changed at every step to be the expected position after a certain time. Hence, we can say the quad-rotor or payload (predator) tries to pursue the trajectory (prey) where the target has a time lead.
+
+There has been some work in predator prey methods \todo{Add more info and papers}
+
+\todo{Add figure explaining how predator-prey works}
+
+\section{Checkpoint}
+
+A checkpoint is defined as a set of points on the trajectory. The quad-rotor or payload is expected to go through these checkpoints in the appropriate order. Hence, this is anologous to the quad-rotor going through loops which are predefined in an arena. The checkpoints do not have specific timestamps here, but there is an ordering that needs to be followed.
+
+The quad-rotor or payload is considered to have gone through a checkpoint if it moved "close" to that point. For example, consider a checkpoint that is defined by the position information:
+\begin{equation}
+  [x_c, y_c, z_y, \omega_c]
+\end{equation}
+We consider the quad-rotor or payload to have gone through this checkpoint if their position is within a spatial neighbourhood of the checkpoint. This can be written as:
+\begin{equation} \begin{split}
+  |x - x_c| &< \epsilon_x \\
+  |y - y_c| &< \epsilon_y \\
+  |z - z_c| &< \epsilon_z \\
+  |\omega - \omega_c| &< \epsilon_\omega
+\end{split} \end{equation}
+The $\epsilon_i$ would be different for $\omega$ as compared to the others because of the units. Also, we notice that $\epsilon_z$ need not be very small as altitude control of the quadrotor is considerably better than x or y. Larger errors in altitude can be easily corrected when prusuing the next checkpoint.
+
+Some noteworthy comments about this technique are:
+
+{\bf Retracing paths}: If a checkpoint is missed due to control error in the trajectory, the quad-rotor would be forced to go backward and find this checkpoint. This is counter productive and may not be a good idea because it modifies the original structure of the trajectory that had to be traced.
+
+{\bf Hard bounds on $\epsilon_i$}: The $\epsilon_i$ which is used to check whether the checkpoint was passed is a hard bound. For example, if the quad-rotor or payload is a little outside this boundary, the checkpoint is not passed. This boundary is arbitrary and can be made soft using fuzzy concepts.
+
+{\bf Jerky trajectories}: The underlying policy that is being used is the position control. So the quad-rotor thinks that it should stop at the next checkpoint because it has reached the target. Hence, it decelerate when it is in the checkpoint's vicinity. This causes the trajectory to be a little jerky adding excessive noise near the checkpoint.
+
+{\bf Piecewise smooth}: Although the trajectory is jerky near the checkpoint, we can term this trajectory as piecewise smooth. Between checkpoints, the trajectory is very smooth and the expected path that the original trajectory that the checkpoints were generated from.
+
+{\bf Generating checkpoints}: There is no direct method to generate checkpoints. It is important that checkpoints are chosed with an appropriate distance between them. Intuitively we notice that in a smooth part of the trajectory few checkpoints are needed. But near a sharp turn, more checkpoints are required so as to decelerate appropriately and make a fine turn.
+
+\todo{Add figure explaining what the checkpoint method does}
+
+\section{Waypoint}
+
+A waypoint is similar to the checkpoint concept. We can think of this as a special checkpoint where the condition to pass is that the quad-rotor or payload passes the plane defined by the normal to the trajectory at this point. The quad-rotor or payload can also be restricted to pass through a specific patch in the plane. Hence, we are not restricted to the absolute $(x, y, z)$ directions, rather the frame of the expected position is used.
+
+Because we simply need the quadrotor to pass the plane of the waypoint, even if the control is bad at certain areas, it does not change the original structure of the trajectory. This comes at the cost that the error in this direction could increase over time. However, we expect that this would not be unbounded as the quad-rotor policy would not allow this unless there is a flaw in the controller or the policy.
+
+We notice that we have similar properties to the checkpoint technique, but this solves the issue of unwanted retracing of paths. We again find a fuzzy boundary for $\epsilon_i$ would prove better. But a fuzzy waypoint would give the benefit that the $\epsilon_i$ boundary is in the frame of the trajectory itself. This enables us to have a finer control of the structure of the expected position. Consider the case where the expected trajectory is a circle. If an oval is an acceptable trajectory instead of a circle, a waypoint method (or a fuzzy waypoint) would be able to acheive that considerably easier. This is because the boundaries are in the frame of the waypoint, and this changes at every instant in a circle.
+
+\todo{Add figure explaining what the waypoint method does}
+
+
+\todo{Add figure showing the path it follows with these 3 tecnhiques}
+
+\todo{Add figure showing the deviation over time for a circle for all 3 techniques}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Apprenticeship Learning}
+
+\todo{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography.
 
