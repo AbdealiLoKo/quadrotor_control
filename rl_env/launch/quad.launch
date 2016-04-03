@@ -28,7 +28,6 @@
   <arg name="model" default="$(find rl_env)/src/Env/HectorQuad/quad.gazebo.xacro"/>
   <arg name="tf_prefix" default="$(optenv ROS_NAMESPACE)"/>
   <arg name="base_link_frame" default="$(arg tf_prefix)/base_link"/>
-  <node pkg="tf2" type="static_transform_publisher" name="link1_broadcaster" args="1 0 0 0 0 0 1 /world /map 100" />
   <arg name="world_frame" default="world"/> <!-- This should actually be "/world". See https://github.com/ros-simulation/gazebo_ros_pkgs/pull/324 -->
   <arg name="x" default="0.0"/>
   <arg name="y" default="0.0"/>
@@ -89,9 +88,9 @@
   </group>
 
   <node pkg="hector_trajectory_server" type="hector_trajectory_server" name="hector_trajectory_server" respawn="true" output="screen">
-    <param name="target_frame_name" type="string" value="/payload" if="$(arg use_payload)" />
-    <param name="target_frame_name" type="string" value="/base_link" unless="$(arg use_payload)" />
-    <param name="source_frame_name" type="string" value="/world" />
+    <param name="source_frame_name" type="string" value="/payload" if="$(arg use_payload)" />
+    <param name="source_frame_name" type="string" value="/base_link" unless="$(arg use_payload)" />
+    <param name="target_frame_name" type="string" value="/world" />
     <param name="trajectory_update_rate" type="double" value="4.0" />
     <param name="trajectory_publish_rate" type="double" value="0.25" />
   </node>
