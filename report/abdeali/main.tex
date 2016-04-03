@@ -521,25 +521,25 @@ Unstable states like the ones seen in aerobatics have the problem that the mecha
 
 \todo{Add 3d schematic of it going to a position with path trace}
 
-\todo{Add 3d schenatic of it going to a position with path trace and angle for yaw}
-
 \todo{Add 3d schematic of learning with path trace}
 
 \subsection{Time analysis}
 
 The gradient descent method attempts to move in small steps in various directions and approximates the gradient of this multi-dimensional function. Hence, if there are $P$ parameters in the policy class, it calcuates the value of the policy $2 \times P$ times. Now if we run the gradient descent $T$ times, the number of episodes that are run are $2 \times H \times P \times T$ where $H$ is the number of times we average the value of the policy in 1 scenario.
 
-We notice that a few parameters are independent in the chosen policy class. For example, $c_1$ and $c_2$ can be learnt independent of $c_7$ and $c_8$. Hence by learning this piece by piece, we can increase the chance of converging faster. This basically means we would be running multiple policy gradient on various parameters independently.
+It is a good idea to remove stochasticity and learn in the beginning. This makes the policy converge faster although does not capture the stochasticity. Later, we once again learn with stochasticity - this earlier policy gives a good starting point as the policy for the stochastic environment would be close to the non-stochastic one. Hence, the convergence time is lower.
+
+We also notice that a few parameters are independent in the chosen policy class. For example, $c_1$ and $c_2$ can be learnt independent of $c_7$ and $c_8$. But, all the parameters depend on $c_5$ and $c_6$ as they need to be able to hover. Hence by learning this piece by piece, we can increase the chance of converging faster. This basically means we would be running multiple policy gradient on various parameters independently.
 
 Currently, ODE does not have GPU capabilities and so is forced to run in the CPU. Because of the nature of physics simulations (where every time step depends on the last) it is not possible to parallelize the steps. Running gradient descent in smaller subsets of the policy also makes it possible to parallelize the learning over multiple computers, and hence faster.
 
-\todo{Add graph of value of the policy being found over time (compare with earlier time)}
-
-\todo{Add 3d schematic of learning with path trace for each component}
-
 \section{Payload control}
 
-\todo{Add picture of quadrotor with payload from simulations}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{quadrotor_payload_sim.png}
+    \caption{Payload on quad-rotor simulated by Hector Quadrotor, ROS, and gazebo.}
+\end{figure}
 
 The next step is to control the payload's position. Here, we add a payload with some freedom at the joint. This makes the payload move in it's own path, not fixed by the quad-rotor's path. Hence, the inertia the payload accumulates cannot be directly controlled.
 
