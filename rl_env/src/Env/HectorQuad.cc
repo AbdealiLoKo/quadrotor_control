@@ -245,7 +245,43 @@ void HectorQuad::reset() {
   curr = 1;
 }
 
-int HectorQuad::pure_pursuit(int wp) {
+// --------------------------------------------------------------------
+// Checkpoints
+
+
+
+// --------------------------------------------------------------------
+// Waypoints
+int HectorQuad::use_waypoints_circle(int wp) {
+  /*
+   * Checks whether a certain waypoint's plane has been crossed
+   * as coming from the previous waypoint
+  */
+  final.pose.position.x = waypoints[wp].first;
+  final.pose.position.y = waypoints[wp].second;
+
+  float d1 = waypoints[wp].first-waypoints[wp-1].first;
+  float d2 = waypoints[wp].second-waypoints[wp-1].second;
+  float slope = -d1/d2;
+  float c = waypoints[wp].second-slope*waypoints[wp].first;
+
+  float p = (waypoints[wp-1].second-slope*waypoints[wp-1].first-c)
+            *(current.pose.position.y-slope*current.pose.position.x-c);
+
+  if ( p < 0 ) {
+    return wp;
+  }
+
+  final.pose.position.x = waypoints[wp+1].first;
+  final.pose.position.y =  waypoints[wp+1].second;
+  final.pose.position.z = 5;
+  return wp + 1;
+}
+
+
+// --------------------------------------------------------------------
+// Pure pursuit
+int HectorQuad::pure_pursuit_circle(int wp) {
   /*
    * Implement PurePursuit tracking
    * Always lock on to a target at a distance LOOKAHEAD
@@ -288,32 +324,8 @@ int HectorQuad::pure_pursuit(int wp) {
 
   final.pose.position.x = checkpoint_x;
   final.pose.position.y = checkpoint_y;
+  final.pose.position.z = 5;
   return wp + i;
- }
-
-int HectorQuad::form_waypoints(int wp) {
-  /*
-   * Checks whether a certain waypoint's plane has been crossed
-   * as coming from the previous waypoint
-  */
-  final.pose.position.x = waypoints[wp].first;
-  final.pose.position.y = waypoints[wp].second;
-
-  float d1 = waypoints[wp].first-waypoints[wp-1].first;
-  float d2 = waypoints[wp].second-waypoints[wp-1].second;
-  float slope = -d1/d2;
-  float c = waypoints[wp].second-slope*waypoints[wp].first;
-
-  float p = (waypoints[wp-1].second-slope*waypoints[wp-1].first-c)
-            *(current.pose.position.y-slope*current.pose.position.x-c);
-
-  if ( p < 0 ) {
-    return wp;
-  }
-
-  final.pose.position.x = waypoints[wp+1].first;
-  final.pose.position.y =  waypoints[wp+1].second;
-  return wp + 1;
 }
 
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
@@ -328,9 +340,9 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if ( time_in_steps < 1000 ) {
   } else if (curr <= 1000) {
     if ( ALGORITHM == SIMPLE_WAYPOINTS ) {
-      curr = form_waypoints(curr);
+      curr = use_waypoints_circle(curr);
     } else if ( ALGORITHM == PURE_PURSUIT ) {
-      curr = pure_pursuit(curr);
+      curr = pure_pursuit_circle(curr);
     }
   }
 
