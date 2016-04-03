@@ -58,7 +58,7 @@ void process_state(const rl_common::RLStateReward::ConstPtr &state_in){
     info.episode_reward = 0;
     info.number_actions += 1;
 
-  } else if (state_in->terminal || info.number_actions > MAX_STEPS) {
+  } else if (state_in->terminal /*|| info.number_actions > MAX_STEPS*/) {
     info.episode_reward += state_in->reward;
     info.episode_number += 1;
     agent->last_action(state_in->reward);
