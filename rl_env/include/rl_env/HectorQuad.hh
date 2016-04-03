@@ -22,10 +22,11 @@
 // Services
 #include <rl_common/RLRunSim.h>
 
-#define SIMPLE_WAYPOINTS 0 
+#define SIMPLE_WAYPOINTS 0
 #define PURE_PURSUIT 1
 #define ALGORITHM 0
-#define NOTRAIN_PEGASUS true
+
+#define TRAIN_PEGASUS true
 
 class HectorQuad: public Environment {
 public:

@@ -114,9 +114,9 @@ const std::vector<float> &HectorQuad::sensation() {
 }
 
 bool HectorQuad::terminal() {
-  #ifdef NOTRAIN_PEGASUS
+  if (! TRAIN_PEGASUS) {
     return false;
-  #endif
+  }
 
   if (cur_step > 10000) return true;
   return false;
