@@ -284,7 +284,7 @@ int HectorQuad::form_waypoints(int wp) {
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
-  final.pose.position.x = 0;
+  final.pose.position.x = 5;
   final.pose.position.y = 5;
   final.pose.position.z = 5;
   final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(

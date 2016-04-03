@@ -5,7 +5,7 @@ Pegasus::Pegasus() {
   n_state = 8;
   n_policy = 8;
 
-  policy_stepsize = 0.001;
+  policy_stepsize = 0.0001;
   discount_factor = 0.90;
   policy_change = 0.01;
   policy_file_name = "policy.txt";
