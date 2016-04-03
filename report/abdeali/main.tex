@@ -511,17 +511,23 @@ The {\bf reward} used is the L1 norm of the deviation from the target. The rewar
   Reward = r(s) = - |x - x_0| - |y - y_0| - |z - z_0| - K \times |\omega - \omega_0|
 \end{equation}
 
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.7\textwidth]{quadrotor_position_control.png}
+    \caption{Quad-rotor using the trained policy by PEGASUS to move from one position (x, y, z, $\protect\omega$) to another.}
+\end{figure}
+
 The roll and pitch are not considered in the target nor the state as a quadrotor cannot hover at a position with a non-zero roll and pitch. Hence, we alway assume the target roll and pitch to be zero. It is impossible to learn a policy which allows the quadrotor to maintain a specific roll and pitch as it would simply move to another orientation, and when returning back to the $(x, y, z, \omega)$ the roll and pitch will again change.
 
 Trying to maintain a roll and pitch is the specific case of unstable targets. In aerobatics, veteran human pilots attempt to maintain the quadrotor in an inverted state. Our method gives the quad-rotor a negative reward in such cases as this is a difficult method to learn. The policy is unable to handle a unstable like this, and things spiral out of control.
 
 Unstable states like the ones seen in aerobatics have the problem that the mechanism is too complex to model into simple closed form reward functions. Apprenticeship learning is something that would make this possible, as was done by Andrew Ng, Jin Kim, Michael Jordan, and Shankar Sastry in their work with inverted helicopters \cite{InvertedHelicopterFlight}.
 
-\todo{Add graph of value of the policy being found over time}
-
-\todo{Add 3d schematic of it going to a position with path trace}
-
-\todo{Add 3d schematic of learning with path trace}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=\textwidth]{quadrotor_position_control_time.png}
+    \caption{Value of best policy found with each iteration of PEGASUS to move to a given target position $(x, y, z, \omega) = (5, 5, 5, 60\protect^{\circ})$}
+\end{figure}
 
 \subsection{Time analysis}
 
@@ -632,7 +638,7 @@ Some noteworthy comments about this technique are:
 \begin{figure}[h]
   \centering
     \includegraphics[width=0.6\textwidth]{purepursuit_con.png}
-    \caption{Schematic of the pure pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because of the pursuit is leading by a large amount.}
+    \caption{Schematic of the pure pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because the target is leading by a large amount.}
 \end{figure}
 
 \todo{Add figure showing the path it follows with these 3 tecnhiques}
