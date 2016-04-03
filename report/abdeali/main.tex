@@ -477,8 +477,6 @@ Hence, we again abstract the payload out from the learning. This enables us to t
 
 \section{Quad-rotor control}
 
-\todo{Add picture of quadrotor from simulations}
-
 A typical implementation of PEGASUS in our case would have atleast 4 paramters in our policy class (for roll, pitch, yaw, and altitude) that need to be trained. We used a gradient descent method to find the maimum valued policy in the PEGASUS algorithm.
 
 The {\bf state} has 8 terms, of which 4 are independent (they can be calculated from the other 4). It captures the absolute position of the robot from a given origin. This can be found using external sensors like a set of cameras pointing a the quad-rotor or onboard sensors like IMU and altimeter. The state vector is:
@@ -556,14 +554,6 @@ Once the velocity and position control are established, we would want the payloa
 
 There are multiple different methods to trace a trajectory after position or velocity control are established. Each technique has it's strengths and weaknesses. So we analyze three methods which use a pre existing trajectory which is given before hand. This trajectory information is then used to find the optimal controls to give to the quad-rotor to acheive the trajectory.
 
-\section{Predator Prey}
-
-In predator prey, the complete trajectory function with time is known. Here, the target of the quad-rotor is changed at every step to be the expected position after a certain time. Hence, we can say the quad-rotor or payload (predator) tries to pursue the trajectory (prey) where the target has a time lead.
-
-There has been some work in predator prey methods \todo{Add more info and papers}
-
-\todo{Add figure explaining how predator-prey works}
-
 \section{Checkpoint}
 
 A checkpoint is defined as a set of points on the trajectory. The quad-rotor or payload is expected to go through these checkpoints in the appropriate order. Hence, this is anologous to the quad-rotor going through loops which are predefined in an arena. The checkpoints do not have specific timestamps here, but there is an ordering that needs to be followed.
@@ -581,6 +571,12 @@ We consider the quad-rotor or payload to have gone through this checkpoint if th
 \end{split} \end{equation}
 The $\epsilon_i$ would be different for $\omega$ as compared to the others because of the units. Also, we notice that $\epsilon_z$ need not be very small as altitude control of the quadrotor is considerably better than x or y. Larger errors in altitude can be easily corrected when prusuing the next checkpoint.
 
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{checkpoint.png}
+    \caption{Schematic of the checkpoint technique showing the quad-rotor and the set of checkpoints for this trajectory.}
+\end{figure}
+
 Some noteworthy comments about this technique are:
 
 {\bf Retracing paths}: If a checkpoint is missed due to control error in the trajectory, the quad-rotor would be forced to go backward and find this checkpoint. This is counter productive and may not be a good idea because it modifies the original structure of the trajectory that had to be traced.
@@ -593,7 +589,11 @@ Some noteworthy comments about this technique are:
 
 {\bf Generating checkpoints}: There is no direct method to generate checkpoints. It is important that checkpoints are chosed with an appropriate distance between them. Intuitively we notice that in a smooth part of the trajectory few checkpoints are needed. But near a sharp turn, more checkpoints are required so as to decelerate appropriately and make a fine turn.
 
-\todo{Add figure explaining what the checkpoint method does}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{checkpoint_con.png}
+    \caption{Schematic of the checkpoint technique showing the quad-rotor's path if a checkpoint has been missed, the path of the quad-rotor is completely different from the original trajectory.}
+\end{figure}
 
 \section{Waypoint}
 
@@ -601,10 +601,39 @@ A waypoint is similar to the checkpoint concept. We can think of this as a speci
 
 Because we simply need the quadrotor to pass the plane of the waypoint, even if the control is bad at certain areas, it does not change the original structure of the trajectory. This comes at the cost that the error in this direction could increase over time. However, we expect that this would not be unbounded as the quad-rotor policy would not allow this unless there is a flaw in the controller or the policy.
 
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{waypoint.png}
+    \caption{Schematic of the waypoint technique showing the quad-rotor and the set of waypoints for this trajectory. The plane of the last target is shown where the quad-rotor did not go through an $\epsilon$ neighbourhood of the waypoint, but passed the plane.}
+\end{figure}
+
 We notice that we have similar properties to the checkpoint technique, but this solves the issue of unwanted retracing of paths. We again find a fuzzy boundary for $\epsilon_i$ would prove better. But a fuzzy waypoint would give the benefit that the $\epsilon_i$ boundary is in the frame of the trajectory itself. This enables us to have a finer control of the structure of the expected position. Consider the case where the expected trajectory is a circle. If an oval is an acceptable trajectory instead of a circle, a waypoint method (or a fuzzy waypoint) would be able to acheive that considerably easier. This is because the boundaries are in the frame of the waypoint, and this changes at every instant in a circle.
 
-\todo{Add figure explaining what the waypoint method does}
+\section{Pure pursuit}
 
+In pure pursuit, the complete trajectory function with time is known. Here, the target of the quad-rotor is changed at every step to be the expected position after a certain time. Hence, we can say the quad-rotor or payload tries to pursue the trajectory where the target has a time lead.
+
+\todo{Add info and papers about predator prey in RL}
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{purepursuit.png}
+    \caption{Schematic of the pure pursuit technique showing the quad-rotor and the leading target. The velocities of the target and the quad-rotor indicate how they will move next.}
+\end{figure}
+
+Some noteworthy comments about this technique are:
+
+{\bf Lead time}: The amount of time by which the trajectory is leading will affect the actual trajectory the quad-rotor will fly. This may depend on trajectory to trajectory, for example a square would need a small lead time whereas a circle or oval would work well with a larger one in comparison. A straight line can have a large lead time.
+
+{\bf Speed}: The speed of the quad-rotor is not easy to control in pursuit. Here, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero.
+
+{\bf Constant lead time}: A constant leading time may be harmful because the leading time would depend on the trajectory itself. For example, a sharp corner would need a small leading time while a smooth trajectory would not need a small leading time. If the leading time is set to be too small, the quad-rotor would move very slowly as it assumes the target is close by.
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{purepursuit_con.png}
+    \caption{Schematic of the pure pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because of the pursuit is leading by a large amount.}
+\end{figure}
 
 \todo{Add figure showing the path it follows with these 3 tecnhiques}
 
