@@ -3,6 +3,7 @@
 <robot name="quadrotor" xmlns:xacro="http://ros.org/wiki/xacro">
   <!-- Taken fromthe Xacro file : <xacro:include filename="$(find hector_quadrotor_description)/urdf/quadrotor.urdf.xacro" /> -->
   <xacro:property name="pi" value="3.1415926535897931" />
+  <xacro:arg name="use_payload" default="false" />
 
   <!-- Sonar sensor include -->
   <!-- <xacro:include filename="$(find hector_sensors_description)/urdf/sonar_sensor.urdf.xacro" /> -->
@@ -30,49 +31,50 @@
     </collision>
   </link>
 
-  <link name="payload">
-    <visual>
-      <geometry>
-        <box size="0.3 0.3 0.3"/>
-      </geometry>
-      <material name="blue">
-        <color rgba="0 0.3 0 1"/>
-      </material>
-      <origin xyz="0 0 -0.3" rpy="0 0 0"/>
-    </visual>
+  <xacro:if value="$(arg use_payload)">
+    <link name="payload">
+      <visual>
+        <geometry>
+          <box size="0.3 0.3 0.3"/>
+        </geometry>
+        <material name="blue">
+          <color rgba="0 0.3 0 1"/>
+        </material>
+        <origin xyz="0 0 -0.3" rpy="0 0 0"/>
+      </visual>
 
-    <inertial>
-      <mass value="0.1" />
-      <inertia ixx="0.005" iyy="0.005" izz="0.005" ixy="0" ixz="0" iyz="0" />
-      <origin rpy="0 0 0" xyz="0 0 -0.3"/>
-    </inertial>
+      <inertial>
+        <mass value="0.1" />
+        <inertia ixx="0.005" iyy="0.005" izz="0.005" ixy="0" ixz="0" iyz="0" />
+        <origin rpy="0 0 0" xyz="0 0 -0.3"/>
+      </inertial>
 
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 -0.3"/>
-      <geometry>
-        <box size="0.3 0.3 0.3"/>
-      </geometry>
-    </collision>
-  </link>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 -0.3"/>
+        <geometry>
+          <box size="0.3 0.3 0.3"/>
+        </geometry>
+      </collision>
+    </link>
 
-  <joint name="payload_connector" type="revolute">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <axis xyz="1 0 0"/>
-    <parent link="base_link"/>
-    <child link="payload"/>
+    <joint name="payload_connector" type="revolute">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <axis xyz="1 0 0"/>
+      <parent link="base_link"/>
+      <child link="payload"/>
 
-    <limit lower="-1" upper="1" effort="1" velocity="1" />
-  </joint>
+      <limit lower="-1" upper="1" effort="1" velocity="1" />
+    </joint>
 
-<joint name="payload_connector2" type="revolute">
-    <origin xyz="0 0 0" rpy="0 0 0" />
-    <axis xyz="0 1 0"/>
-    <parent link="base_link"/>
-    <child link="payload"/>
+    <!-- <joint name="payload_connector2" type="revolute">
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <axis xyz="0 1 0"/>
+      <parent link="base_link"/>
+      <child link="payload"/>
 
-    <limit lower="-1" upper="1" effort="1" velocity="1" />
-  </joint>
-
+      <limit lower="-1" upper="1" effort="1" velocity="1" />
+    </joint> -->
+  </xacro:if>
   <!-- Sonar height sensor -->
   <!-- <xacro:sonar_sensor name="sonar" parent="base_link" ros_topic="sonar_height" update_rate="10" min_range="0.03" max_range="3.0" field_of_view="${40*pi/180}" ray_count="3">
     <origin xyz="-0.16 0.0 -0.012" rpy="0 ${90*pi/180} 0"/>
@@ -82,12 +84,12 @@
   <arg name="world_frame" default="world"/> <!-- This should actually be "/world". See https://github.com/ros-simulation/gazebo_ros_pkgs/pull/324 -->
   <arg name="base_link_frame" default="base_link"/>
 
+  <!-- Quadrotor Gazebo Plugins -->
   <xacro:include filename="$(find hector_quadrotor_gazebo)/urdf/quadrotor_sensors.gazebo.xacro" />
   <xacro:include filename="$(find hector_quadrotor_gazebo)/urdf/quadrotor_controller.gazebo.xacro" />
   <xacro:include filename="$(find hector_quadrotor_gazebo)/urdf/quadrotor_propulsion.gazebo.xacro" />
   <xacro:include filename="$(find hector_quadrotor_gazebo)/urdf/quadrotor_aerodynamics.gazebo.xacro" />
 
-  <!-- Quadrotor Gazebo Plugins -->
   <xacro:quadrotor_sensors />
   <xacro:quadrotor_controller />
   <xacro:quadrotor_propulsion />

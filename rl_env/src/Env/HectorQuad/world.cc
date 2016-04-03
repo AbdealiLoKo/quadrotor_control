@@ -26,48 +26,45 @@ namespace gazebo {
       int step_count = req.steps;
       world_ptr->StepWorld(step_count);
 
-      physics::ModelPtr model_ptr = world_ptr->GetModel("quadrotor");
-      physics::LinkPtr base_link_ptr = model_ptr->GetLink("base_link");
-      physics::LinkPtr payload_ptr = model_ptr->GetLink("payload");
-      // std::cout << "Pose: " << payload_ptr->GetWorldPose().pos.x << ","
-      //                       << payload_ptr->GetWorldPose().pos.y << ","
-      //                       << payload_ptr->GetWorldPose().pos.z << "\n";
-      // Use the payload's position and orientation
-      if ( payload_ptr == NULL ) {
+      physics::ModelPtr quad_ptr = world_ptr->GetModel("quadrotor");
+      if ( quad_ptr == NULL ) {
         res.success = false;
         return true;
-      } else {
-        res.success = true;
-
-        // Set time
-        common::Time sim_time = world_ptr->GetSimTime();
-        res.sim_time.sec = sim_time.sec;
-        res.sim_time.nsec = sim_time.nsec;
-
-        // Set pose
-        math::Pose pose = payload_ptr->GetWorldPose();
-        res.pose.position.x = pose.pos.x;
-        res.pose.position.y = pose.pos.y;
-        res.pose.position.z = pose.pos.z;
-        res.pose.orientation.x = pose.rot.x;
-        res.pose.orientation.y = pose.rot.y;
-        res.pose.orientation.z = pose.rot.z;
-        res.pose.orientation.w = pose.rot.w;
-
-        // Set twist
-        math::Vector3 lin_vel = payload_ptr->GetWorldLinearVel();
-        res.twist.linear.x = lin_vel.x;
-        res.twist.linear.y = lin_vel.y;
-        res.twist.linear.z = lin_vel.z;
-        math::Vector3 ang_vel = payload_ptr->GetWorldAngularVel();
-        res.twist.angular.x = ang_vel.x;
-        res.twist.angular.y = ang_vel.y;
-        res.twist.angular.z = ang_vel.z;
-        // std::cout << "Time : " << sim_time.sec << "." << sim_time.nsec
-        //           << "\t\tPos : " << pose.pos.z << "\n";
-
-        return true;
       }
+
+      // Use payload only if it exists.
+      physics::LinkPtr payload_ptr = quad_ptr->GetLink("payload");
+
+      res.success = true;
+
+      // Set time
+      common::Time sim_time = world_ptr->GetSimTime();
+      res.sim_time.sec = sim_time.sec;
+      res.sim_time.nsec = sim_time.nsec;
+
+      // Set pose
+      math::Pose pose = (payload_ptr)? payload_ptr->GetWorldPose() : quad_ptr->GetWorldPose();
+      res.pose.position.x = pose.pos.x;
+      res.pose.position.y = pose.pos.y;
+      res.pose.position.z = pose.pos.z;
+      res.pose.orientation.x = pose.rot.x;
+      res.pose.orientation.y = pose.rot.y;
+      res.pose.orientation.z = pose.rot.z;
+      res.pose.orientation.w = pose.rot.w;
+
+      // Set twist
+      math::Vector3 lin_vel = (payload_ptr)? payload_ptr->GetWorldLinearVel() : quad_ptr->GetWorldLinearVel();
+      res.twist.linear.x = lin_vel.x;
+      res.twist.linear.y = lin_vel.y;
+      res.twist.linear.z = lin_vel.z;
+      math::Vector3 ang_vel = (payload_ptr)? payload_ptr->GetWorldAngularVel() : quad_ptr->GetWorldAngularVel();
+      res.twist.angular.x = ang_vel.x;
+      res.twist.angular.y = ang_vel.y;
+      res.twist.angular.z = ang_vel.z;
+      // std::cout << "Time : " << sim_time.sec << "." << sim_time.nsec
+      //           << "\t\tPos : " << pose.pos.z << "\n";
+
+      return true;
     }
 
     ros::ServiceServer run_sim;
