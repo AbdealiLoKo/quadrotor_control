@@ -15,6 +15,8 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/Point.h>
 #include <gazebo_msgs/ModelState.h>
 #include <gazebo_msgs/SetModelState.h>
 #include <controller_manager_msgs/LoadController.h>
@@ -25,9 +27,9 @@
 
 #define SIMPLE_WAYPOINTS 0
 #define PURE_PURSUIT 1
-#define ALGORITHM -1
+#define ALGORITHM 1
 
-#define TRAIN_PEGASUS true
+#define TRAIN_PEGASUS false
 #define USE_WIND false
 
 class HectorQuad: public Environment {
@@ -47,7 +49,7 @@ protected:
   long long cur_step; // each step is 0.01 sec
 
   // Publishers, subscribers and services
-  ros::Publisher cmd_vel, motor_pwm, command_twist, wind, syscommand;
+  ros::Publisher cmd_vel, motor_pwm, command_twist, wind, syscommand, viz_points;
   ros::ServiceClient reset_world, run_sim, pause_phy, engage, shutdown,
                      list_controllers, load_controller, set_model_state;
   std_srvs::Empty empty_msg;

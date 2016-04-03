@@ -27,6 +27,7 @@ HectorQuad::HectorQuad()
   // motor_pwm = node.advertise<hector_uav_msgs::MotorPWM>("/motor_pwm", 5);
   wind = node.advertise<geometry_msgs::Vector3>("/wind", 5);
   syscommand = node.advertise<std_msgs::String>("/syscommand", 5);
+  viz_points = node.advertise<geometry_msgs::PointStamped>("/visualize_points", 5);
 
   // Services
   ros::service::waitForService("/gazebo/reset_world", -1);
@@ -66,14 +67,6 @@ HectorQuad::HectorQuad()
   shutdown = node.serviceClient<std_srvs::Empty>("/shutdown");
 
   reset();
-
-  std::vector<std::pair<float, float> > wps;
-  for(int i=0; i<1000; ++i) {
-    std::pair<float, float> p = std::make_pair(5 * sin(i/50.0), 5 * cos(i/50.0));
-    // std::pair<float, float> p = std::make_pair(i/20.0, cos(i/20.0));
-    wps.push_back(p);
-  }
-  waypoints = wps;
 }
 
 const std::vector<float> &HectorQuad::sensation() {
@@ -234,6 +227,21 @@ void HectorQuad::reset() {
   reset_syscommand.data = "reset";
   syscommand.publish(reset_syscommand);
 
+  if (ALGORITHM == SIMPLE_WAYPOINTS || ALGORITHM == PURE_PURSUIT) {
+    std::vector<std::pair<float, float> > wps;
+    for(int i=0; i<1000; ++i) {
+      std::pair<float, float> p = std::make_pair(5 * sin(i/50.0), 5 * cos(i/50.0));
+      // std::pair<float, float> p = std::make_pair(i/20.0, cos(i/20.0));
+      wps.push_back(p);
+      // geometry_msgs::PointStamped geo_point;
+      // geo_point.point.x = p.first;
+      // geo_point.point.y = p.second;
+      // geo_point.point.z = 5;
+      // viz_points.publish(geo_point);
+    }
+    waypoints = wps;
+  }
+
   curr = 1;
 }
 
@@ -319,11 +327,11 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
 
   if ( time_in_steps < 1000 ) {
   } else if (curr <= 1000) {
-    #if ( ALGORITHM == SIMPLE_WAYPOINTS )
+    if ( ALGORITHM == SIMPLE_WAYPOINTS ) {
       curr = form_waypoints(curr);
-    #elif ( ALGORITHM == PURE_PURSUIT )
+    } else if ( ALGORITHM == PURE_PURSUIT ) {
       curr = pure_pursuit(curr);
-    #endif
+    }
   }
 
   final.twist.linear.x = 0;
