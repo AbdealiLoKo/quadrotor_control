@@ -24,9 +24,10 @@
 
 #define SIMPLE_WAYPOINTS 0
 #define PURE_PURSUIT 1
-#define ALGORITHM 0
+#define ALGORITHM -1
 
-#define TRAIN_PEGASUS true
+#define TRAIN_PEGASUS false
+#define USE_WIND true
 
 class HectorQuad: public Environment {
 public:
@@ -41,10 +42,11 @@ public:
 protected:
   int n_policy, n_state, n_action;
   int phy_steps;
+  long seed;
   long long cur_step; // each step is 0.01 sec
 
   // Publishers, subscribers and services
-  ros::Publisher cmd_vel, motor_pwm, command_twist;
+  ros::Publisher cmd_vel, motor_pwm, command_twist, wind;
   ros::ServiceClient reset_world, run_sim, pause_phy, engage, shutdown,
                      list_controllers, load_controller, set_model_state;
   std_srvs::Empty empty_msg;
@@ -54,6 +56,7 @@ protected:
   gazebo_msgs::ModelState initial, final, current;
   gazebo_msgs::ModelState payload_initial, payload_final, payload_current;
   geometry_msgs::Twist prev_vel;
+  geometry_msgs::Vector3 wind_vel;
 
   // Waypoints
   std::vector<std::pair<float, float> > waypoints;

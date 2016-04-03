@@ -25,6 +25,7 @@ HectorQuad::HectorQuad()
   // cmd_vel = node.advertise<geometry_msgs::Twist>("/cmd_vel", 5);
   command_twist = node.advertise<geometry_msgs::TwistStamped>("/command/twist", 5);
   // motor_pwm = node.advertise<hector_uav_msgs::MotorPWM>("/motor_pwm", 5);
+  wind = node.advertise<geometry_msgs::Vector3>("/wind", 5);
 
   // Services
   ros::service::waitForService("/gazebo/reset_world", -1);
@@ -85,6 +86,22 @@ const std::vector<float> &HectorQuad::sensation() {
   current.pose = msg.response.pose;
   current.twist = msg.response.twist;
   get_trajectory();
+
+  // Set wind for next turn
+  if (USE_WIND) {
+    double max_wind = 5;
+    wind_vel.x += ((double)rand()/RAND_MAX - 0.5) * 2*max_wind * 0.01;
+    wind_vel.y += ((double)rand()/RAND_MAX - 0.5) * 2*max_wind * 0.01;
+    wind_vel.z += ((double)rand()/RAND_MAX - 0.5) * 2*max_wind * 0.01;
+    // truncate wind
+    wind_vel.x = std::max(wind_vel.x, -max_wind);
+    wind_vel.x = std::min(wind_vel.x, max_wind);
+    wind_vel.y = std::max(wind_vel.y, -max_wind);
+    wind_vel.y = std::min(wind_vel.y, max_wind);
+    wind_vel.z = std::max(wind_vel.z, -max_wind);
+    wind_vel.z = std::min(wind_vel.z, max_wind);
+    wind.publish(wind_vel);
+  }
 
   // Convert gazebo's state to internal representation
   s[0] = final.pose.position.z - current.pose.position.z;
@@ -194,6 +211,10 @@ void HectorQuad::reset() {
   initial.twist.angular.x = 0;
   initial.twist.angular.y = 0;
   initial.twist.angular.z = 0;
+
+  wind_vel.x = 0;
+  wind_vel.y = 0;
+  wind_vel.z = 0;
 
   // Reset and pause the world
   // Note: Pause has to be done only after `waitForService` finds the service.
