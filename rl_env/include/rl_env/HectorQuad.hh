@@ -11,6 +11,7 @@
 
 // Messages
 #include <std_srvs/Empty.h>
+#include <std_msgs/String.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <geometry_msgs/Pose.h>
@@ -26,8 +27,8 @@
 #define PURE_PURSUIT 1
 #define ALGORITHM -1
 
-#define TRAIN_PEGASUS false
-#define USE_WIND true
+#define TRAIN_PEGASUS true
+#define USE_WIND false
 
 class HectorQuad: public Environment {
 public:
@@ -46,7 +47,7 @@ protected:
   long long cur_step; // each step is 0.01 sec
 
   // Publishers, subscribers and services
-  ros::Publisher cmd_vel, motor_pwm, command_twist, wind;
+  ros::Publisher cmd_vel, motor_pwm, command_twist, wind, syscommand;
   ros::ServiceClient reset_world, run_sim, pause_phy, engage, shutdown,
                      list_controllers, load_controller, set_model_state;
   std_srvs::Empty empty_msg;

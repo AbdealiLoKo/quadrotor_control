@@ -26,6 +26,7 @@ HectorQuad::HectorQuad()
   command_twist = node.advertise<geometry_msgs::TwistStamped>("/command/twist", 5);
   // motor_pwm = node.advertise<hector_uav_msgs::MotorPWM>("/motor_pwm", 5);
   wind = node.advertise<geometry_msgs::Vector3>("/wind", 5);
+  syscommand = node.advertise<std_msgs::String>("/syscommand", 5);
 
   // Services
   ros::service::waitForService("/gazebo/reset_world", -1);
@@ -227,6 +228,11 @@ void HectorQuad::reset() {
   gazebo_msgs::SetModelState msg;
   msg.request.model_state = initial;
   assert(set_model_state.call(msg));
+
+  // Reset the trajectory visualizer
+  std_msgs::String reset_syscommand;
+  reset_syscommand.data = "reset";
+  syscommand.publish(reset_syscommand);
 
   curr = 1;
 }
