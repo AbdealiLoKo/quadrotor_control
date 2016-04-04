@@ -19,8 +19,14 @@ public:
   std::vector<geometry_msgs::Point> points;
   long current_point;
   long time_to_get_to_position;
+  double epsilon_plane;
 
-  Waypoints();
+  // These are all for Checkpoints. This is mainly to reduce duplicate code for
+  // Generating checkpoints/waypoints - which has the same code.
+  bool use_checkpoint_condition;
+  double epsilon_x, epsilon_y, epsilon_z;
+
+  Waypoints(bool _use_checkpoints = false);
 
   virtual void create_waypoints() = 0;
 

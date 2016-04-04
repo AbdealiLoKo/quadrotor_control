@@ -22,9 +22,7 @@ gazebo_msgs::ModelState Pursuit::current_target(
     initial_position = compute_lead(0);
   }
   if (getting_to_initial_position &&
-      (abs(model_state.pose.position.x - initial_position.x) > 0.25 ||
-       abs(model_state.pose.position.y - initial_position.y) > 0.25 ||
-       abs(model_state.pose.position.z - initial_position.z) > 0.25)) {
+      ! is_within(model_state.pose.position, initial_position, 0.25, 0.25, 0.25)) {
     target.pose.position = initial_position;
     // ROS_INFO("Waiting for initial position to be reached");
 

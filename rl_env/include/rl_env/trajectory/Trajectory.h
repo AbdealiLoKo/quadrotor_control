@@ -24,6 +24,10 @@ public:
   virtual gazebo_msgs::ModelState current_target(
     long long timestamp,
     gazebo_msgs::ModelState state) = 0;
+
+  // Helper functions
+  bool is_within(geometry_msgs::Point to_check, geometry_msgs::Point point,
+                 double ex, double ey, double ez);
 };
 
 #endif

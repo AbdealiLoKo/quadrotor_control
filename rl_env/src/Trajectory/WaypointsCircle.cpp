@@ -1,6 +1,7 @@
 #include <rl_env/trajectory/WaypointsCircle.h>
 
-WaypointsCircle::WaypointsCircle() {
+WaypointsCircle::WaypointsCircle(bool _use_checkpoints /*= false*/) :
+Waypoints(_use_checkpoints) {
   dir1_radius = 5;
   dir2_radius = 5;
   dir1_center = 0;

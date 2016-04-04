@@ -32,10 +32,11 @@
 // Possible trajectories and algos
 #define NO_TRAJECTORY -1
 #define WAYPOINTS_CIRCLE 10
-#define PURSUIT_CIRCLE 20
+#define CHECKPOINTS_CIRCLE 20
+#define PURSUIT_CIRCLE 30
 
 // Trajectory can from the above list
-#define TRAJECTORY PURSUIT_CIRCLE
+#define TRAJECTORY CHECKPOINTS_CIRCLE
 
 #define TRAIN_PEGASUS false
 #define USE_WIND false

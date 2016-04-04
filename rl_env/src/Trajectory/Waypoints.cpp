@@ -1,8 +1,13 @@
 #include <rl_env/trajectory/Waypoints.h>
 
-Waypoints::Waypoints() {
+Waypoints::Waypoints(bool _use_checkpoints /*= false*/) {
   time_to_get_to_position = 1000;
   current_point = -1;
+  epsilon_plane = 0.3;
+  epsilon_x = epsilon_y = 0.3;
+  epsilon_z = 1;
+
+  use_checkpoint_condition = _use_checkpoints;
 
   // Visualize waypoints
   ros::NodeHandle nh;
@@ -29,9 +34,7 @@ gazebo_msgs::ModelState Waypoints::current_target(
 
   // Wait for initial buffer
   if (getting_to_initial_position &&
-      (abs(model_state.pose.position.x - points[0].x) > 0.25 ||
-       abs(model_state.pose.position.y - points[0].y) > 0.25 ||
-       abs(model_state.pose.position.z - points[0].z) > 0.25)) {
+      ! is_within(model_state.pose.position, points[0], 0.25, 0.25, 0.25)) {
     target.pose.position = points[0];
     // ROS_INFO("Waiting for initial position to be reached");
 
@@ -47,27 +50,35 @@ gazebo_msgs::ModelState Waypoints::current_target(
     derivative.y = points[current_point].y - points[current_point-1].y;
     derivative.z = points[current_point].z - points[current_point-1].z;
 
-    // Make a plane about 30% before the current waypoint
-    geometry_msgs::Point plane_point;
-    plane_point = points[current_point];
-    plane_point.x -= derivative.x * 0.3;
-    plane_point.y -= derivative.y * 0.3;
-    plane_point.z -= derivative.z * 0.3;
+    if (use_checkpoint_condition) {
+      if (is_within(model_state.pose.position, points[current_point],
+                    epsilon_x, epsilon_y, epsilon_z)) {
+        current_point += 1;
+      }
+    } else {
+      // Make a plane a little in front of the current waypoint as we need
+      // to truncate the policy before.
+      geometry_msgs::Point plane_point;
+      plane_point = points[current_point];
+      plane_point.x -= derivative.x * epsilon_plane;
+      plane_point.y -= derivative.y * epsilon_plane;
+      plane_point.z -= derivative.z * epsilon_plane;
 
-    // Find equation of plane: a * (x - x0) + b * (y - y0) + c * (z - z0) = 0
-    double cur_side = equation_plane(derivative,
-                                     plane_point,
-                                     model_state.pose.position);
-    double old_side = equation_plane(derivative,
-                                     plane_point,
-                                     points[current_point-1]);
+      // Find equation of plane: a * (x - x0) + b * (y - y0) + c * (z - z0) = 0
+      double cur_side = equation_plane(derivative,
+                                       plane_point,
+                                       model_state.pose.position);
+      double old_side = equation_plane(derivative,
+                                       plane_point,
+                                       points[current_point-1]);
 
-    // Move to next point if plane was passed. We check this by checking if
-    // both the last waypoint and current position are on the same side of the
-    // plane.
-    if ( cur_side * old_side <= 0 ) {
-      current_point += 1;
-      assert(current_point < points.size());
+      // Move to next point if plane was passed. We check this by checking if
+      // both the last waypoint and current position are on the same side of the
+      // plane.
+      if ( cur_side * old_side <= 0 ) {
+        current_point += 1;
+        assert(current_point < points.size());
+      }
     }
 
     target.pose.position = points[current_point];

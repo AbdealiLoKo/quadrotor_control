@@ -17,7 +17,7 @@ public:
   // Frequency and loop count
   long points_per_loop, num_loops;
 
-  WaypointsCircle();
+  WaypointsCircle(bool _use_checkpoints = false);
 
   void create_waypoints();
 };

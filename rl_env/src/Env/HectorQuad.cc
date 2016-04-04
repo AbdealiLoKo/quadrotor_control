@@ -230,6 +230,9 @@ void HectorQuad::reset() {
   if (TRAJECTORY == WAYPOINTS_CIRCLE) {
     trajectory = new WaypointsCircle();
     trajectory->reset();
+  } else if (TRAJECTORY == CHECKPOINTS_CIRCLE) {
+    trajectory = new WaypointsCircle(true);
+    trajectory->reset();
   } else if (TRAJECTORY == PURSUIT_CIRCLE) {
     trajectory = new PursuitCircle();
     trajectory->reset();
