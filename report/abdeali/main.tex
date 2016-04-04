@@ -188,7 +188,7 @@ Consider a complicated dynamic task like bipedal walking. The agent here is the 
 
 The agent needs to attempt various actions and observe the state and the reward at every step. Using this observed state, the agent chooses an action and obtains a reward for this action. The next state would depend on the transition function, and once again the agent chooses an action in this new state. The goal of the agent is to find which action should be performed in a state to optimize the cumulative reward (or some function of the set of rewards). This mapping is the policy $\pi$.
 
-{\bf Difference between Planning and Reinforcement learning}
+\noindent {\bf Difference between Planning and Reinforcement learning}
 
 Planning is the task of fincding an optimal policy for the agent when the agent is given the complete knowledge of the environment. In Reinforcement Learning, the agent is given no knowledge of the environment. The agent must explore, gain experience, and perform actions based on the inferences of the past expereince.
 
@@ -412,9 +412,10 @@ The environment transmits the state information using the RLEnv message on the t
 An environment named Hector Quad-rotor has been implemented which passes the action from the agent to the gazebo environment as a twist state. The sensation function is also implemented in such a way as to wait for gazebo to complete a transition step and return back the observable state from this. For all this a random seed can be set in gazebo to create the repeatable scenarios required by PEGASUS.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Quad-rotor dynamics}
+\chapter{Dynamics and modelling}
 
-Quad-rotor dynamics can be controlled by controlling the rotor thrusts. This is used to change the altitude, pitch, roll, and yaw of the quad-rotor. We can compute how the rotor thrust affects the roll, pitch, yaw, and altitude using the model of the quad-rotor. Using this, we analyze how a quad-rotor is capable of moving in 6 degrees of freedom (linear directions and the Euler angles) with only 4 controllable inputs.
+\chapter{Quad-rotor dynamics}
+Quad-rotor dynamics can be controlled with the rotor thrusts. This is used to change the altitude, pitch, roll, and yaw of the quad-rotor. We can compute how the rotor thrust affects the roll, pitch, yaw, and altitude using the model of the quad-rotor. Using this, we analyze how a quad-rotor is capable of moving in 6 degrees of freedom (linear directions and the Euler angles) with only 4 controllable inputs.
 
 Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for the quad-rotor to turn, and move in various ways. The following configurations are possible:
 
@@ -457,7 +458,7 @@ Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for
     \caption{The configuration of the 4 rotors of a quad-rotor to change roll and pitch.}
 \end{figure}
 
-\section{System modelling}
+\section{Simulator model}
 
 The quad-rotor dynamics have been documented by Samir Boubdallah and Roland Siegwart for the OS4 project \cite{QuadrotorDynamics}. This is the same modelling that is used in the Hector Quad-rotor package.
 
@@ -613,18 +614,19 @@ The $\epsilon_i$ would be different for $\omega$ as compared to the others becau
     \caption{Quad-rotor simulation moving in a circular trajecotry with the checkpoint technique. The red marker denotes the current targetted checkpoint and the blue markers are all the checkpoints in the trajectory.}
 \end{figure}
 
-Some noteworthy comments about this technique are:
-
 \subsection{Jerky trajectories}
-The underlying policy that is being used is the position control. So the quad-rotor thinks that it should stop at the next checkpoint because it has reached the target. Hence, it decelerate when it is in the checkpoint's vicinity. This causes the trajectory to be a little jerky adding excessive noise near the checkpoint.
+The underlying policy that is being used is the position control. So the quad-rotor thinks that it should stop at the next checkpoint because it has reached the target. Hence, it decelerates when it is in the checkpoint's vicinity. This causes the trajectory to be a little jerky adding excessive noise near the checkpoints.
 
-Although the trajectory is jerky near the checkpoint, we can term this trajectory as piecewise smooth. Between checkpoints, the trajectory is very smooth and the expected path that the original trajectory that the checkpoints were generated from.
+Although the trajectory is jerky near the checkpoint, the trajectory followed by the quadrotor will be piecewise smooth. Between checkpoints, the trajectory is interpolated as a smooth straight line. If the ceckpoints are further apart, the jerks will be fewer but the trajectory would lose definition (i.e. it would be an approximate of the original one). Hence, there is a tradeoff involved.
 
-Also, the $\epsilon_i$ which is used to check whether the checkpoint was passed is a hard bound. For example, if the quad-rotor or payload is a little outside this boundary, the checkpoint is not passed. This boundary is arbitrary and can be made soft using fuzzy concepts.
+Also, the $\epsilon_i$ which is used to check whether the checkpoint was passed is a hard bound. For example, if the quad-rotor or payload is a little outside this boundary, the checkpoint is not passed. This makes things a little confusing, because a small margin of error could disrupt the whole trajectory. A possible method of fixing this fallacy is to use the velocity and judge whether the quad-rotor will be moving away from the trajectory or towards and set the bound based on this. This uses the intuitive understanding that the quad-rotor will in the future be on the right track or not.
+
+Another possible solution for $\epsilon_i$ is to use fuzzy concepts to make the bound soft. The history of the trajectory can be used to compute how well the quadrotor's current target helps to maintain this trajectory and how well changing the checkpoint will maintain the trajectory. This would give a metric to compare the two scenarios. "How well" a trajectory is maintained would need to be defined mathematically, which can be done by checking the smallest distance to the trajectory.
 
 \subsection{Generating checkpoints}
 There is no direct method to generate checkpoints. It is important that checkpoints are chosed with an appropriate distance between them. Intuitively we notice that in a smooth part of the trajectory few checkpoints are needed. But near a sharp turn, more checkpoints are required so as to decelerate appropriately and make a fine turn. The checkpoints could be created intuitively based on the derivative of the trajectory itself.
 
+Other than this, consider plotting the trajectory using a software like Inkscape which makes an SVG representation. Vector graphics can use the paths involved and discretize based on pre defined factors to reduce metrics like area error and deviation. This wouldn't take into account the deceleration though and may have to be manually considered.
 
 \subsection{Retracing paths}
 If a checkpoint is missed due to control error in the trajectory, the quad-rotor would be forced to go backward and find this checkpoint. This is counter productive and may not be a good idea because it modifies the original structure of the trajectory that had to be traced.
@@ -663,24 +665,34 @@ In pursuit, the complete trajectory function with time is known. Here, the targe
     \caption{Quad-rotor simulation moving in a circular trajecotry with the pursuit technique. The red marker denotes the current position of the moving target.}
 \end{figure}
 
-Some noteworthy comments about this technique are:
-
-\subsection{Carried over error}
-A continuous pursuit would also mean that the target is never reached. This means that if there is an initial error when the trajectory began or there is an error due to wrong control in between, the agent may never recover. This would result in a completely different trajectory from the planned trajectory if unforeseen environmental conditions arise. Hence, this is not suitable for stochastic problems where a gust of wind could blow the quadrotor away completely.
-
-\subsection{Speed control}
-The speed of the quad-rotor is not easy to control in pursuit. Here, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero. Although there is some notion that the faster the target is, the faster the quad-rotor will be this is not easy to control.
-
 \subsection{Lead time}
 The amount of time by which the trajectory is leading will affect the actual trajectory the quad-rotor will fly. This may depend on trajectory to trajectory, for example a square would need a small lead time whereas a circle or oval would work well with a larger one in comparison. A straight line can have a large lead time.
 
 A constant leading time may be harmful because the leading time would depend on the trajectory itself. For example, a sharp corner would need a small leading time while a smooth trajectory would not need a small leading time. If the leading time is set to be too small, the quad-rotor would move very slowly as it assumes the target is close by.
+
+Due to the fact that the target trajectory is continuous and changes with every time step, the trajectory generated by this method is extremely smooth. The major issue of this method is that there is no feedback from the quad-rotor to the trajectory generator, which makes it impossible for the quadrotor to recover if it deviates from the path.
 
 \begin{figure}[h]
   \centering
     \includegraphics[width=0.6\textwidth]{pursuit_con.png}
     \caption{Schematic of the pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because the target is leading by a large amount.}
 \end{figure}
+
+\subsection{Carried over error}
+A continuous pursuit would also mean that the target is never reached (as the target moves). This means that if there is an initial error when the trajectory began or if there is anomalous behaviour due to stochasticity at some points, the agent may never recover. These would result in a completely different trajectory from the planned trajectory because there is no feedback to the trajectory generator. Hence, this is not suitable for stochastic problems where a gust of wind could blow the quadrotor away completely.
+
+For environments where the stochasticity is not much this is a great value add though, as it gives an extremely smooth trajectory. If there is a "slowness" factor incorporated in the trajectory which makes the target move slower if the quadrotor lags behind too much, this would help in resolving this issue.
+
+\section{Comparison of trajectory techniques}
+
+
+\subsection{Speed control}
+The speed of the quad-rotor is not easy to control in either of the methods. This is because the underlying policy is that for hovering, and trajectories are created by truncating the hovering policy in quick succession.
+
+In the checkpoint method, the quad-rotor attempts to decelerate as the target is nearly reached. This makes the speed of the quadrotor vary excessively. Although there is some notion that the checkpoint is only required for turns, where the quadrotor would need to slow down to avoid over shooting, this is not very intuitive nor rigorously controllable.
+
+In the pursuit method, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero. Although there is some notion that the faster the target is, the faster the quad-rotor will be this is not easy to control.
+
 
 \todo{Add figure showing the deviation in radius over time for a circle for all 3 techniques}
 
