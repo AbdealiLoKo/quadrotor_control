@@ -24,15 +24,18 @@
 // Trajectories
 #include <rl_env/trajectory/Trajectory.h>
 #include <rl_env/trajectory/WaypointsCircle.h>
+#include <rl_env/trajectory/PursuitCircle.h>
 
 // Services
 #include <rl_common/RLRunSim.h>
 
-// Possible algos
+// Possible trajectories and algos
+#define NO_TRAJECTORY -1
 #define WAYPOINTS_CIRCLE 10
 #define PURSUIT_CIRCLE 20
 
-#define ALGORITHM WAYPOINTS_CIRCLE
+// Trajectory can from the above list
+#define TRAJECTORY PURSUIT_CIRCLE
 
 #define TRAIN_PEGASUS false
 #define USE_WIND false

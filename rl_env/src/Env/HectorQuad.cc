@@ -227,23 +227,11 @@ void HectorQuad::reset() {
   reset_syscommand.data = "reset";
   syscommand.publish(reset_syscommand);
 
-  if (ALGORITHM == PURSUIT_CIRCLE) {
-    std::cout << "Using PursuitCircle for trajectory.\n";
-    std::vector<std::pair<float, float> > wps;
-    for(int i=0; i<1000; ++i) {
-      std::pair<float, float> p = std::make_pair(5 * sin(i/50.0), 5 * cos(i/50.0));
-      // std::pair<float, float> p = std::make_pair(i/20.0, cos(i/20.0));
-      wps.push_back(p);
-      // geometry_msgs::PointStamped geo_point;
-      // geo_point.point.x = p.first;
-      // geo_point.point.y = p.second;
-      // geo_point.point.z = 5;
-      // viz_points.publish(geo_point);
-    }
-    waypoints = wps;
-  } else if (ALGORITHM == WAYPOINTS_CIRCLE) {
-    std::cout << "Using WaypointCircle for trajectory.\n";
+  if (TRAJECTORY == WAYPOINTS_CIRCLE) {
     trajectory = new WaypointsCircle();
+    trajectory->reset();
+  } else if (TRAJECTORY == PURSUIT_CIRCLE) {
+    trajectory = new PursuitCircle();
     trajectory->reset();
   }
 
@@ -306,23 +294,21 @@ int HectorQuad::pure_pursuit_circle(int wp) {
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
-  final.pose.position.x = 5;
-  final.pose.position.y = 5;
-  final.pose.position.z = 5;
-  final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
-    0, 0, angles::from_degrees(60));
+  if ( TRAJECTORY == NO_TRAJECTORY ) {
+    final.pose.position.x = 5;
+    final.pose.position.y = 5;
+    final.pose.position.z = 5;
+    final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
+      0, 0, angles::from_degrees(60));
 
-  final.twist.linear.x = 0;
-  final.twist.linear.y = 0;
-  final.twist.linear.z = 0;
-  final.twist.angular.x = 0;
-  final.twist.angular.y = 0;
-  final.twist.angular.z = 0;
-
-  if ( ALGORITHM == WAYPOINTS_CIRCLE ) {
+    final.twist.linear.x = 0;
+    final.twist.linear.y = 0;
+    final.twist.linear.z = 0;
+    final.twist.angular.x = 0;
+    final.twist.angular.y = 0;
+    final.twist.angular.z = 0;
+  } else {
     final = trajectory->current_target(time_in_steps, current);
-  } else if ( ALGORITHM == PURSUIT_CIRCLE ) {
-    curr = pure_pursuit_circle(curr);
   }
 
   // std::cout << "At: " << time_in_steps << "\t";

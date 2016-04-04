@@ -11,6 +11,10 @@ class Trajectory {
   a trajectory means.
   */
 public:
+  bool getting_to_initial_position;
+
+  Trajectory();
+
   // Any code that resets internal state variables which keeps track of
   // the trajectory.
   virtual void reset() = 0;

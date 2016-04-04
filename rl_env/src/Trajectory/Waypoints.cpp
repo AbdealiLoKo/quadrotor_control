@@ -12,7 +12,7 @@ Waypoints::Waypoints() {
 void Waypoints::reset() {
   points.clear();
   create_waypoints();
-  current_point = 0;
+  current_point = 1;
   visualize_points();
 }
 
@@ -21,22 +21,25 @@ gazebo_msgs::ModelState Waypoints::current_target(
   gazebo_msgs::ModelState model_state) {
 
   if (current_point == -1) {
-    std::cout << "Trajectory has not been reset\n";
+    std::cout << "Trajectory has not been reset, waypoints were not created.\n";
   }
 
   // Set default values of target
   gazebo_msgs::ModelState target = default_target();
 
   // Wait for initial buffer
-  if (current_point == 0 &&
+  if (getting_to_initial_position &&
       (abs(model_state.pose.position.x - points[0].x) > 0.25 ||
        abs(model_state.pose.position.y - points[0].y) > 0.25 ||
        abs(model_state.pose.position.z - points[0].z) > 0.25)) {
     target.pose.position = points[0];
-    // ROS_INFO("Waiting for initial position");
+    // ROS_INFO("Waiting for initial position to be reached");
+
   } else {
-    if (current_point == 0)
-      current_point += 1; // Finished waiting for "initial state"
+    if (getting_to_initial_position) {
+      // Finished waiting for "initial state"
+      getting_to_initial_position = false;
+    }
 
     // Calculate derivative
     geometry_msgs::Vector3 derivative;
