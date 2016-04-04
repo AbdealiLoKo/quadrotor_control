@@ -166,13 +166,38 @@ Next, we need an algorithm which would be suitable for our specific use case. He
 
 We initially use PEGASUS on the quad-rotor without any payload. This is a sanity check to ensure that PEGASUS can indeed handle the system. Then, we add the payload and learn a policy that can control the payload directly.
 
-\section{The Reinforcement Learning Problem}
-
-\section{Markov Decision Process}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Background}
 
-\chapter{Literature Review}
+\section{Reinforcement Learning}
+
+\subsection{Markov Decision Processes}
+A common problem in learning is that of an agent learning to act logically in an environment by interacting with it and obtaining feedback of some sort in the form of rewards. The agent and the environment compose a dynamic system. The agent is the part which is controllable (the input) and the environment is that part that cannot be controlled. The agent's objective is to learn a policy to maximize the some function of the rewards it receives from the environment.
+
+A Markov Decision Process \cite{MarkovDecisionProcess} (MDP) is used to model such dynamic systems. MDPs are a general mathematical framework to model decision making in scenarios where some stochasticity is involved and systems that can be partially controlled. The MDP is a tuple with:
+\begin{itemize}
+\item{{\bf State space ($\mathbb{S}$)} The set of possible states an agent can find itself in.}
+\item{{\bf Action space ($\mathbb{A}$)} The set of all actions that an agent can perform.}
+\item{{\bf Transition function ($P(s'|s,a)$)} The probability of a transition from one state to another assuming an action has been taken.}
+\item{{\bf Reward function ($R(s, a)$)} The reward got from the environment for taking an action $a$ at state $s$.}
+\item{{\bf Discount factor ($\gamma \in [0,1]$)} The discount factor which specifies how important future rewards are.}
+\end{itemize}
+
+\subsection{The Reinforcement learning problem}
+Consider a complicated dynamic task like bipedal walking. The agent here is the learner who can control the motions of joints like the knee, and ankle. When the agent uses these controllable actuators, it gets rewards from the environment, like falling down, walking in the wrong direction, and losing balance. Here, the agent does not know what the next state will be nor what the reward it would get for an action when it begins this task.
+
+The agent needs to attempt various actions and observe the state and the reward at every step. Using this observed state, the agent chooses an action and obtains a reward for this action. The next state would depend on the transition function, and once again the agent chooses an action in this new state. The goal of the agent is to find which action should be performed in a state to optimize the cumulative reward (or some function of the set of rewards). This mapping is the policy $\pi$.
+
+{\bf Difference between Planning and Reinforcement learning}
+
+Planning is the task of fincding an optimal policy for the agent when the agent is given the complete knowledge of the environment. In Reinforcement Learning, the agent is given no knowledge of the environment. The agent must explore, gain experience, and perform actions based on the inferences of the past expereince.
+
+\subsection{Application of Reinforcement Learning}
+Reinforcement learning has been applied to a wide variety of spheres ranging from robotics \cite{HelicopterPegasus} to game playing like checkers \cite{RLInCheckers}, the game of Go \cite{RLInGo} and the famous TD-Gammon player \cite{RLInBackgammon}. The game agents were able to beat some of the best players of the time. The gaming agents led to advancements in the theory of backgammon and recently may do the same in Go as it explores strategies humans have not experimented with.
+
+Reinforcement Learning has also been applied to routing (Q-routing) \cite{RLInQRouting},
+improving elevator dispatch performance \cite{RLInElevators}, algorithm
+selection \cite{RLInAlgoSelection}, job-shop scheduling \cite{RLInJobShopScheduling}, dialog systems \cite{RLInDialogSystems} and recommendation systems \cite{RLInRecommenders}.
 
 \section{Reinforcement learning in control}
 
@@ -182,9 +207,10 @@ Reinforcement learning has been applied to control problems frequently. Reinforc
 
 Value iteration and Policy iteration are the core concepts of control using reinforcement learning. In value iteration, the value function is updated in every iteration trying to update the estimated value using the Bellman equations. It can be shown that the values converge to the actual value of the state over time. Having found the value function of the system, we can create a policy. In policy iteration, the value function of the current policy is computed and then the policy is updated using the current value function.
 
-Policy search emerged as an alternative method to policy iterations or value iterations, which did not need to calculate the value function at all. This involved creating a set of policies that the objective can be achieved by and searching in this set for the optimal policy. Although it seems to be a difficult task which borders of brute force, techniques have been formulated to smartly converge to the optimal policy quickly.
+\subsection*{Policy Search}
+Policy search is an alternative method to policy iterations or value iterations, which does not need to calculate the value function at all. This involves creating a set of policies that the objective can be achieved by and searching in this set for the optimal policy. Techniques have been formulated to converge to the optimal policy quickly based on analysis.
 
-Policy search methods became popular due to the fact that the value function was not directly involved in the computation, and variations that use model free policy search and model based policy search were created. Model free methods include techniques like Policy gradients, Expectation maximization, and Stochastic search methods. As no model is assumed in these cases, they were slow but extremely generalized. Model based methods like Analytic policy gradients and Trajectory optimization estimate the model in every iteration and update a policy based on this estimated model.
+In some cases like high dimensional space problems, using value functions gives poor performancs. Policy search methods became popular due to the fact that the value function was not directly involved in the computation. Variations that use model free policy search and model based policy search were created. Model free methods include techniques like Policy gradients, Expectation maximization, and Stochastic search methods. As no model is assumed in these cases, they were slow but extremely generalized. Model based methods like Analytic policy gradients and Trajectory optimization estimate the model in every iteration and update a policy based on this estimated model.
 
 To optimize on data used, step based policy search was conceptualized and used. These attempt to evaluate the quality of a state, action pair using the reward that the pair generates rather than the parameters defining a policy. Step based policy search methods due to their nature of formulation are not favourable for smooth trajectories but provide uncorrelated exploration unlike episode based search. Examples of step based policy search include Reinforce, Policy gradient theorem, and Episodic natural Actor-Critic. Examples of episode based policy search are Episodic REPS, Cross-Entropy search, and PEGASUS.
 
@@ -218,17 +244,15 @@ There has also been some work in controlling payloads of UAVs using Reinforcemen
     \caption{Quadrotor with a payload attached using a non rigid body. States (cartesian co-ordinates and euler angles) of the payload are shown.}
 \end{figure}
 
-\section{Apprenticeship learning}
+\section{Inverse Reinforcement Learning}
 
-In reinforcement learning we consider a reward function, which describes the task and the target that needs to be achieved. A dynamics model is implicit which describes how the agent and interaction with the environment and how the environment reacts to the action from the agent. Then we try to find an optimal policy that maximizes the expected return.
+In reinforcement learning we use a reward function, which describes the task and the target that needs to be achieved. Reinforcement learning can be applied to tasks as ill defined as "drive the car well". This is not clear and has many many inherent meanings like "drive to the destination quickly", "do not crash into anything", "stop at red signals" and even more subtle meanings like "change lanes as little as possible", "move in smooth trajectories" and so on. In such cases, which are not clearly defined it is even more difficult to quantify the expected task and create a reward function.
 
-Reinforcement learning can be applied to tasks as ill defined as "drive the car well". This is not clear and has many many inherent meanings like "drive to the destination quickly", "do not crash into anything", "stop at red signals" and even more subtle meanings like "change lanes as little as possible", "move in smooth trajectories" and so on. In such cases, which are not clearly defined it is even more difficult to quantify the expected task and create a reward function.
+Inverse Reinforcement Learning (IRL) is a field of Reinforcement learning where no reward function is given. Here, the agent tries to identify the policy given some pre-prepared behaviour of another agent. The pre-prepared agent is expected to be an expert. This usually requires multiple demonstrations as the reward function is analyzed using these trajectories and policies.
 
-Apprenticeship learning \cite{ApprenticeshipLearning} helps to solve this issue by providing  learning a task from a mentor or teacher which already knows the target. The mentor is asked to perform the task and the trajectories and actions used by the mentor is stored in the memory of the agent. Then the agent uses this memory in some way to help itself to find a policy suitable for the task.
+Apprenticeship learning \cite{ApprenticeshipLearning} helps to solve this issue by learning a task from a mentor which already knows the target and is thought to be maximizing a reward function. The mentor is asked to perform the task and the trajectories and actions used by the mentor is stored in the memory of the agent. Then the agent uses this memory to help itself find a reward distribution suitable for the task. The reward function can be derived by identifying which transitions occur frequently in the mentor's trajectories and which ones do not. The frequent transitions should give a larger reward while the transitions that do not occur give no or negative rewards. The mentor can even specify which trajectories are bad and should not occur for a more balanced reward function.
 
-The most common method of using the mentors information in the agent or the apprentice is to make a reward function based on the trajectories. The reward function can be derived by identifying which transitions occur frequently in the mentor's trajectories and which ones do not. The frequent transitions should give a larger reward while the transitions that do not occur give no or negative rewards. The mentor can even specify which trajectories are bad and should not occur for a more balanced reward function.
-
-In the case of the continuous rewards and states like ours, things are not as easy. Here, it is impossible to count transitions and so the above method is not possible. In such cases the trajectories need to be time normalized and then stitched to find the optimal trajectory for the task.
+In the case of the continuous rewards and states like ours, it is impossible to count transitions and so the above method is not possible. A more structured approach to the analysis is required. In such cases the trajectories need to be time normalized and then stitched to find the optimal policy for the task.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -259,7 +283,7 @@ As we don't really know the value of the policy before hand, to compute the valu
   V(\pi) \approx \hat{V}(\pi) = \frac{1}{m} \sum_{i=1}^{m} V^{\pi} (s_{0}^{i})
 \end{equation}
 
-\section{Optimal policy}
+\section{Obtaining the optimal policy}
 
 Now that we have a quantitative scalar for a policy, we can compare policies using it. So a policy $\pi_{1}$ is considered better than another policy $\pi_{2}$ if $V(\pi_{1}) > V(\pi_{2})$. Hence, we can now define an optimal policy as:
 \begin{equation}
@@ -281,7 +305,7 @@ Hence, the value now becomes a function of a finite set of continuous variables 
     \caption{An example of a policy with 2 parameters. The value of the policy at these parameters has been plot. The optimal policy is marked at the maximum value.}
 \end{figure}
 
-\section{Stochastic MDP to non-stochastic POMDP}
+\section{Conversion of Stochastic MDP to non-stochastic POMDP}
 
 The PEGASUS algorithm works for both MDPs and POMDPs. But, it involves running a specific scenario multiple times - and assumes the same transition function for the environment. If the transition function is not same, the value of the policy will have a large variance. Hence, it does not work well with stochastic transition functions.
 
@@ -513,7 +537,7 @@ The {\bf reward} used is the L1 norm of the deviation from the target. The rewar
 
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.7\textwidth]{quadrotor_position_control.png}
+    \includegraphics[width=0.7\textwidth]{quadrotor_position_control2.png}
     \caption{Quad-rotor using the trained policy by PEGASUS to move from one position (x, y, z, $\protect\omega$) to another.}
 \end{figure}
 
@@ -543,7 +567,7 @@ Currently, ODE does not have GPU capabilities and so is forced to run in the CPU
 
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.6\textwidth]{quadrotor_payload_sim.png}
+    \includegraphics[width=0.4\textwidth]{quadrotor_payload_sim.png}
     \caption{Payload on quad-rotor simulated by Hector Quadrotor, ROS, and gazebo.}
 \end{figure}
 
@@ -560,7 +584,7 @@ Once the velocity and position control are established, we would want the payloa
 
 There are multiple different methods to trace a trajectory after position or velocity control are established. Each technique has it's strengths and weaknesses. So we analyze three methods which use a pre existing trajectory which is given before hand. This trajectory information is then used to find the optimal controls to give to the quad-rotor to acheive the trajectory.
 
-\section{Checkpoint}
+\section{Trajectory control using checkpoints}
 
 A checkpoint is defined as a set of points on the trajectory. The quad-rotor or payload is expected to go through these checkpoints in the appropriate order. Hence, this is anologous to the quad-rotor going through loops which are predefined in an arena. The checkpoints do not have specific timestamps here, but there is an ordering that needs to be followed.
 
@@ -583,17 +607,27 @@ The $\epsilon_i$ would be different for $\omega$ as compared to the others becau
     \caption{Schematic of the checkpoint technique showing the quad-rotor and the set of checkpoints for this trajectory.}
 \end{figure}
 
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{checkpoint_circle.png}
+    \caption{Quad-rotor simulation moving in a circular trajecotry with the checkpoint technique. The red marker denotes the current targetted checkpoint and the blue markers are all the checkpoints in the trajectory.}
+\end{figure}
+
 Some noteworthy comments about this technique are:
 
-{\bf Retracing paths}: If a checkpoint is missed due to control error in the trajectory, the quad-rotor would be forced to go backward and find this checkpoint. This is counter productive and may not be a good idea because it modifies the original structure of the trajectory that had to be traced.
+\subsection{Jerky trajectories}
+The underlying policy that is being used is the position control. So the quad-rotor thinks that it should stop at the next checkpoint because it has reached the target. Hence, it decelerate when it is in the checkpoint's vicinity. This causes the trajectory to be a little jerky adding excessive noise near the checkpoint.
 
-{\bf Hard bounds on $\epsilon_i$}: The $\epsilon_i$ which is used to check whether the checkpoint was passed is a hard bound. For example, if the quad-rotor or payload is a little outside this boundary, the checkpoint is not passed. This boundary is arbitrary and can be made soft using fuzzy concepts.
+Although the trajectory is jerky near the checkpoint, we can term this trajectory as piecewise smooth. Between checkpoints, the trajectory is very smooth and the expected path that the original trajectory that the checkpoints were generated from.
 
-{\bf Jerky trajectories}: The underlying policy that is being used is the position control. So the quad-rotor thinks that it should stop at the next checkpoint because it has reached the target. Hence, it decelerate when it is in the checkpoint's vicinity. This causes the trajectory to be a little jerky adding excessive noise near the checkpoint.
+Also, the $\epsilon_i$ which is used to check whether the checkpoint was passed is a hard bound. For example, if the quad-rotor or payload is a little outside this boundary, the checkpoint is not passed. This boundary is arbitrary and can be made soft using fuzzy concepts.
 
-{\bf Piecewise smooth}: Although the trajectory is jerky near the checkpoint, we can term this trajectory as piecewise smooth. Between checkpoints, the trajectory is very smooth and the expected path that the original trajectory that the checkpoints were generated from.
+\subsection{Generating checkpoints}
+There is no direct method to generate checkpoints. It is important that checkpoints are chosed with an appropriate distance between them. Intuitively we notice that in a smooth part of the trajectory few checkpoints are needed. But near a sharp turn, more checkpoints are required so as to decelerate appropriately and make a fine turn. The checkpoints could be created intuitively based on the derivative of the trajectory itself.
 
-{\bf Generating checkpoints}: There is no direct method to generate checkpoints. It is important that checkpoints are chosed with an appropriate distance between them. Intuitively we notice that in a smooth part of the trajectory few checkpoints are needed. But near a sharp turn, more checkpoints are required so as to decelerate appropriately and make a fine turn.
+
+\subsection{Retracing paths}
+If a checkpoint is missed due to control error in the trajectory, the quad-rotor would be forced to go backward and find this checkpoint. This is counter productive and may not be a good idea because it modifies the original structure of the trajectory that had to be traced.
 
 \begin{figure}[h]
   \centering
@@ -601,15 +635,7 @@ Some noteworthy comments about this technique are:
     \caption{Schematic of the checkpoint technique showing the quad-rotor's path if a checkpoint has been missed, the path of the quad-rotor is completely different from the original trajectory.}
 \end{figure}
 
-\begin{figure}[h]
-  \centering
-    \includegraphics[width=0.6\textwidth]{checkpoint_circle.png}
-    \caption{Quad-rotor simulation moving in a circular trajecotry with the checkpoint technique. The red marker denotes the current targetted checkpoint and the blue markers are all the checkpoints in the trajectory.}
-\end{figure}
-
-\section{Waypoint}
-
-A waypoint is similar to the checkpoint concept. We can think of this as a special checkpoint where the condition to pass is that the quad-rotor or payload passes the plane defined by the normal to the trajectory at this point. The quad-rotor or payload can also be restricted to pass through a specific patch in the plane. Hence, we are not restricted to the absolute $(x, y, z)$ directions, rather the frame of the expected position is used.
+A waypoint can help reduce retracing of paths due to unusual behaviour in between. This is a special case of checkpoints where the condition to pass is that the quad-rotor or payload passes the plane defined by the normal to the trajectory at this point. The quad-rotor or payload can also be restricted to pass through a specific patch in the plane. Also, this allows bounds to be set on the frame of the expected position rather than the absolute $(x, y, z)$ directions.
 
 Because we simply need the quadrotor to pass the plane of the waypoint, even if the control is bad at certain areas, it does not change the original structure of the trajectory. This comes at the cost that the error in this direction could increase over time. However, we expect that this would not be unbounded as the quad-rotor policy would not allow this unless there is a flaw in the controller or the policy.
 
@@ -619,32 +645,16 @@ Because we simply need the quadrotor to pass the plane of the waypoint, even if 
     \caption{Schematic of the waypoint technique showing the quad-rotor and the set of waypoints for this trajectory. The plane of the last target is shown where the quad-rotor did not go through an $\epsilon$ neighbourhood of the waypoint, but passed the plane.}
 \end{figure}
 
-We notice that we have similar properties to the checkpoint technique, but this solves the issue of unwanted retracing of paths. We again find a fuzzy boundary for $\epsilon_i$ would prove better. But a fuzzy waypoint would give the benefit that the $\epsilon_i$ boundary is in the frame of the trajectory itself. This enables us to have a finer control of the structure of the expected position. Consider the case where the expected trajectory is a circle. If an oval is an acceptable trajectory instead of a circle, a waypoint method (or a fuzzy waypoint) would be able to acheive that considerably easier. This is because the boundaries are in the frame of the waypoint, and this changes at every instant in a circle.
+\section{Trajectory control using Pursuit}
 
-\section{Pure pursuit}
-
-In pure pursuit, the complete trajectory function with time is known. Here, the target of the quad-rotor is changed at every step to be the expected position after a certain time. Hence, we can say the quad-rotor or payload tries to pursue the trajectory where the target has a time lead.
+In pursuit, the complete trajectory function with time is known. Here, the target of the quad-rotor is changed at every step to be the expected position after a certain time. Hence, we can say the quad-rotor or payload tries to pursue the trajectory where the target has a time lead.
 
 \todo{Add info and papers about predator prey in RL}
 
 \begin{figure}[h]
   \centering
     \includegraphics[width=0.6\textwidth]{pursuit.png}
-    \caption{Schematic of the pure pursuit technique showing the quad-rotor and the leading target. The velocities of the target and the quad-rotor indicate how they will move next.}
-\end{figure}
-
-Some noteworthy comments about this technique are:
-
-{\bf Speed}: The speed of the quad-rotor is not easy to control in pursuit. Here, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero. Although there is some notion that the faster the target is, the faster the quad-rotor will be this is not easy to control.
-
-{\bf Lead time value}: The amount of time by which the trajectory is leading will affect the actual trajectory the quad-rotor will fly. This may depend on trajectory to trajectory, for example a square would need a small lead time whereas a circle or oval would work well with a larger one in comparison. A straight line can have a large lead time.
-
-{\bf Adaptive lead lead}: A constant leading time may be harmful because the leading time would depend on the trajectory itself. For example, a sharp corner would need a small leading time while a smooth trajectory would not need a small leading time. If the leading time is set to be too small, the quad-rotor would move very slowly as it assumes the target is close by.
-
-\begin{figure}[h]
-  \centering
-    \includegraphics[width=0.6\textwidth]{pursuit_con.png}
-    \caption{Schematic of the pure pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because the target is leading by a large amount.}
+    \caption{Schematic of the pursuit technique showing the quad-rotor and the leading target. The velocities of the target and the quad-rotor indicate how they will move next.}
 \end{figure}
 
 \begin{figure}[h]
@@ -653,7 +663,26 @@ Some noteworthy comments about this technique are:
     \caption{Quad-rotor simulation moving in a circular trajecotry with the pursuit technique. The red marker denotes the current position of the moving target.}
 \end{figure}
 
-\todo{Add figure showing the deviation over time for a circle for all 3 techniques}
+Some noteworthy comments about this technique are:
+
+\subsection{Carried over error}
+A continuous pursuit would also mean that the target is never reached. This means that if there is an initial error when the trajectory began or there is an error due to wrong control in between, the agent may never recover. This would result in a completely different trajectory from the planned trajectory if unforeseen environmental conditions arise. Hence, this is not suitable for stochastic problems where a gust of wind could blow the quadrotor away completely.
+
+\subsection{Speed control}
+The speed of the quad-rotor is not easy to control in pursuit. Here, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero. Although there is some notion that the faster the target is, the faster the quad-rotor will be this is not easy to control.
+
+\subsection{Lead time}
+The amount of time by which the trajectory is leading will affect the actual trajectory the quad-rotor will fly. This may depend on trajectory to trajectory, for example a square would need a small lead time whereas a circle or oval would work well with a larger one in comparison. A straight line can have a large lead time.
+
+A constant leading time may be harmful because the leading time would depend on the trajectory itself. For example, a sharp corner would need a small leading time while a smooth trajectory would not need a small leading time. If the leading time is set to be too small, the quad-rotor would move very slowly as it assumes the target is close by.
+
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{pursuit_con.png}
+    \caption{Schematic of the pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because the target is leading by a large amount.}
+\end{figure}
+
+\todo{Add figure showing the deviation in radius over time for a circle for all 3 techniques}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Apprenticeship Learning}
