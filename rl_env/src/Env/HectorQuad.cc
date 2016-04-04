@@ -238,59 +238,6 @@ void HectorQuad::reset() {
   curr = 1;
 }
 
-// --------------------------------------------------------------------
-// Checkpoints
-
-
-// --------------------------------------------------------------------
-// Pure pursuit
-int HectorQuad::pure_pursuit_circle(int wp) {
-  /*
-   * Implement PurePursuit tracking
-   * Always lock on to a target at a distance LOOKAHEAD
-   * from the current position
-  */
-  float x1, y1;
-  float x = current.pose.position.x;
-  float y = current.pose.position.y;
-  float theta;
-  float LOOKAHEAD = 1;
-
-  float checkpoint_x;
-  float checkpoint_y;
-  int i = 0;
-
-  // Check which waypoint to use for following pursuit
-  // based on the current position of the point and LOOKAHEAD
-  while( sqrt( ( y - waypoints[wp+i].second ) * ( y - waypoints[wp+i].second )
-      + ( x - waypoints[wp+i].first ) * ( x - waypoints[wp+i].first ) ) < LOOKAHEAD ) {
-    i += 1;
-    // Check for overflow
-    assert(i<waypoints.size());
-  }
-
-  x1 = waypoints[wp+i].first;
-  y1 = waypoints[wp+i].second;
-  theta = atan(abs((y1-y)/(x1-x)));
-
-  // Find the correct angle
-  if (y1-y < 0 && x1-x<0)
-    theta += 3.14;
-  else if (y1-y<0)
-    theta = -theta;
-  else if (x1-x<0)
-    theta = 3.14-theta;
-
-  // Add the lookahead based checkpoint(Linear interpolation)
-  checkpoint_x = x + LOOKAHEAD * cos(theta);
-  checkpoint_y = y + LOOKAHEAD * sin(theta);
-
-  final.pose.position.x = checkpoint_x;
-  final.pose.position.y = checkpoint_y;
-  final.pose.position.z = 5;
-  return wp + i;
-}
-
 void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   if (time_in_steps == -1) time_in_steps = cur_step;
 
