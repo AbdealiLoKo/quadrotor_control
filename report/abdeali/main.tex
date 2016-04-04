@@ -601,6 +601,12 @@ Some noteworthy comments about this technique are:
     \caption{Schematic of the checkpoint technique showing the quad-rotor's path if a checkpoint has been missed, the path of the quad-rotor is completely different from the original trajectory.}
 \end{figure}
 
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{checkpoint_circle.png}
+    \caption{Quad-rotor simulation moving in a circular trajecotry with the checkpoint technique. The red marker denotes the current targetted checkpoint and the blue markers are all the checkpoints in the trajectory.}
+\end{figure}
+
 \section{Waypoint}
 
 A waypoint is similar to the checkpoint concept. We can think of this as a special checkpoint where the condition to pass is that the quad-rotor or payload passes the plane defined by the normal to the trajectory at this point. The quad-rotor or payload can also be restricted to pass through a specific patch in the plane. Hence, we are not restricted to the absolute $(x, y, z)$ directions, rather the frame of the expected position is used.
@@ -623,7 +629,7 @@ In pure pursuit, the complete trajectory function with time is known. Here, the 
 
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.6\textwidth]{purepursuit.png}
+    \includegraphics[width=0.6\textwidth]{pursuit.png}
     \caption{Schematic of the pure pursuit technique showing the quad-rotor and the leading target. The velocities of the target and the quad-rotor indicate how they will move next.}
 \end{figure}
 
@@ -637,11 +643,15 @@ Some noteworthy comments about this technique are:
 
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.6\textwidth]{purepursuit_con.png}
+    \includegraphics[width=0.6\textwidth]{pursuit_con.png}
     \caption{Schematic of the pure pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because the target is leading by a large amount.}
 \end{figure}
 
-\todo{Add figure showing the path it follows with these 3 tecnhiques}
+\begin{figure}[h]
+  \centering
+    \includegraphics[width=0.6\textwidth]{pursuit_circle.png}
+    \caption{Quad-rotor simulation moving in a circular trajecotry with the pursuit technique. The red marker denotes the current position of the moving target.}
+\end{figure}
 
 \todo{Add figure showing the deviation over time for a circle for all 3 techniques}
 

@@ -7,7 +7,7 @@ PursuitCircle::PursuitCircle() {
   dir2_center = 0;
   dir3_pos = 0;
   axes = "xyz";
-  steps_per_loop = 40000;
+  steps_per_loop = 50000;
 }
 
 geometry_msgs::Point PursuitCircle::compute_lead(long long timestamp) {

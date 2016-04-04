@@ -36,7 +36,7 @@
 #define PURSUIT_CIRCLE 30
 
 // Trajectory can from the above list
-#define TRAJECTORY CHECKPOINTS_CIRCLE
+#define TRAJECTORY PURSUIT_CIRCLE
 
 #define TRAIN_PEGASUS false
 #define USE_WIND false

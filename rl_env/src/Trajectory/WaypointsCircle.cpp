@@ -8,8 +8,14 @@ Waypoints(_use_checkpoints) {
   dir2_center = 0;
   dir3_pos = 0;
   axes = "xyz";
-  points_per_loop = 16;
+  points_per_loop = 32;
   num_loops = 100;
+
+  // From waypoints
+  epsilon_x = epsilon_y = 0.75;
+  epsilon_z = 1;
+  epsilon_plane = 0.75;
+
 }
 
 void WaypointsCircle::create_waypoints() {
