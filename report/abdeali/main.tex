@@ -20,7 +20,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Title page
 
-\title{Autonomous control of Quad-rotor payloads}
+\title{Autonomous control of Quad-rotor and payloads using Reinforcement Learning}
 
 \author{Abdeali JK}
 
@@ -629,11 +629,11 @@ In pure pursuit, the complete trajectory function with time is known. Here, the 
 
 Some noteworthy comments about this technique are:
 
-{\bf Lead time}: The amount of time by which the trajectory is leading will affect the actual trajectory the quad-rotor will fly. This may depend on trajectory to trajectory, for example a square would need a small lead time whereas a circle or oval would work well with a larger one in comparison. A straight line can have a large lead time.
+{\bf Speed}: The speed of the quad-rotor is not easy to control in pursuit. Here, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero. Although there is some notion that the faster the target is, the faster the quad-rotor will be this is not easy to control.
 
-{\bf Speed}: The speed of the quad-rotor is not easy to control in pursuit. Here, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero.
+{\bf Lead time value}: The amount of time by which the trajectory is leading will affect the actual trajectory the quad-rotor will fly. This may depend on trajectory to trajectory, for example a square would need a small lead time whereas a circle or oval would work well with a larger one in comparison. A straight line can have a large lead time.
 
-{\bf Constant lead time}: A constant leading time may be harmful because the leading time would depend on the trajectory itself. For example, a sharp corner would need a small leading time while a smooth trajectory would not need a small leading time. If the leading time is set to be too small, the quad-rotor would move very slowly as it assumes the target is close by.
+{\bf Adaptive lead lead}: A constant leading time may be harmful because the leading time would depend on the trajectory itself. For example, a sharp corner would need a small leading time while a smooth trajectory would not need a small leading time. If the leading time is set to be too small, the quad-rotor would move very slowly as it assumes the target is close by.
 
 \begin{figure}[h]
   \centering
