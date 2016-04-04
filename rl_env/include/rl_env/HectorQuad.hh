@@ -4,8 +4,6 @@
 #include <unistd.h>
 #include <utility>
 #include <ros/ros.h>
-#include <iostream>
-#include <fstream>
 
 #include <rl_common/core.hh>
 
@@ -22,12 +20,19 @@
 #include <controller_manager_msgs/LoadController.h>
 #include <controller_manager_msgs/ListControllers.h>
 #include <hector_uav_msgs/MotorPWM.h>
+
+// Trajectories
+#include <rl_env/trajectory/Trajectory.h>
+#include <rl_env/trajectory/WaypointsCircle.h>
+
 // Services
 #include <rl_common/RLRunSim.h>
 
-#define SIMPLE_WAYPOINTS 0
-#define PURE_PURSUIT 1
-#define ALGORITHM 1
+// Possible algos
+#define WAYPOINTS_CIRCLE 10
+#define PURSUIT_CIRCLE 20
+
+#define ALGORITHM WAYPOINTS_CIRCLE
 
 #define TRAIN_PEGASUS false
 #define USE_WIND false
@@ -65,10 +70,12 @@ protected:
   std::vector<std::pair<float, float> > waypoints;
   int curr;
 
+  Trajectory * trajectory;
+
   float reward();
   void get_trajectory(long long time_in_steps = -1);
   int form_waypoints(int k);
-  int pure_pursuit(int k);
+  int pure_pursuit_circle(int k);
 };
 
 #endif

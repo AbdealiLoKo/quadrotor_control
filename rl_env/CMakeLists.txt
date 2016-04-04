@@ -27,6 +27,11 @@ add_executable(env
   src/env.cpp
 
   src/Env/HectorQuad.cc
+
+  # Trajectories
+  src/Trajectory/Trajectory.cpp
+  src/Trajectory/Waypoints.cpp
+  src/Trajectory/WaypointsCircle.cpp
 )
 
 add_library(env_hectorquad_world

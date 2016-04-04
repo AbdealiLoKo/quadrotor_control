@@ -227,7 +227,8 @@ void HectorQuad::reset() {
   reset_syscommand.data = "reset";
   syscommand.publish(reset_syscommand);
 
-  if (ALGORITHM == SIMPLE_WAYPOINTS || ALGORITHM == PURE_PURSUIT) {
+  if (ALGORITHM == PURSUIT_CIRCLE) {
+    std::cout << "Using PursuitCircle for trajectory.\n";
     std::vector<std::pair<float, float> > wps;
     for(int i=0; i<1000; ++i) {
       std::pair<float, float> p = std::make_pair(5 * sin(i/50.0), 5 * cos(i/50.0));
@@ -240,6 +241,10 @@ void HectorQuad::reset() {
       // viz_points.publish(geo_point);
     }
     waypoints = wps;
+  } else if (ALGORITHM == WAYPOINTS_CIRCLE) {
+    std::cout << "Using WaypointCircle for trajectory.\n";
+    trajectory = new WaypointsCircle();
+    trajectory->reset();
   }
 
   curr = 1;
@@ -247,36 +252,6 @@ void HectorQuad::reset() {
 
 // --------------------------------------------------------------------
 // Checkpoints
-
-
-
-// --------------------------------------------------------------------
-// Waypoints
-int HectorQuad::use_waypoints_circle(int wp) {
-  /*
-   * Checks whether a certain waypoint's plane has been crossed
-   * as coming from the previous waypoint
-  */
-  final.pose.position.x = waypoints[wp].first;
-  final.pose.position.y = waypoints[wp].second;
-
-  float d1 = waypoints[wp].first-waypoints[wp-1].first;
-  float d2 = waypoints[wp].second-waypoints[wp-1].second;
-  float slope = -d1/d2;
-  float c = waypoints[wp].second-slope*waypoints[wp].first;
-
-  float p = (waypoints[wp-1].second-slope*waypoints[wp-1].first-c)
-            *(current.pose.position.y-slope*current.pose.position.x-c);
-
-  if ( p < 0 ) {
-    return wp;
-  }
-
-  final.pose.position.x = waypoints[wp+1].first;
-  final.pose.position.y =  waypoints[wp+1].second;
-  final.pose.position.z = 5;
-  return wp + 1;
-}
 
 
 // --------------------------------------------------------------------
@@ -337,19 +312,23 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   final.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(
     0, 0, angles::from_degrees(60));
 
-  if ( time_in_steps < 1000 ) {
-  } else if (curr <= 1000) {
-    if ( ALGORITHM == SIMPLE_WAYPOINTS ) {
-      curr = use_waypoints_circle(curr);
-    } else if ( ALGORITHM == PURE_PURSUIT ) {
-      curr = pure_pursuit_circle(curr);
-    }
-  }
-
   final.twist.linear.x = 0;
   final.twist.linear.y = 0;
   final.twist.linear.z = 0;
   final.twist.angular.x = 0;
   final.twist.angular.y = 0;
   final.twist.angular.z = 0;
+
+  if ( ALGORITHM == WAYPOINTS_CIRCLE ) {
+    final = trajectory->current_target(time_in_steps, current);
+  } else if ( ALGORITHM == PURSUIT_CIRCLE ) {
+    curr = pure_pursuit_circle(curr);
+  }
+
+  // std::cout << "At: " << time_in_steps << "\t";
+  // std::cout << "Target:" << final.pose.position.x << ", "
+  //           << final.pose.position.y << "\t";
+  // std::cout << "State:" << current.pose.position.x << ", "
+  //           << current.pose.position.y;
+  // std::cout << "\n";
 }
