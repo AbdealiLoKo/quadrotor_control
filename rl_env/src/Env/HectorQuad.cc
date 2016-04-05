@@ -262,9 +262,7 @@ void HectorQuad::get_trajectory(long long time_in_steps /* = -1 */) {
   }
 
   // std::cout << "At: " << time_in_steps << "\t";
-  // std::cout << "Target:" << final.pose.position.x << ", "
-  //           << final.pose.position.y << "\t";
-  // std::cout << "State:" << current.pose.position.x << ", "
-  //           << current.pose.position.y;
+  // std::cout << "Target:" << final.pose.position << "\t";
+  // std::cout << "State:" << current.pose.position << "\t";
   // std::cout << "\n";
 }

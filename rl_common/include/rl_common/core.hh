@@ -13,6 +13,12 @@
 #include <tf/transform_datatypes.h>
 #include <angles/angles.h>
 
+#include <geometry_msgs/Twist.h>
+#include <geometry_msgs/TwistStamped.h>
+#include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PointStamped.h>
+#include <geometry_msgs/Point.h>
+
 #define NINF INT_MIN
 #define INF INT_MAX
 
@@ -21,6 +27,9 @@
 #endif
 
 std::ostream& operator<< (std::ostream&, const Eigen::Vector3d&);
+std::ostream& operator<< (std::ostream&, const geometry_msgs::Vector3&);
+std::ostream& operator<< (std::ostream&, const geometry_msgs::Point&);
+std::ostream& operator<< (std::ostream&, const geometry_msgs::Quaternion&);
 
 template<typename T>
 std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {

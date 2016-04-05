@@ -70,10 +70,11 @@ void Pursuit::visualize_target(geometry_msgs::Point target,
   viz_points.type = visualization_msgs::Marker::POINTS;
 
   // Size of points
-  viz_points.scale.x = 0.2;
-  viz_points.scale.y = 0.2;
+  viz_points.scale.x = 0.2f;
+  viz_points.scale.y = 0.2f;
+  // viz_points.scale.z = 0.2f;
 
-  // Green color
+  // Color
   viz_points.color.r = 1.0f;
   viz_points.color.g = 0.0f;
   viz_points.color.b = 0.0f;
@@ -83,4 +84,39 @@ void Pursuit::visualize_target(geometry_msgs::Point target,
   viz_points.points.push_back(target);
 
   visualization_publisher.publish(viz_points);
+
+  // Now publish arrow to denote velocity
+  visualization_msgs::Marker viz_arrow;
+  viz_arrow.header.frame_id = "/world";
+  viz_arrow.header.stamp = ros::Time::now();
+  viz_arrow.ns = "target_velocity";
+  // viz_arrow.pose.orientation.w = 1.0;
+  viz_arrow.action = visualization_msgs::Marker::ADD;
+  viz_arrow.type = visualization_msgs::Marker::ARROW;
+
+  // Size of ARROW
+  viz_arrow.scale.x = 0.1; // Shaft dia
+  viz_arrow.scale.y = 0.2; // Head dia
+  // Color
+  viz_arrow.color.r = 1.0f;
+  viz_arrow.color.g = 0.0f;
+  viz_arrow.color.b = 0.0f;
+  viz_arrow.color.a = 1.0f;
+
+  // Create second point for arrow
+  geometry_msgs::Point point2;
+  double scale = 100;
+  point2.x = target.x - scale * (old_target_for_viz.x - target.x);
+  point2.y = target.y - scale * (old_target_for_viz.y - target.y);
+  point2.z = target.z - scale * (old_target_for_viz.z - target.z);
+
+  viz_arrow.points.push_back(target);
+  viz_arrow.points.push_back(point2);
+
+  // std::cout << "Target:" << target << "\t";
+  // std::cout << "Point2:" << point2 << "\n";
+
+  visualization_publisher.publish(viz_arrow);
+
+  old_target_for_viz = target;
 }

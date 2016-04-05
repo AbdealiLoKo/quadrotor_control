@@ -13,7 +13,7 @@
 class Pursuit: public Trajectory {
   // A generic class which uses pursuit based trajectories.
 public:
-  geometry_msgs::Point initial_position;
+  geometry_msgs::Point initial_position, old_target_for_viz;
   ros::Publisher visualization_publisher;
   long long initiating_lag;
 
