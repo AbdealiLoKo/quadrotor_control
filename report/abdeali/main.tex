@@ -641,13 +641,15 @@ Other than this, consider plotting the trajectory using a software like Inkscape
 \subsection{Retracing paths}
 If a checkpoint is missed due to control error in the trajectory, the quad-rotor would be forced to go backward and find this checkpoint. This is counter productive and may not be a good idea because it modifies the original structure of the trajectory that had to be traced.
 
+
 \begin{figure}[h]
   \centering
     \includegraphics[width=0.6\textwidth]{checkpoint_con.png}
     \caption{Schematic of the checkpoint technique showing the quad-rotor's path if a checkpoint has been missed, the path of the quad-rotor is completely different from the original trajectory.}
 \end{figure}
 
-A waypoint can help reduce retracing of paths which can occur in stochastic environmnets. This is a special case of checkpoints where the condition to pass is that the quad-rotor or payload passes the plane defined by the normal to the trajectory at this point. The quad-rotor or payload can also be restricted to pass through a specific patch in the plane. Also, this allows bounds to be set on the frame of the expected position rather than the absolute $(x, y, z)$ directions.
+
+The Stanford Testbed of Autonomous RObocraft for Multi aent control (STARMAC) \cite{STARMAC} has done some work solving this problem by introducing the concept of waypoints to reduce retracing of paths which can occur in stochastic environmnets. This is a special case of checkpoints where the condition to pass is that the quad-rotor or payload passes the plane defined by the normal to the trajectory at this point. The quad-rotor or payload can also be restricted to pass through a specific patch in the plane. Also, this allows bounds to be set on the frame of the expected position rather than the absolute $(x, y, z)$ directions.
 
 Because we simply need the quadrotor to pass the plane of the waypoint, even if the control is bad at certain areas, it does not change the original structure of the trajectory. This comes at the cost that the error in this direction could increase over time. However, we expect that this would not be unbounded as the quad-rotor policy would not allow this unless there is a flaw in the controller or the policy.
 
@@ -693,6 +695,33 @@ Due to the fact that the target trajectory is continuous and changes with every 
 
 \section{Comparison of trajectory techniques}
 
+\subsection{Accuracy}
+The accuracy of the trajectory being followed is an important aspect which needs to be considered. To measure the accuracy, we attempt to quantify the accuracy for a particular trajectory and find the deviation of the actual position of the quad-rotor to the trajectory.
+
+Consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. The expected trajectory would make the quad-rotor be at a distance of $r$ at all times from the center. We simply measure the distance of the quad-rotor from the origin and compare this to the radius of the circlei being followed.
+
+\todo{Add figure showing the deviation in radius over time for a circle for all techniques}
+\begin{figure}[h]
+  \centering
+    % \includegraphics[width=0.6\textwidth]{pursuit_con.png}
+    \caption{Comparison of accuracy in trajectory control techniques following a 2D circular path.}
+    \label{fig:TrajectoryComparison)
+\end{figure}
+
+\subsection{Smoothness of the trajectory}
+There are two metrics to consider smoothness. One is the smoothness of the spatial function of the trajectory. For example, whether the trajectory has extra edges while the original trajectory does not. The other metric to consider smoothness is related to time, the smoothness of the agent's motion on the trajectory and whether the velocity and acceleration is the expected value.
+
+We once again consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. By checking the deviation from the radius over time, we can find points where the graph peaks. This can be seen in \ref{fig:TrajectoryComparison}. We find the trajectory of the checkpoint based method is not smooth in this sense. Although, the error of the pursuit method overall is large. This shows that there is a inverse relation between accuracy and smoothness. In checkpoints, if we decrease the number of checkpoints, we would get a smoother trajectory which wouldn't be as accurate.
+
+The smoothness of velocity can once again be calculated in the circular trajectory experiment. Here, we plot the magnitude of the velocity and analyze the variation in both cases. We see that the checkpoints method has jerks in the speed because of the decelaration when the checkpoint is close by. This is not seen in pursuit as the target there is at a nearly constant distance from the agent.
+
+\todo{Add figure showing the speed over time for a circle for all techniques}
+\begin{figure}[h]
+  \centering
+    % \includegraphics[width=0.6\textwidth]{pursuit_con.png}
+    \caption{Comparison of speed in trajectory control techniques following a 2D circular path.}
+    \label{fig:TrajectoryComparison)
+\end{figure}
 
 \subsection{Speed control}
 The speed of the quad-rotor is not easy to control in either of the methods. This is because the underlying policy is that for hovering, and trajectories are created by truncating the hovering policy in quick succession.
@@ -700,9 +729,6 @@ The speed of the quad-rotor is not easy to control in either of the methods. Thi
 In the checkpoint method, the quad-rotor attempts to decelerate as the target is nearly reached. This makes the speed of the quadrotor vary excessively. Although there is some notion that the checkpoint is only required for turns, where the quadrotor would need to slow down to avoid over shooting, this is not very intuitive nor rigorously controllable.
 
 In the pursuit method, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero. Although there is some notion that the faster the target is, the faster the quad-rotor will be this is not easy to control.
-
-
-\todo{Add figure showing the deviation in radius over time for a circle for all 3 techniques}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Apprenticeship Learning}
