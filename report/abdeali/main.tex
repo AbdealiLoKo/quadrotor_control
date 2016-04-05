@@ -197,7 +197,7 @@ Reinforcement learning has been applied to a wide variety of spheres ranging fro
 
 Reinforcement Learning has also been applied to routing (Q-routing) \cite{RLInQRouting},
 improving elevator dispatch performance \cite{RLInElevators}, algorithm
-selection \cite{RLInAlgoSelection}, job-shop scheduling \cite{RLInJobShopScheduling}, dialog systems \cite{RLInDialogSystems} and recommendation systems \cite{RLInRecommenders}.
+selection \cite{RLInAlgoSelection}, job-shop scheduling \cite{RLInJobShopScheduling}, dialog systems \cite{RLInDialogSystems}, maze solving with multi agents \cite{PredatorPrey}, and recommendation systems \cite{RLInRecommenders}.
 
 \section{Reinforcement learning in control}
 
@@ -253,6 +253,16 @@ Inverse Reinforcement Learning (IRL) is a field of Reinforcement learning where 
 Apprenticeship learning \cite{ApprenticeshipLearning} helps to solve this issue by learning a task from a mentor which already knows the target and is thought to be maximizing a reward function. The mentor is asked to perform the task and the trajectories and actions used by the mentor is stored in the memory of the agent. Then the agent uses this memory to help itself find a reward distribution suitable for the task. The reward function can be derived by identifying which transitions occur frequently in the mentor's trajectories and which ones do not. The frequent transitions should give a larger reward while the transitions that do not occur give no or negative rewards. The mentor can even specify which trajectories are bad and should not occur for a more balanced reward function.
 
 In the case of the continuous rewards and states like ours, it is impossible to count transitions and so the above method is not possible. A more structured approach to the analysis is required. In such cases the trajectories need to be time normalized and then stitched to find the optimal policy for the task.
+
+\section{Predator Prey methods}
+
+Predator Prey environments are dynamic systems where there are a few Predators and a few prey. The predators attempt to catch the prey while the latter attempts to escape. There are a few escape states where the predator is incapable of reaching, but the prey is - making those the end states. This work involves learning a second layer (high level control of the quad-rotor) to chase after a trajectory. 
+
+The Predator Prey systems are motivated from population theory \cite{PredatorPreyCoEvolution} where the population of animals is modelled. In such cases, there is food for prey (plants) planted at various points. These are considered to be static, but they can grow over time. The prey moves around eating or resting. Eating and resting allows them to conserve energy which is then used to escape from predators or find more food. If a prey or predator does not eat for too long, they may die. Population theory is used to spawn new predators and prey based on known distributions.
+
+In a large number of cases, the Prey is considered a passive agent which simply moves in predefined paths like towards food and to a resting area (their home), or even simply a random motion. There has been a large amount of work to make the predator learn to catch the prey as quickly as possible. Most techniques \cite{PredatorPrey} keep a value function and use Temporal Difference (TD) algorithms to find this value function. This can also be done by a policy search method like PEGASUS.
+
+Predator Prey environments typically focus on systems where the prey is a learning agent. Hence, the path taken by prey is not known a priori. This can be used on top of the quad-rotor control for actions like catching objects, finding other quadrotors, etc. Also, the main concept in these tecniques is to catch the prey as soon as it can or catch it before the time ends. Hence, the policy learnt makes the predator move in the time optimal trajectory to catch the moving target.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -637,7 +647,7 @@ If a checkpoint is missed due to control error in the trajectory, the quad-rotor
     \caption{Schematic of the checkpoint technique showing the quad-rotor's path if a checkpoint has been missed, the path of the quad-rotor is completely different from the original trajectory.}
 \end{figure}
 
-A waypoint can help reduce retracing of paths due to unusual behaviour in between. This is a special case of checkpoints where the condition to pass is that the quad-rotor or payload passes the plane defined by the normal to the trajectory at this point. The quad-rotor or payload can also be restricted to pass through a specific patch in the plane. Also, this allows bounds to be set on the frame of the expected position rather than the absolute $(x, y, z)$ directions.
+A waypoint can help reduce retracing of paths which can occur in stochastic environmnets. This is a special case of checkpoints where the condition to pass is that the quad-rotor or payload passes the plane defined by the normal to the trajectory at this point. The quad-rotor or payload can also be restricted to pass through a specific patch in the plane. Also, this allows bounds to be set on the frame of the expected position rather than the absolute $(x, y, z)$ directions.
 
 Because we simply need the quadrotor to pass the plane of the waypoint, even if the control is bad at certain areas, it does not change the original structure of the trajectory. This comes at the cost that the error in this direction could increase over time. However, we expect that this would not be unbounded as the quad-rotor policy would not allow this unless there is a flaw in the controller or the policy.
 
@@ -651,8 +661,6 @@ Because we simply need the quadrotor to pass the plane of the waypoint, even if 
 
 In pursuit, the complete trajectory function with time is known. Here, the target of the quad-rotor is changed at every step to be the expected position after a certain time. Hence, we can say the quad-rotor or payload tries to pursue the trajectory where the target has a time lead.
 
-\todo{Add info and papers about predator prey in RL}
-
 \begin{figure}[h]
   \centering
     \includegraphics[width=0.6\textwidth]{pursuit.png}
@@ -664,6 +672,11 @@ In pursuit, the complete trajectory function with time is known. Here, the targe
     \includegraphics[width=0.6\textwidth]{pursuit_circle.png}
     \caption{Quad-rotor simulation moving in a circular trajecotry with the pursuit technique. The red marker denotes the current position of the moving target.}
 \end{figure}
+
+\subsection{Accumulated error}
+A continuous pursuit would also mean that the target is never reached (as the target moves). This means that if there is an initial error when the trajectory began or if there is anomalous behaviour due to stochasticity at some points, the agent may never recover. These would result in a completely different trajectory from the planned trajectory because there is no feedback to the trajectory generator. Hence, this is not suitable for stochastic problems where a gust of wind could blow the quadrotor away completely.
+
+For environments where the stochasticity is not much this is a great value add though, as it gives an extremely smooth trajectory. If there is a "slowness" factor incorporated in the trajectory which makes the target move slower if the quadrotor lags behind too much, this would help in resolving this issue.
 
 \subsection{Lead time}
 The amount of time by which the trajectory is leading will affect the actual trajectory the quad-rotor will fly. This may depend on trajectory to trajectory, for example a square would need a small lead time whereas a circle or oval would work well with a larger one in comparison. A straight line can have a large lead time.
@@ -677,11 +690,6 @@ Due to the fact that the target trajectory is continuous and changes with every 
     \includegraphics[width=0.6\textwidth]{pursuit_con.png}
     \caption{Schematic of the pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because the target is leading by a large amount.}
 \end{figure}
-
-\subsection{Carried over error}
-A continuous pursuit would also mean that the target is never reached (as the target moves). This means that if there is an initial error when the trajectory began or if there is anomalous behaviour due to stochasticity at some points, the agent may never recover. These would result in a completely different trajectory from the planned trajectory because there is no feedback to the trajectory generator. Hence, this is not suitable for stochastic problems where a gust of wind could blow the quadrotor away completely.
-
-For environments where the stochasticity is not much this is a great value add though, as it gives an extremely smooth trajectory. If there is a "slowness" factor incorporated in the trajectory which makes the target move slower if the quadrotor lags behind too much, this would help in resolving this issue.
 
 \section{Comparison of trajectory techniques}
 
