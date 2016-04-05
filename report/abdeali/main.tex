@@ -256,7 +256,7 @@ In the case of the continuous rewards and states like ours, it is impossible to 
 
 \section{Predator Prey methods}
 
-Predator Prey environments are dynamic systems where there are a few Predators and a few prey. The predators attempt to catch the prey while the latter attempts to escape. There are a few escape states where the predator is incapable of reaching, but the prey is - making those the end states. This work involves learning a second layer (high level control of the quad-rotor) to chase after a trajectory. 
+Predator Prey environments are dynamic systems where there are a few Predators and a few prey. The predators attempt to catch the prey while the latter attempts to escape. There are a few escape states where the predator is incapable of reaching, but the prey is - making those the end states. This work involves learning a second layer (high level control of the quad-rotor) to chase after a trajectory.
 
 The Predator Prey systems are motivated from population theory \cite{PredatorPreyCoEvolution} where the population of animals is modelled. In such cases, there is food for prey (plants) planted at various points. These are considered to be static, but they can grow over time. The prey moves around eating or resting. Eating and resting allows them to conserve energy which is then used to escape from predators or find more food. If a prey or predator does not eat for too long, they may die. Population theory is used to spawn new predators and prey based on known distributions.
 
@@ -383,12 +383,12 @@ The propellers are modelled as discs as a trade-off between visual accuracy, col
     \begin{subfigure}[c]{0.45\textwidth}
       \centering
         \includegraphics[width=\textwidth]{quadrotor_sim.png}
-        \caption{\label{fig:fig1}}
+        \caption{}
     \end{subfigure}
     \begin{subfigure}[c]{0.45\textwidth}
       \centering
         \includegraphics[width=\textwidth]{quadrotor_sim2.png}
-        \caption{\label{fig:fig2}}
+        \caption{}
     \end{subfigure}
     \caption{Quad-rotor simulated by Hector Quadrotor using ROS and gazebo.}
 \end{figure}
@@ -458,12 +458,12 @@ Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for
     \begin{subfigure}[c]{0.45\textwidth}
       \centering
         \includegraphics[width=\textwidth]{quadrotor_rotors_roll.png}
-        \caption{\label{fig:fig1}}
+        \caption{}
     \end{subfigure}
     \begin{subfigure}[c]{0.45\textwidth}
       \centering
         \includegraphics[width=\textwidth]{quadrotor_rotors_pitch.png}
-        \caption{\label{fig:fig2}}
+        \caption{}
     \end{subfigure}
     \caption{The configuration of the 4 rotors of a quad-rotor to change roll and pitch.}
 \end{figure}
@@ -624,6 +624,21 @@ The $\epsilon_i$ would be different for $\omega$ as compared to the others becau
     \caption{Quad-rotor simulation moving in a circular trajecotry with the checkpoint technique. The red marker denotes the current targetted checkpoint and the blue markers are all the checkpoints in the trajectory.}
 \end{figure}
 
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}[c]{0.45\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{checkpoint_circle.png}
+      \caption{With no stochasticity}
+  \end{subfigure}
+  \begin{subfigure}[c]{0.45\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{checkpoint_circle_wind.png}
+      \caption{With large stochasticity - wind with uniform sum distribution limited to $5 m/s$}
+  \end{subfigure}
+  \caption{Quad-rotor simulation moving in a circular trajecotry with the checkpoint technique. The red marker denotes the current targetted checkpoint and the blue markers are all the checkpoints in the trajectory.}
+\end{figure}
+
 \subsection{Jerky trajectories}
 The underlying policy that is being used is the position control. So the quad-rotor thinks that it should stop at the next checkpoint because it has reached the target. Hence, it decelerates when it is in the checkpoint's vicinity. This causes the trajectory to be a little jerky adding excessive noise near the checkpoints.
 
@@ -671,8 +686,17 @@ In pursuit, the complete trajectory function with time is known. Here, the targe
 
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.6\textwidth]{pursuit_circle.png}
-    \caption{Quad-rotor simulation moving in a circular trajecotry with the pursuit technique. The red marker denotes the current position of the moving target.}
+  \begin{subfigure}[c]{0.45\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{pursuit_circle.png}
+      \caption{With no stochasticity}
+  \end{subfigure}
+  \begin{subfigure}[c]{0.45\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{pursuit_circle_wind.png}
+      \caption{With large stochasticity - wind with uniform sum distribution limited to $5 m/s$}
+  \end{subfigure}
+  \caption{Quad-rotor simulation moving in a circular trajecotry with the pursuit technique. The red marker and arrow denote the current position and velocity of the target.}
 \end{figure}
 
 \subsection{Accumulated error}
@@ -683,15 +707,15 @@ For environments where the stochasticity is not much this is a great value add t
 \subsection{Lead time}
 The amount of time by which the trajectory is leading will affect the actual trajectory the quad-rotor will fly. This may depend on trajectory to trajectory, for example a square would need a small lead time whereas a circle or oval would work well with a larger one in comparison. A straight line can have a large lead time.
 
-A constant leading time may be harmful because the leading time would depend on the trajectory itself. For example, a sharp corner would need a small leading time while a smooth trajectory would not need a small leading time. If the leading time is set to be too small, the quad-rotor would move very slowly as it assumes the target is close by.
-
-Due to the fact that the target trajectory is continuous and changes with every time step, the trajectory generated by this method is extremely smooth. The major issue of this method is that there is no feedback from the quad-rotor to the trajectory generator, which makes it impossible for the quadrotor to recover if it deviates from the path.
-
 \begin{figure}[h]
   \centering
     \includegraphics[width=0.6\textwidth]{pursuit_con.png}
     \caption{Schematic of the pursuit technique showing the quad-rotor and the leading target in a case where a portion of the trajectory is ignored because the target is leading by a large amount.}
 \end{figure}
+
+A constant leading time may be harmful because the leading time would depend on the trajectory itself. For example, a sharp corner would need a small leading time while a smooth trajectory would not need a small leading time. If the leading time is set to be too small, the quad-rotor would move very slowly as it assumes the target is close by.
+
+Due to the fact that the target trajectory is continuous and changes with every time step, the trajectory generated by this method is extremely smooth. The major issue of this method is that there is no feedback from the quad-rotor to the trajectory generator, which makes it impossible for the quadrotor to recover if it deviates from the path.
 
 \section{Comparison of trajectory techniques}
 
@@ -705,13 +729,13 @@ Consider the experiment of a circular trajectory with a radius $r$ centered at $
   \centering
     % \includegraphics[width=0.6\textwidth]{pursuit_con.png}
     \caption{Comparison of accuracy in trajectory control techniques following a 2D circular path.}
-    \label{fig:TrajectoryComparison)
+    \label{fig:TrajectoryComparison}
 \end{figure}
 
 \subsection{Smoothness of the trajectory}
 There are two metrics to consider smoothness. One is the smoothness of the spatial function of the trajectory. For example, whether the trajectory has extra edges while the original trajectory does not. The other metric to consider smoothness is related to time, the smoothness of the agent's motion on the trajectory and whether the velocity and acceleration is the expected value.
 
-We once again consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. By checking the deviation from the radius over time, we can find points where the graph peaks. This can be seen in \ref{fig:TrajectoryComparison}. We find the trajectory of the checkpoint based method is not smooth in this sense. Although, the error of the pursuit method overall is large. This shows that there is a inverse relation between accuracy and smoothness. In checkpoints, if we decrease the number of checkpoints, we would get a smoother trajectory which wouldn't be as accurate.
+We once again consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. By checking the deviation from the radius over time, we can find points where the graph peaks. This can be seen in Figure \ref{fig:TrajectoryComparison}. We find the trajectory of the checkpoint based method is not smooth in this sense. Although, the error of the pursuit method overall is large. This shows that there is a inverse relation between accuracy and smoothness. In checkpoints, if we decrease the number of checkpoints, we would get a smoother trajectory which wouldn't be as accurate.
 
 The smoothness of velocity can once again be calculated in the circular trajectory experiment. Here, we plot the magnitude of the velocity and analyze the variation in both cases. We see that the checkpoints method has jerks in the speed because of the decelaration when the checkpoint is close by. This is not seen in pursuit as the target there is at a nearly constant distance from the agent.
 
@@ -720,7 +744,6 @@ The smoothness of velocity can once again be calculated in the circular trajecto
   \centering
     % \includegraphics[width=0.6\textwidth]{pursuit_con.png}
     \caption{Comparison of speed in trajectory control techniques following a 2D circular path.}
-    \label{fig:TrajectoryComparison)
 \end{figure}
 
 \subsection{Speed control}
