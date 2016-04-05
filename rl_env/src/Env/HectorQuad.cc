@@ -111,15 +111,24 @@ const std::vector<float> &HectorQuad::sensation() {
   //           << current.twist.linear.y - prev_vel.linear.y << " "
   //           << current.twist.linear.z - prev_vel.linear.z << "\n";
 
-  // Save the linear acceleration in a file for analysis
+  // Save data to scratch pad
+  double circle_pos_error = sqrt(current.pose.position.x * current.pose.position.x +
+    current.pose.position.y * current.pose.position.y +
+    current.pose.position.z * current.pose.position.z) - 5;
+  double speed = sqrt(current.twist.linear.x * current.twist.linear.x +
+    current.twist.linear.y * current.twist.linear.y +
+    current.twist.linear.z * current.twist.linear.z);
   float total_acc = sqrt(current.twist.linear.x * current.twist.linear.x
-    + current.twist.linear.y * current.twist.linear.y) -
-  sqrt(prev_vel.linear.x * prev_vel.linear.x
-    + prev_vel.linear.y * prev_vel.linear.y);
-  std::ofstream myfile;
-  myfile.open ("acceleration.txt", std::ios::app);
-  myfile << total_acc << "\n";
-  myfile.close();
+      + current.twist.linear.y * current.twist.linear.y) -
+    sqrt(prev_vel.linear.x * prev_vel.linear.x
+      + prev_vel.linear.y * prev_vel.linear.y);
+
+  if (cur_step > 10000) {
+    std::ofstream myfile;
+    myfile.open ("quadrotor_data.txt", std::ios::app);
+    myfile << speed << "\n";
+    myfile.close();
+  }
 
   return s;
 }

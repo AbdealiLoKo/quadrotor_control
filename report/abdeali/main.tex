@@ -73,6 +73,8 @@ Date: \todo{4 April 2016}
 
 I would like to thank my university Indian Institute of Technology, Madras for giving me the opportunity to work on this project. My guides for allowing me to work with them and their invaluable help throughout the project, right from the identification of the project topic to helping mould approaches and identifying new directions to work in when a line of thought had to be abandoned.
 
+I'd also like to thank Kunal Grover (ME12B033) who has worked with me during the project. With various intriguing conversations on concept ideas, planning, learning methodologies, coding practices, and simulation design it's been great working with him.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Abstract
 
@@ -93,8 +95,8 @@ I would like to thank my university Indian Institute of Technology, Madras for g
 \tableofcontents
 \thispagestyle{empty}
 
-\listoftables
-\addcontentsline{toc}{chapter}{LIST OF TABLES}
+% \listoftables
+% \addcontentsline{toc}{chapter}{LIST OF TABLES}
 \listoffigures
 \addcontentsline{toc}{chapter}{LIST OF FIGURES}
 \end{singlespace}
@@ -562,7 +564,7 @@ Unstable states like the ones seen in aerobatics have the problem that the mecha
 \begin{figure}[h]
   \centering
     \includegraphics[width=\textwidth]{quadrotor_position_control_time.png}
-    \caption{Value of best policy found with each iteration of PEGASUS to move to a given target position $(x, y, z, \omega) = (5, 5, 5, 60\protect^{\circ})$}
+    \caption{Value of best policy found with each iteration of PEGASUS to move to a given target position $(x, y, z, \omega) = (5, 5, 5, 60\protect^{\circ})$ with stochastic wind.}
 \end{figure}
 
 \subsection{Time analysis}
@@ -718,11 +720,10 @@ The accuracy of the trajectory being followed is an important aspect which needs
 
 Consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. The expected trajectory would make the quad-rotor be at a distance of $r$ at all times from the center. We simply measure the distance of the quad-rotor from the origin and compare this to the radius of the circlei being followed.
 
-\todo{Add figure showing the deviation in radius over time for a circle for all techniques}
 \begin{figure}[h]
   \centering
-    % \includegraphics[width=0.6\textwidth]{pursuit_con.png}
-    \caption{Comparison of accuracy in trajectory control techniques following a 2D circular path.}
+    \includegraphics[width=\textwidth]{comparison_accuracy.png}
+    \caption{Comparison of accuracy in trajectory control techniques following a 2D circular path with and without wind.}
     \label{fig:TrajectoryComparison}
 \end{figure}
 
@@ -731,13 +732,12 @@ There are two metrics to consider smoothness. One is the smoothness of the spati
 
 We once again consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. By checking the deviation from the radius over time, we can find points where the graph peaks. This can be seen in Figure \ref{fig:TrajectoryComparison}. We find the trajectory of the checkpoint based method is not smooth in this sense. Although, the error of the pursuit method overall is large. This shows that there is a inverse relation between accuracy and smoothness. In checkpoints, if we decrease the number of checkpoints, we would get a smoother trajectory which wouldn't be as accurate.
 
-The smoothness of velocity can once again be calculated in the circular trajectory experiment. Here, we plot the magnitude of the velocity and analyze the variation in both cases. We see that the checkpoints method has jerks in the speed because of the decelaration when the checkpoint is close by. This is not seen in pursuit as the target there is at a nearly constant distance from the agent.
+The smoothness of velocity can once again be calculated in the circular trajectory experiment. Here, we plot the magnitude of the velocity and analyze the variation in both cases. We see that the checkpoints method decelerates the agent when the checkpoint is close by and accelerates after it passes the checkpoint. This is not seen in pursuit as the target there is at a nearly constant distance from the agent.
 
-\todo{Add figure showing the speed over time for a circle for all techniques}
 \begin{figure}[h]
   \centering
-    % \includegraphics[width=0.6\textwidth]{pursuit_con.png}
-    \caption{Comparison of speed in trajectory control techniques following a 2D circular path.}
+    \includegraphics[width=\textwidth]{comparison_velocity.png}
+    \caption{Comparison of speed in trajectory control techniques following a 2D circular path with and without wind.}
 \end{figure}
 
 \subsection{Speed control}
@@ -747,10 +747,6 @@ In the checkpoint method, the quad-rotor attempts to decelerate as the target is
 
 In the pursuit method, the lead that the target has would determine the speed, and hence the further away the leading target is, the faster the quad-rotor would be. This is because the quad-rotor would decelerate as it approaches the target - because the PEGASUS model has been learnt for a target velocity of zero. Although there is some notion that the faster the target is, the faster the quad-rotor will be this is not easy to control.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Apprenticeship Learning}
-
-\todo{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography.
 

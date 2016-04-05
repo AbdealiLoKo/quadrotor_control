@@ -26,8 +26,7 @@ ax.set_xlabel('Policy parameter 1')
 ax.set_ylabel('Policy parameter 2')
 ax.set_zlabel('Value of policy')
 ax.view_init(elev=30., azim=30)
-ax.plot([0], [0], [0], 'r-',
-        markerfacecolor='r', markeredgecolor='r', marker='o', markersize=7)
+ax.plot([0], [0], [0], 'r-', markerfacecolor='r', markeredgecolor='r', marker='o', markersize=7)
 # ax.plot([0], [0], [0], markerfacecolor='r', markeredgecolor='r', marker='o', markersize=7)
 
 plt.show()
