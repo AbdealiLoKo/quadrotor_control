@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="use_payload" default="false" />
+  <arg name="use_payload" default="true" />
 
   <!-- ################################################################### -->
   <!-- Start Gazebo with world running in (max) realtime -->

@@ -36,10 +36,10 @@
 #define PURSUIT_CIRCLE 30
 
 // Trajectory can from the above list
-#define TRAJECTORY PURSUIT_CIRCLE
+#define TRAJECTORY NO_TRAJECTORY
 
-#define TRAIN_PEGASUS false
-#define USE_WIND false
+#define TRAIN_PEGASUS true
+#define USE_WIND true
 
 class HectorQuad: public Environment {
 public:
