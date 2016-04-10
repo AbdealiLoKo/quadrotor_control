@@ -2,6 +2,7 @@
 
 import numpy as np
 import scipy as sp
+import sympy as sym
 from scipy.spatial.distance import euclidean
 
 from dtw import dtw
@@ -92,6 +93,25 @@ def _observation(current_kalman_state, noise):
     # Simple gaussian noise added
     return current_kalman_state + noise
 
+x,y,z,w,vx,vy,vz,vw,ax,ay,az,aw = sym.symbols('x y z w vx vy vz vw ax ay az aw')
+alph = 0.5
+system_dyamics = sym.Matrix([
+    x + vx + alph*(ax-vx),
+    y + vy + alph*(ay-vy),
+    z + vz + alph*(az-vz),
+    w + vw + alph*(aw-vw),
+    vx + alph*(ax-vx),
+    vy + alph*(ay-vy),
+    vz + alph*(az-vz),
+    vw + alph*(aw-vw),
+    ax,
+    ay,
+    az,
+    aw
+])
+state = sym.Matrix([x,y,z,w,vx,vy,vz,vw,ax,ay,az,aw])
+jacobian_dynamics = system_dyamics.jacobian(state)
+
 def _transition(current_kalman_state, noise):
                 #observed_trajectories=observed_trajectories,
                 #time_mapping=time_mapping):
@@ -105,10 +125,12 @@ def _transition(current_kalman_state, noise):
     """
     print("In _transition: ", current_kalman_state, noise)
     # current_kalman_state[:n_dim_state, :]
-    return current_kalman_state
+    next_state = system_dyamics.subs(list(zip(state, current_kalman_state)))
+    return list(next_state)
 
-def jakobian_transition(current_kalman_state, noise):
-    pass
+def jacobian_transition(current_kalman_state, noise):
+    j = jacobian.subs(list(zip(state, current_kalman_state)))
+    return list(j)
 
 ukf = UnscentedKalmanFilter(
     transition_functions=_transition,
@@ -121,16 +143,18 @@ ukf = UnscentedKalmanFilter(
     n_dim_obs=n_dim_kalman_observed,
     random_state=None)
 
-while True:
+n = 100
+while n:
+    n -= 1
 
-    # Step 2 = E step for latent trajectory
+    # Find the means and covariances
 
     for obs in observed_trajectories:
-        # warp trajectory to make it same length of hidden trajectory
+        # warp trajectory to make it to the same length of hidden trajectory
         warped_obs = get_time_warped_series(obs)
         smooth_means, smooth_cov = ukf.smooth(warped_obs)
 
-    # Step 3 = M step for latent trajectory
+    # Find new Q and R
     smooth_means
     smooth_cov
     filter_means
@@ -138,11 +162,20 @@ while True:
     Q = ukf.transition_covariance
     R = ukf.observation_covariance
 
-    d_mu = smooth_means - np.array([_transition(i) for i in smooth_means])
-    A = np.array([jakobian_transition(i) for i in smooth_means])
-    L = filter_cov * A.T / filter_cov
-    P = filter_cov - smooth_cov * L.T * A.T + A.T * L.T * smooth_cov
-    Q = 1.0 / T * np.dot(d_mu, d_mu)
+    new_Q = 0
+    new_R = 0
+    for t in range(hidden_time_length-1):
+        d_mu = smooth_means[t+1] - _transition(smooth_means[t])
+        A = jacobian_transition(smooth_means[i])
+        L = filter_cov[t] * A.T / filter_cov[t+1]
+        P = smooth_cov[t+1] - smooth_cov[t+1] * L.T * A.T - A.T * L.T * smooth_cov[t+1]
+        new_Q += d_mu * d_mu.T + A * smooth_cov[t] * A.T + P
 
-    # Step 2 = E step for latent trajectory
+        d_y = warped_obs[t] - _observation(smooth_means[t]) # TODOOOO
+        C = jacobian_transition(smooth_means[t])
+        new_R += d_y * d_y.T + C * filter_cov[t] * C.T
+    new_Q = new_Q / (hidden_time_length - 1)
+    new_R = new_R / (hidden_time_length - 1)
 
+    ukf.transition_covariance = new_Q
+    ukf.observation_covariance = new_R
