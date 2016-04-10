@@ -1,7 +1,7 @@
 %\documentclass[PhD]{iitmdiss}
 %\documentclass[MS]{iitmdiss}
 %\documentclass[MTech]{iitmdiss}
-\documentclass[BTech]{iitmdiss}
+\documentclass[hidelinks,BTech]{iitmdiss}
 \usepackage{times}
 \usepackage{t1enc}
 \usepackage{graphicx}
@@ -247,13 +247,13 @@ There has also been some work in controlling payloads of UAVs using Reinforcemen
     \caption{Quadrotor with a payload attached using a non rigid body. States (cartesian co-ordinates and euler angles) of the payload are shown.}
 \end{figure}
 
-\section{Inverse Reinforcement Learning}
+\section{Apprenticeship Learning}
 
 In reinforcement learning we use a reward function, which describes the task and the target that needs to be achieved. Reinforcement learning can be applied to tasks as ill defined as "drive the car well". This is not clear and has many many inherent meanings like "drive to the destination quickly", "do not crash into anything", "stop at red signals" and even more subtle meanings like "change lanes as little as possible", "move in smooth trajectories" and so on. In such cases, which are not clearly defined it is even more difficult to quantify the expected task and create a reward function.
 
-Inverse Reinforcement Learning (IRL) is a field of Reinforcement learning where no reward function is given. Here, the agent tries to identify the policy given some pre-prepared behaviour of another agent. The pre-prepared agent is expected to be an expert. This usually requires multiple demonstrations as the reward function is analyzed using these trajectories and policies.
+Inverse Reinforcement Learning (IRL) is a field of Reinforcement learning where no reward function is given. Here, the agent tries to identify the reward function, given some pre-prepared behaviour of another agent. The pre-prepared agent is assumed to be an expert. This usually requires multiple demonstrations as the reward function is analyzed using these trajectories and policies.
 
-Apprenticeship learning \cite{ApprenticeshipLearning} helps to solve this issue by learning a task from a mentor which already knows the target and is thought to be maximizing a reward function. The mentor is asked to perform the task and the trajectories and actions used by the mentor is stored in the memory of the agent. Then the agent uses this memory to help itself find a reward distribution suitable for the task. The reward function can be derived by identifying which transitions occur frequently in the mentor's trajectories and which ones do not. The frequent transitions should give a larger reward while the transitions that do not occur give no or negative rewards. The mentor can even specify which trajectories are bad and should not occur for a more balanced reward function.
+Apprenticeship learning \cite{ApprenticeshipLearning} helps to solve this issue by learning a task from a mentor which already knows the target and is thought to be maximizing a reward function. The mentor is asked to perform the task and the trajectories and actions used by the mentor is stored in the memory of the agent. Then the agent uses this memory to help itself find a suitable policy for the task. A naive policy can be derived by identifying which transitions occur frequently in the mentors trajectories and which ones do not. The frequent transitions should give a larger reward while the transitions that do not occur give no or negative rewards. The mentor can even specify which trajectories are bad and should not occur for a more balanced reward function.
 
 In the case of the continuous rewards and states like ours, it is impossible to count transitions and so the above method is not possible. A more structured approach to the analysis is required. In such cases the trajectories need to be time normalized and then stitched to find the optimal policy for the task.
 
