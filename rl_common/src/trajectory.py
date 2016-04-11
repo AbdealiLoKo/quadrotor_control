@@ -3,7 +3,7 @@
 import numpy as np
 from scipy.spatial.distance import euclidean
 
-from dtw import dtw
+from cdtw import dtw
 
 
 n_dim_state = 8
@@ -65,7 +65,7 @@ def get_time_warped_series(series1, series2=hidden_trajectory):
     print(p2)
     new_mapping = np.zeros(series2.shape)
     for i in range(series2.shape[0]):
-        new_mapping[i, :] = series1[p1[p2 == i]].mean(axis=0)
+        new_mapping[i, :] = series1[p1[p2 == i]].mean(axis=0)   
     assert len(series2) == len(new_mapping)
 
     return new_mapping
@@ -94,7 +94,7 @@ if not USE_MODEL:
 
         # Find average to get the hidden trajectory
         new_hidden_trajectory = warped_obs / hidden_time_length
-        if (new_hidden_trajectory - hidden_trajectory).sum() < 0.001:
+        if abs((new_hidden_trajectory - hidden_trajectory).sum()) < 0.001:
             break
         hidden_trajectory = new_hidden_trajectory
 
