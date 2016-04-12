@@ -9,6 +9,8 @@
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/Pose.h>
 
+#define DEBUG 0
+
 namespace gazebo {
   class EnvHectorQuadWorld : public WorldPlugin {
   public:
@@ -40,11 +42,17 @@ namespace gazebo {
 
       if (payload_ptr) {
         link_ptr = payload_ptr;
+        if (DEBUG) {
+          ROS_INFO("Using PAYLOAD link for state in world.cc");
+        }
       } else {
         link_ptr = base_ptr;
+        if (DEBUG) {
+          ROS_INFO("Using BASE_LINK link for state in world.cc");
+        }
       }
 
-      if (0) {
+      if (DEBUG) {
         if (base_ptr) {
           std::cout << "Quadrotor Base link\n"
                     << "Position = " << base_ptr->GetWorldPose().pos << "\n"
