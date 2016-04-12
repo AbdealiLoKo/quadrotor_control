@@ -659,21 +659,28 @@ The {\bf reward} used is the L1 norm of the deviation from the target. The rewar
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=0.7\textwidth]{quadrotor_position_control2.png}
-    \caption{Quad-rotor using the trained policy by PEGASUS to move from one position (x, y, z, $\protect\omega$) to another.}
+    \begin{subfigure}[t]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{quadrotor_position_control.png}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{quadrotor_position_control2.png}
+    \end{subfigure}
+    \caption{Quad-rotor moving using the trained policy by PEGASUS to move from one position (x, y, z, $\protect\omega$) to another.}
 \end{figure}
 
 The roll and pitch are not considered in the target nor the state, as a quad-rotor cannot hover at a position with a non-zero roll and pitch. Hence, the target's roll and pitch is always assumed to be zero. It is impossible to learn a policy which allows the quad-rotor to maintain a specific roll and pitch as it would simply move to another orientation, and when returning back to the $(x, y, z, \omega)$ the roll and pitch will again change.
 
 Trying to maintain a roll and pitch is the specific case of unstable targets. In aerobatics, veteran human pilots attempt to maintain the quad-rotor in an inverted state. Our method gives the quad-rotor a negative reward in such cases as this is a difficult method to learn. The policy is unable to handle a unstable like this, and things spiral out of control.
 
-Unstable states like the ones seen in aerobatics have the problem that the mechanism is too complex to model into simple closed form reward functions. Apprenticeship learning is something that would make this possible, as was done by Andrew Ng, Jin Kim, Michael Jordan, and Shankar Sastry in their work with inverted helicopters \cite{InvertedHelicopterFlight}.
-
 \begin{figure}[H]
   \centering
     \includegraphics[width=\textwidth]{quadrotor_position_control_time.png}
     \caption{Value of best policy found with each iteration of PEGASUS to move to a given target position $(x, y, z, \omega) = (5, 5, 5, 60\protect^{\circ})$ with stochastic wind.}
 \end{figure}
+
+Unstable states like the ones seen in aerobatics have the problem that the mechanism is too complex to model into simple closed form reward functions. Apprenticeship learning is something that would make this possible, as was done by Andrew Ng, Jin Kim, Michael Jordan, and Shankar Sastry in their work with inverted helicopters \cite{InvertedHelicopterFlight}.
 
 \subsection{Time analysis}
 
@@ -685,17 +692,31 @@ Currently, ODE does not have GPU capabilities and so is forced to run in the CPU
 
 \section{Payload control}
 
+The next step is to control the payload's position. Here, a payload is suspended on the quad-rotor with some freedom at the joint. This makes the payload move in it's own path, not fixed by the quad-rotor's path. Hence, the inertia the payload accumulates cannot be directly controlled.
+
 \begin{figure}[H]
   \centering
-    \includegraphics[width=0.4\textwidth]{quadrotor_payload_sim.png}
+    \includegraphics[width=0.4\textwidth]{payload_sim.png}
     \caption{Payload on quad-rotor simulated by Hector Quadrotor, ROS, and gazebo.}
 \end{figure}
-
-The next step is to control the payload's position. Here, a payload is suspended on the quad-rotor with some freedom at the joint. This makes the payload move in it's own path, not fixed by the quad-rotor's path. Hence, the inertia the payload accumulates cannot be directly controlled.
 
 The state vector used in PEGASUS is again the same as above, but it uses the state of the payload rather than that of the quad-rotor. Also, the target state that needs to be acheived is the payload's state.
 
 The action is still the action of the quad-rotor. There is no action that can be done directly on the payload as the joint is not actuated. Hence, the only variables that are controllable are the velocities (linear and angular) of the quad-rotor. It is interesting to note that when using the above reward and policy class the payload moves in a smooth trajectory without much deviation from the intended behaviour. This is without any state information of the quad-rotor. This is probably because the state information of the quad-rotor is highly correlated to the state of the payload. If more joints need to be added (like a chain for example), this would not hold true and a better policy would need to be considered.
+
+With 3 chain links, although the policy class used was sub optimal, the value function of the payload's policy converged to a better policy than the original one without the payload (a policy with lower value). Hence, the policy was fine tuned to this payload. If the joint angles are known using an angular position sensor, the policy found can be made even more precise as the state representation will be better.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.8\textwidth]{payload_position_control_time.png}
+    \caption{Value of best policy with each iteration of PEGASUS to move to a given target position $(x, y, z, \omega) = (5, 5, 5, 60\protect^{\circ})$. The payload is attached with a chain consisting 3 links and the initial policy is the optimal policy without the payload.}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.6\textwidth]{payload_position_control.png}
+    \caption{Payload moving using the trained policy by PEGASUS to move from one position (x, y, z, $\protect\omega$) to another.}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Trajectory control}

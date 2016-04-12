@@ -8,13 +8,14 @@
   <!-- value for chain's mass -->
   <xacro:property name="payload_mass" value="0.1" />
   <!-- Cube dimensions (side x side x side) of payload -->
-  <xacro:property name="payload_side" value="0.3" />
+  <xacro:property name="payload_side" value="0.2" />
 
   <!-- value for chain's mass -->
   <xacro:property name="chain_mass" value="0.001" />
   <!-- Square dimensions (width x width) of links in the chain -->
-  <xacro:property name="chain_width" value="0.03" />
+  <xacro:property name="chain_width" value="0.02" />
   <xacro:property name="chain_height" value="0.3" />
+  <xacro:property name="chain_angle_limit" value="0.1" />
   <!-- Space btw top of beam and the each joint -->
   <!-- <xacro:property name="chain_axel_offset" value="0.05" /> -->
 
@@ -50,7 +51,8 @@
       <child link="link1"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
-      <limit upper="0.1" lower="-0.1" velocity="10" effort="1"/>
+      <limit upper="${chain_angle_limit}" lower="${-chain_angle_limit}"
+             velocity="10" effort="1"/>
     </joint>
 
     <link name="link1">
@@ -66,8 +68,8 @@
         <geometry>
           <box size="${chain_width} ${chain_width} ${chain_height}"/>
         </geometry>
-        <material name="red">
-          <color rgba="1 0 0 1"/>
+        <material name="yellow">
+          <color rgba="1 1 0 1"/>
         </material>
       </visual>
 
@@ -81,10 +83,121 @@
       </inertial>
     </link>
 
+    <joint name="joint2" type="revolute">
+      <parent link="link1"/>
+      <child link="link2"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit upper="${chain_angle_limit}" lower="${-chain_angle_limit}"
+             velocity="10" effort="1"/>
+    </joint>
+
+    <link name="link2">
+      <collision>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${chain_width} ${chain_width} ${chain_height}"/>
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${chain_width} ${chain_width} ${chain_height}"/>
+        </geometry>
+        <material name="yellow">
+          <color rgba="1 1 0 1"/>
+        </material>
+      </visual>
+
+      <inertial>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <mass value="${chain_mass}"/>
+        <inertia
+          ixx="${chain_mass / 12.0 * (chain_width*chain_width + chain_height*chain_height)}" ixy="0.0" ixz="0.0"
+          iyy="${chain_mass / 12.0 * (chain_height*chain_height + chain_width*chain_width)}" iyz="0.0"
+          izz="${chain_mass / 12.0 * (chain_width*chain_width + chain_width*chain_width)}"/>
+      </inertial>
+    </link>
+<!--
+    <joint name="joint3" type="revolute">
+      <parent link="link2"/>
+      <child link="link3"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit upper="${chain_angle_limit}" lower="${-chain_angle_limit}"
+             velocity="10" effort="1"/>
+    </joint>
+
+    <link name="link3">
+      <collision>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${chain_width} ${chain_width} ${chain_height}"/>
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${chain_width} ${chain_width} ${chain_height}"/>
+        </geometry>
+        <material name="yellow">
+          <color rgba="1 1 0 1"/>
+        </material>
+      </visual>
+
+      <inertial>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <mass value="${chain_mass}"/>
+        <inertia
+          ixx="${chain_mass / 12.0 * (chain_width*chain_width + chain_height*chain_height)}" ixy="0.0" ixz="0.0"
+          iyy="${chain_mass / 12.0 * (chain_height*chain_height + chain_width*chain_width)}" iyz="0.0"
+          izz="${chain_mass / 12.0 * (chain_width*chain_width + chain_width*chain_width)}"/>
+      </inertial>
+    </link>
+
+    <joint name="joint4" type="revolute">
+      <parent link="link3"/>
+      <child link="link4"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit upper="${chain_angle_limit}" lower="${-chain_angle_limit}"
+             velocity="10" effort="1"/>
+    </joint>
+
+    <link name="link4">
+      <collision>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${chain_width} ${chain_width} ${chain_height}"/>
+        </geometry>
+      </collision>
+
+      <visual>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${chain_width} ${chain_width} ${chain_height}"/>
+        </geometry>
+        <material name="yellow">
+          <color rgba="1 1 0 1"/>
+        </material>
+      </visual>
+
+      <inertial>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <mass value="${chain_mass}"/>
+        <inertia
+          ixx="${chain_mass / 12.0 * (chain_width*chain_width + chain_height*chain_height)}" ixy="0.0" ixz="0.0"
+          iyy="${chain_mass / 12.0 * (chain_height*chain_height + chain_width*chain_width)}" iyz="0.0"
+          izz="${chain_mass / 12.0 * (chain_width*chain_width + chain_width*chain_width)}"/>
+      </inertial>
+    </link>
+ -->
     <joint name="joint_payload" type="revolute">
       <origin xyz="0 0 ${-chain_height}" rpy="0 0 0"/>
       <axis xyz="0 1 0"/>
-      <parent link="link1"/>
+      <parent link="link2"/>
       <child link="payload"/>
       <limit upper="0.1" lower="-0.1" velocity="10" effort="1"/>
     </joint>

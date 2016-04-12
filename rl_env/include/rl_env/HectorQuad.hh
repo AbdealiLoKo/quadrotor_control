@@ -39,7 +39,7 @@
 #define TRAJECTORY NO_TRAJECTORY
 
 #define TRAIN_PEGASUS true
-#define USE_WIND true
+#define USE_WIND false
 
 class HectorQuad: public Environment {
 public:
