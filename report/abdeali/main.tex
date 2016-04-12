@@ -73,7 +73,7 @@ Date: \todo{4 April 2016}
 
 I would like to thank my university Indian Institute of Technology, Madras for giving me the opportunity to work on this project. My guides for allowing me to work with them and their invaluable help throughout the project, right from the identification of the project topic to helping mould approaches and identifying new directions to work in when a line of thought had to be abandoned.
 
-I'd also like to thank Kunal Grover (ME12B033) who has worked with me during the project. With various intriguing conversations on concept ideas, planning, learning methodologies, coding practices, and simulation design it's been great working with him.
+I'd also like to thank Kunal Grover who has worked with me during the project. With various intriguing conversations on concept ideas, planning, learning methodologies, coding practices, and simulation design it's been great working with him. For helping me with concepts related to control theory and to understand Kalman Filters and the quad-rotor dynamics I'd also like to thank Anjali Ramesh and Abhishek Sivaram. I'd also like to thank Menta Sandeep and Nikhilesh Rajaraman for listening to me and allowing me to bounce ideas off them.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Abstract
@@ -700,7 +700,7 @@ The next step is to control the payload's position. Here, a payload is suspended
     \caption{Payload on quad-rotor simulated by Hector Quadrotor, ROS, and gazebo.}
 \end{figure}
 
-The state vector used in PEGASUS is again the same as above, but it uses the state of the payload rather than that of the quad-rotor. Also, the target state that needs to be acheived is the payload's state.
+The state vector used in PEGASUS is similar to the one used for the quad-rotor, but it uses the position and velocities of the payload rather than that of the quad-rotor. Also, the target state that needs to be acheived is the payload's state, not the quad-rotor's state. This minimial change is because the abstracted space is easy to work with and easy to change.
 
 The action is still the action of the quad-rotor. There is no action that can be done directly on the payload as the joint is not actuated. Hence, the only variables that are controllable are the velocities (linear and angular) of the quad-rotor. It is interesting to note that when using the above reward and policy class the payload moves in a smooth trajectory without much deviation from the intended behaviour. This is without any state information of the quad-rotor. This is probably because the state information of the quad-rotor is highly correlated to the state of the payload. If more joints need to be added (like a chain for example), this would not hold true and a better policy would need to be considered.
 
