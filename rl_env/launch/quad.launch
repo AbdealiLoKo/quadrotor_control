@@ -19,7 +19,7 @@
 
   <!-- Start gazebo gui - if asked for it -->
   <group if="$(arg gazebo_gui)">
-    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="true" output="screen"/>
   </group>
 
   <!-- ################################################################### -->

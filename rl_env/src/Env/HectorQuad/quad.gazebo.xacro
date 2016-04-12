@@ -5,6 +5,19 @@
   <xacro:property name="pi" value="3.1415926535897931" />
   <xacro:arg name="use_payload" default="false" />
 
+  <!-- value for chain's mass -->
+  <xacro:property name="payload_mass" value="0.1" />
+  <!-- Cube dimensions (side x side x side) of payload -->
+  <xacro:property name="payload_side" value="0.3" />
+
+  <!-- value for chain's mass -->
+  <xacro:property name="chain_mass" value="0.001" />
+  <!-- Square dimensions (width x width) of links in the chain -->
+  <xacro:property name="chain_width" value="0.03" />
+  <xacro:property name="chain_height" value="0.3" />
+  <!-- Space btw top of beam and the each joint -->
+  <!-- <xacro:property name="chain_axel_offset" value="0.05" /> -->
+
   <!-- Sonar sensor include -->
   <!-- <xacro:include filename="$(find hector_sensors_description)/urdf/sonar_sensor.urdf.xacro" /> -->
 
@@ -32,48 +45,77 @@
   </link>
 
   <xacro:if value="$(arg use_payload)">
-    <link name="payload">
-      <visual>
+    <joint name="joint1" type="revolute">
+      <parent link="base_link"/>
+      <child link="link1"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit upper="0.1" lower="-0.1" velocity="10" effort="1"/>
+    </joint>
+
+    <link name="link1">
+      <collision>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
         <geometry>
-          <box size="0.3 0.3 0.3"/>
+          <box size="${chain_width} ${chain_width} ${chain_height}"/>
         </geometry>
-        <material name="blue">
-          <color rgba="0 0.3 0 1"/>
+      </collision>
+
+      <visual>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${chain_width} ${chain_width} ${chain_height}"/>
+        </geometry>
+        <material name="red">
+          <color rgba="1 0 0 1"/>
         </material>
-        <origin xyz="0 0 -0.3" rpy="0 0 0"/>
       </visual>
 
       <inertial>
-        <mass value="0.1" />
-        <inertia ixx="0.005" iyy="0.005" izz="0.005" ixy="0" ixz="0" iyz="0" />
-        <origin rpy="0 0 0" xyz="0 0 -0.3"/>
+        <origin xyz="0 0 ${-chain_height/2}" rpy="0 0 0"/>
+        <mass value="${chain_mass}"/>
+        <inertia
+          ixx="${chain_mass / 12.0 * (chain_width*chain_width + chain_height*chain_height)}" ixy="0.0" ixz="0.0"
+          iyy="${chain_mass / 12.0 * (chain_height*chain_height + chain_width*chain_width)}" iyz="0.0"
+          izz="${chain_mass / 12.0 * (chain_width*chain_width + chain_width*chain_width)}"/>
+      </inertial>
+    </link>
+
+    <joint name="joint_payload" type="revolute">
+      <origin xyz="0 0 ${-chain_height}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <parent link="link1"/>
+      <child link="payload"/>
+      <limit upper="0.1" lower="-0.1" velocity="10" effort="1"/>
+    </joint>
+
+    <link name="payload">
+      <visual>
+        <geometry>
+          <box size="${payload_side} ${payload_side} ${payload_side}"/>
+        </geometry>
+        <material name="green">
+          <color rgba="0 0.3 0 1"/>
+        </material>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </visual>
+
+      <inertial>
+        <mass value="${payload_mass}" />
+        <inertia
+          ixx="${payload_mass / 12.0 * (payload_side*payload_side + payload_side*payload_side)}" ixy="0.0" ixz="0.0"
+          iyy="${payload_mass / 12.0 * (payload_side*payload_side + payload_side*payload_side)}" iyz="0.0"
+          izz="${payload_mass / 12.0 * (payload_side*payload_side + payload_side*payload_side)}"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
       </inertial>
 
       <collision>
-        <origin rpy="0 0 0" xyz="0 0 -0.3"/>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
         <geometry>
-          <box size="0.3 0.3 0.3"/>
+          <box size="${payload_side} ${payload_side} ${payload_side}"/>
         </geometry>
       </collision>
     </link>
-
-    <joint name="payload_connector" type="revolute">
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <axis xyz="1 0 0"/>
-      <parent link="base_link"/>
-      <child link="payload"/>
-
-      <limit lower="-1" upper="1" effort="1" velocity="1" />
-    </joint>
-
-    <joint name="payload_connector2" type="revolute">
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <axis xyz="0 1 0"/>
-      <parent link="base_link"/>
-      <child link="payload"/>
-
-      <limit lower="-1" upper="1" effort="1" velocity="1" />
-    </joint>
   </xacro:if>
   <!-- Sonar height sensor -->
   <!-- <xacro:sonar_sensor name="sonar" parent="base_link" ros_topic="sonar_height" update_rate="10" min_range="0.03" max_range="3.0" field_of_view="${40*pi/180}" ray_count="3">
