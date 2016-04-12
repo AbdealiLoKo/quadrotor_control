@@ -102,10 +102,10 @@
 %
 % natbib allows easy switching of citation style and using it along
 % with the iitm.bst makes things perfect.
-\RequirePackage[square,numbers]{natbib}
+\RequirePackage[square,numbers,sort&compress]{natbib}
 %\RequirePackage[numbers,square]{natbib}
 %\bibliographystyle{iitm}
-\bibliographystyle{plain}
+\bibliographystyle{unsrt}
 
 %\newcommand{\bibstyle@iitm}{\bibpunct{(}{)}{;}{a}{,}{,}%
 %     \gdef\NAT@biblabel##1{##1. }}
