@@ -1,5 +1,6 @@
 #include <unistd.h>
 
+#include <rl_common/core.hh>
 #include <ros/ros.h>
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/Model.hh>
@@ -33,8 +34,32 @@ namespace gazebo {
       }
 
       // Use payload only if it exists.
+      physics::LinkPtr link_ptr;
+      physics::LinkPtr base_ptr = quad_ptr->GetLink("base_link");
       physics::LinkPtr payload_ptr = quad_ptr->GetLink("payload");
 
+      if (payload_ptr) {
+        link_ptr = payload_ptr;
+      } else {
+        link_ptr = base_ptr;
+      }
+
+      if (0) {
+        if (base_ptr) {
+          std::cout << "Quadrotor Base link\n"
+                    << "Position = " << base_ptr->GetWorldPose().pos << "\n"
+                    << "Orientation = " << base_ptr->GetWorldPose().rot << "\n"
+                    << "Velocity = " << base_ptr->GetWorldLinearVel() << "\n"
+                    << "Ang velocity = " << base_ptr->GetWorldAngularVel() << "\n";
+        }
+        if (payload_ptr) {
+          std::cout << "Payload link\n"
+                    << "Position = " << payload_ptr->GetWorldPose().pos << "\n"
+                    << "Orientation = " << payload_ptr->GetWorldPose().rot << "\n"
+                    << "Velocity = " << payload_ptr->GetWorldLinearVel() << "\n"
+                    << "Ang velocity = " << payload_ptr->GetWorldAngularVel() << "\n";
+        }
+      }
       res.success = true;
 
       // Set time
@@ -43,7 +68,7 @@ namespace gazebo {
       res.sim_time.nsec = sim_time.nsec;
 
       // Set pose
-      math::Pose pose = (payload_ptr)? payload_ptr->GetWorldPose() : quad_ptr->GetWorldPose();
+      math::Pose pose = link_ptr->GetWorldPose();
       res.pose.position.x = pose.pos.x;
       res.pose.position.y = pose.pos.y;
       res.pose.position.z = pose.pos.z;
@@ -53,11 +78,11 @@ namespace gazebo {
       res.pose.orientation.w = pose.rot.w;
 
       // Set twist
-      math::Vector3 lin_vel = (payload_ptr)? payload_ptr->GetWorldLinearVel() : quad_ptr->GetWorldLinearVel();
+      math::Vector3 lin_vel = link_ptr->GetWorldLinearVel();
       res.twist.linear.x = lin_vel.x;
       res.twist.linear.y = lin_vel.y;
       res.twist.linear.z = lin_vel.z;
-      math::Vector3 ang_vel = (payload_ptr)? payload_ptr->GetWorldAngularVel() : quad_ptr->GetWorldAngularVel();
+      math::Vector3 ang_vel = link_ptr->GetWorldAngularVel();
       res.twist.angular.x = ang_vel.x;
       res.twist.angular.y = ang_vel.y;
       res.twist.angular.z = ang_vel.z;

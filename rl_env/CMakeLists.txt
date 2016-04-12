@@ -43,7 +43,7 @@ add_library(env_hectorquad_world
 target_link_libraries(env rlcommon ${catkin_LIBRARIES})
 add_dependencies(env rl_common_generate_messages_cpp)
 
-target_link_libraries(env_hectorquad_world ${GAZEBO_LIBRARIES})
+target_link_libraries(env_hectorquad_world ${GAZEBO_LIBRARIES} ${catkin_LIBRARIES})
 add_dependencies(env_hectorquad_world rl_common_generate_messages_cpp)
 
 ## Mark executables and/or libraries for installation
