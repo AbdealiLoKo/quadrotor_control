@@ -560,8 +560,6 @@ Where, $\tau_t^k$ is the time step in the intended trajectory mapped to the obse
   T = 2 \left( \frac{1}{M} \sum_{k=1}^{M} N^k \right)
 \end{equation}
 
-\todo{Add image of the tau warping 2 trajectories (circles and arrows)}
-
 In the generative model, there are other errors that creep in, and hence it needs to be extended. For example, it is often difficult for the expert to keep the quad-rotor centered about a fixed position. The demonstrated trajectory hence has demonstration drift which can be accounted for. This can be done using a Gaussian noise model. There may be some prior knowledge about the states and actions in the trajectory which can also be added to the model. Incorporating all these errors, the final extended generative model can be seen in Section 4.1.3 of Pieter Abeel, Andrew Ng, and Adam Coates' work \cite{ApprenticeshipHelicopterAerobatics}.
 
 \section{Trajectory Estimation}
@@ -583,17 +581,21 @@ Hence the effective algorithm for apprenticeship learning has two steps:
 
 \subsection{Dynamic Time Warping}
 
-Dynamic time warping \cite{DTW} has been used in multiple spheres. It is an algorithm that computes the similarity between two time series which may vary in time. Dynamic time warping has been applied to temporal sequences like video, audio, and graphics. It has been seen in  numerous speech recognition literature to cope with different speaking speeds.
+Dynamic time warping \cite{DTW} has been used in multiple spheres. It is an algorithm that computes the similarity between two time series which may vary in time. Dynamic time warping has been applied to temporal sequences like video, audio, and graphics. It has been seen in numerous speech recognition literature to cope with different speaking speeds.
 
 What DTW does is that it finds the optimal match between the given sequences. It warps the time dimension non-linearly in the sequences to find the transform that makes the series the most similar based on a given metric. The alignment of the time dimension of two sequences is the feature that's needed to find the trajectories.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{timewarp.png}
+    \caption{Demonstrated trajectory's time warped to align with the time dimension of the intended trajectory.}
+\end{figure}
 
 To visualize the DTW, often the time dimensions of the two series are plotted in a graph. In this graph, any one-to-one function (i.e. monotonously increasing function) will be a transformation in the time dimensions of the series. When two series which have the same speed are warped with DTW, the transformation will be plotted as the diagonal of the graph as the time dimensions do not need to be transformed at all.
 
 Although the DTW can provide good results, often it provides the optimal result which intuitively is wrong. Here, the concept of windowing is introduced, which constrains the mapped non-linear transformation of the time dimension to be "not too large". Windowing essentially constrains the DTW's warped time dimensions to be close to the diagonal in the visualized graph. This ensures that the warping isn't too severe.
 
-One major concern is how to window the DTW. There have been many attempts to create smart methods of doing this. Some popular methods are itakura windowing, sakoechiba windowing, and slanted-band windowing. Each has it's own benefits and disadvantages and no single windowing technique is better than the rest.
-
-\todo{Add pictures indicating the window types}
+One major concern is how to window the DTW. There have been many attempts to create smart methods of doing this. Some popular methods are itakura windowing, sakoechiba windowing, and slanted-band windowing which are implemented in the R "dtw" package \cite{RDTWPackage}. Each has it's own benefits and disadvantages and which to use depends on the context.
 
 \subsection{EM with Kalman Filters for non-linear dynamical systems}
 
@@ -889,6 +891,8 @@ In the pursuit method, the lead that the target has would determine the speed, a
 % \todo{Elaborate on how we don't use Kalman filter}
 
 % \todo{Elaborate on how DTW was used}
+
+% \todo{Add pictures indicating window types}
 
 % By trial and error, slantedband windowing was the best suited for our use case the best.
 
