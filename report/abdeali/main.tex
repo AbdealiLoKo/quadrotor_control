@@ -503,7 +503,7 @@ This model is useful, as it helps to formulate the best policy class that can be
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Apprenticeship Learning}
 
-Apprenticeship learning or Apprenticeship via inverse reinforcement learning \cite{ApprenticeshipLearning} is a concept that helps to perform complex trajectories that are not necessarily stable. These unstable trajectories are difficult to learn using the traditional reinforcement learning as the reward function is not easy to define. 
+Apprenticeship learning or Apprenticeship via inverse reinforcement learning \cite{ApprenticeshipLearning} is a concept that helps to perform complex trajectories that are not necessarily stable. These unstable trajectories are difficult to learn using the traditional reinforcement learning as the reward function is not easy to define.
 
 Consider the case of the quad-rotor performing aerobatic stunts. In specific, take the case of the quad-rotor performing a flip. It is easy to describe the target trajectory as a flip, but it is difficult to create a closed form reward function for the same.
 
@@ -558,7 +558,7 @@ Each demonstrated trajectory maps to the intended hidden trajectory with some no
 Where, $\tau_t^k$ is the time step in the intended trajectory mapped to the observed trajectory at time step $t$. These time indices $\tau_t^k$ are not known and need to be found. There is no error at the start of the demonstration, and so $\tau_0^k = 0 \forall k$. A reasonable approximation of the total time steps in the hidden trajectory is twice the average of the demonstrations:
 \begin{equation}
   T = 2 \left( \frac{1}{M} \sum_{k=1}^{M} N^k \right)
-\end{equation} 
+\end{equation}
 
 \todo{Add image of the tau warping 2 trajectoryes (circles and arrows)}
 
@@ -874,8 +874,11 @@ By trial and error, slantedband windowing was the best suited for our use case t
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography.
 
-% \addcontentsline{toc}{section}{References}
 \begin{singlespace}
+  \pagebreak
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{References}
   \bibliography{refs}
 \end{singlespace}
 
