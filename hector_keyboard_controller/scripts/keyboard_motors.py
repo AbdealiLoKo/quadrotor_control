@@ -3,39 +3,15 @@
 import rospy, tf
 import time, sys, math
 from geometry_msgs.msg import Twist, Pose, Quaternion
-from gazebo_msgs.msg import ModelStates
-import pygame
+from hector_uav_msgs.msg import MotorPWM
 from base_controller import BaseController
 
-class KeyboardController(BaseController):
-    def _gui_init(self):
-        pygame.init()
-        self.screen = pygame.display.set_mode([400, 500])
-        self.clock = pygame.time.Clock()
+from gazebo_msgs.msg import ModelStates
+import pygame
 
-        background = pygame.Surface(self.screen.get_size())
-        background = background.convert()
-        background.fill((250, 250, 250))
-
-        font = pygame.font.Font(None, 36)
-
-        text = font.render("Keyboard controller", 1, (10, 10, 10))
-        textpos = text.get_rect()
-        textpos.centerx = background.get_rect().centerx
-        background.blit(text, textpos)
-
-        font = pygame.font.Font(None, 30)
-        text = font.render("Not connected", 1, (200, 10, 10))
-        textpos = text.get_rect()
-        textpos.centerx = background.get_rect().centerx
-        textpos.centery = background.get_rect().centery
-        background.blit(text, textpos)
-
-        self.screen.blit(background, (0, 0))
-        pygame.display.flip()
-
-    def _rospy_init(self, rate=10):
-        self.publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+class KeyboardControllerMotors(BaseController):
+    def _rospy_init(self, rate=100):
+        self.publisher = rospy.Publisher('motor_pwm', MotorPWM, queue_size=100)
         self.model_states = rospy.Subscriber(
             '/gazebo/model_states',
             ModelStates,
@@ -46,41 +22,32 @@ class KeyboardController(BaseController):
         self.quad_pose = Pose()
         self.quad_twist = Twist()
         self.rate = rospy.Rate(rate) # in Hz
-        self.msg = Twist()
+        self.msg = MotorPWM()
+        self.msg.pwm = [200]*4
 
     def _event(self, key_events):
-        dx, dy, dz = 0.1, 0.1, 0.1
-        dax, day, daz = 0.01, 0.01, 0.01
+        dx = 0.1
+        dx1, dx2, dx3, dx4 = 1, 1, 1, 1
 
-        if key_events[pygame.K_UP]:
-            self.msg.linear.z += dz
-        elif key_events[pygame.K_DOWN]:
-            self.msg.linear.z -= dz
+        if key_events[pygame.K_q]:
+            self.msg.pwm[0] += dx
+        elif key_events[pygame.K_a]:
+            self.msg.pwm[0] -= dx
 
         if key_events[pygame.K_w]:
-            self.msg.linear.y += dy
+            self.msg.pwm[1] += dx
         elif key_events[pygame.K_s]:
-            self.msg.linear.y -= dy
+            self.msg.pwm[1] -= dx
 
-        if key_events[pygame.K_d]:
-            self.msg.linear.x += dx
-        elif key_events[pygame.K_a]:
-            self.msg.linear.x -= dx
+        if key_events[pygame.K_e]:
+            self.msg.pwm[2] += dx
+        elif key_events[pygame.K_d]:
+            self.msg.pwm[2] -= dx
 
-        if key_events[pygame.K_i]:
-            self.msg.angular.z += daz
-        elif key_events[pygame.K_k]:
-            self.msg.angular.z -= daz
-
-        if key_events[pygame.K_z]:
-            self.msg.angular.x += dax
-        elif key_events[pygame.K_x]:
-            self.msg.angular.x -= dax
-
-        if key_events[pygame.K_c]:
-            self.msg.angular.y += day
-        elif key_events[pygame.K_v]:
-            self.msg.angular.y -= day
+        if key_events[pygame.K_r]:
+            self.msg.pwm[3] += dx
+        elif key_events[pygame.K_f]:
+            self.msg.pwm[3] -= dx
 
     def _draw(self):
         self.background = pygame.Surface(self.screen.get_size())
@@ -95,17 +62,11 @@ class KeyboardController(BaseController):
 
         old_draw_y = self._draw_y
         self._draw_x = width / 4
-        self._draw_text("Linear vel", 30)
-        self._draw_text("X (d/a) : %.3f" % self.msg.linear.x)
-        self._draw_text("Y (w/s) : %.3f" % self.msg.linear.y)
-        self._draw_text("Z (up/down) : %.3f" % self.msg.linear.z)
-
-        self._draw_y = old_draw_y # On the side
-        self._draw_x = width * 3 / 4
-        self._draw_text("Angular vel", 30)
-        self._draw_text("X (z/x): %.3f" % self.msg.angular.x)
-        self._draw_text("Y (c/v): %.3f" % self.msg.angular.y)
-        self._draw_text("Z (i/k) : %.3f" % self.msg.angular.z)
+        self._draw_text("Motor", 30)
+        self._draw_text("Motor 1: %.3f" % self.msg.pwm[0])
+        self._draw_text("Motor 2: %.3f" % self.msg.pwm[1])
+        self._draw_text("Motor 3: %.3f" % self.msg.pwm[2])
+        self._draw_text("Motor 4: %.3f" % self.msg.pwm[3])
 
         self._draw_x = width / 2
         self._draw_text("Quadrotor state", 40)
@@ -152,10 +113,9 @@ class KeyboardController(BaseController):
 
 if __name__ == '__main__':
     try:
-        keyboard = KeyboardController()
+        keyboard = KeyboardControllerMotors()
         keyboard.run()
     except rospy.ROSInterruptException:
         print("Closed the program due to ROS Interrupt exception")
     except KeyboardInterrupt:
         print("Closed the program due to Keyboard Interrupt exception")
-
