@@ -7,7 +7,7 @@ from geometry_msgs.msg import Twist
 from keyboard_base import BaseKeyboardController
 
 
-class KeyboardController(BaseKeyboardController):
+class KeyboardTwistController(BaseKeyboardController):
     def rospy_init(self, rate=10):
         BaseKeyboardController.rospy_init(self, rate)
         self.publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
@@ -76,7 +76,7 @@ class KeyboardController(BaseKeyboardController):
 
 if __name__ == '__main__':
     try:
-        keyboard = KeyboardController()
+        keyboard = KeyboardTwistController()
         keyboard.run()
     except rospy.ROSInterruptException:
         print("Closed the program due to ROS Interrupt exception")

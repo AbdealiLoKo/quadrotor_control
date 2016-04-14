@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import time, sys, math
 import pygame
 
@@ -161,13 +159,3 @@ class BaseKeyboardController:
 
     def sleep(self):
         self.rate.sleep()
-
-if __name__ == '__main__':
-    try:
-        keyboard = KeyboardController()
-        keyboard.run()
-    except rospy.ROSInterruptException:
-        print("Closed the program due to ROS Interrupt exception")
-    except KeyboardInterrupt:
-        print("Closed the program due to Keyboard Interrupt exception")
-
