@@ -50,7 +50,6 @@ class KeyboardTwistController(BaseKeyboardController):
                     self.msg.angular.x += ax
                     self.msg.angular.y += ay
                     self.msg.angular.z += az
-                    break
 
     def draw(self):
         BaseKeyboardController.draw(self)
@@ -69,9 +68,9 @@ class KeyboardTwistController(BaseKeyboardController):
         self._draw_y = old_draw_y # On the side
         self._draw_x = width * 3 / 4
         self._draw_text("Angular vel", 30)
-        self._draw_text("X (u/o): %.3f" % self.msg.angular.x)
-        self._draw_text("Y (j/l): %.3f" % self.msg.angular.y)
-        self._draw_text("Z (i/k) : %.3f" % self.msg.angular.z)
+        self._draw_text("X (u/o): %.5f" % self.msg.angular.x)
+        self._draw_text("Y (j/l): %.5f" % self.msg.angular.y)
+        self._draw_text("Z (i/k) : %.5f" % self.msg.angular.z)
 
 
 if __name__ == '__main__':
