@@ -8,47 +8,52 @@ from keyboard_base import BaseKeyboardController
 
 
 class KeyboardController(BaseKeyboardController):
-    def _rospy_init(self, rate=10):
-        BaseKeyboardController._rospy_init(self, rate)
+    def rospy_init(self, rate=10):
+        BaseKeyboardController.rospy_init(self, rate)
         self.publisher = rospy.Publisher('cmd_vel', Twist, queue_size=10)
         self.msg = Twist()
 
-    def _event(self, key_events):
-        dx, dy, dz = 0.1, 0.1, 0.1
-        dax, day, daz = 0.01, 0.01, 0.01
+    def event_handler(self, key_events):
+        dx = dy = dz = 0.001
+        dax = day = daz = 0.0001
 
-        if key_events[pygame.K_UP]:
-            self.msg.linear.z += dz
-        elif key_events[pygame.K_DOWN]:
-            self.msg.linear.z -= dz
+        twist_events = { # x, y, z, roll, pitch, yaw
+            pygame.K_e: [dx, 0, 0, 0, 0, 0],
+            pygame.K_q: [-dx, 0, 0, 0, 0, 0],
+            pygame.K_d: [0, dy, 0, 0, 0, 0],
+            pygame.K_a: [0, -dy, 0, 0, 0, 0],
+            pygame.K_w: [0, 0, dz, 0, 0, 0],
+            pygame.K_s: [0, 0, -dz, 0, 0, 0],
 
-        if key_events[pygame.K_w]:
-            self.msg.linear.y += dy
-        elif key_events[pygame.K_s]:
-            self.msg.linear.y -= dy
+            pygame.K_o: [0, 0, 0, dax, 0, 0],
+            pygame.K_u: [0, 0, 0, -dax, 0, 0],
+            pygame.K_l: [0, 0, 0, 0, day, 0],
+            pygame.K_j: [0, 0, 0, 0, -day, 0],
+            pygame.K_i: [0, 0, 0, 0, 0, daz],
+            pygame.K_k: [0, 0, 0, 0, 0, -daz],
+        }
+        if key_events[pygame.K_0]:
+            assert self.gz_reset()
+            self.msg.linear.z = 0
+            self.msg.linear.y = 0
+            self.msg.linear.x = 0
+            self.msg.angular.x = 0
+            self.msg.angular.y = 0
+            self.msg.angular.z = 0
+        else:
+            for key in twist_events:
+                if key_events[key]:
+                    x, y, z, ax, ay, az = twist_events[key]
+                    self.msg.linear.x += x
+                    self.msg.linear.y += y
+                    self.msg.linear.z += z
+                    self.msg.angular.x += ax
+                    self.msg.angular.y += ay
+                    self.msg.angular.z += az
+                    break
 
-        if key_events[pygame.K_d]:
-            self.msg.linear.x += dx
-        elif key_events[pygame.K_a]:
-            self.msg.linear.x -= dx
-
-        if key_events[pygame.K_i]:
-            self.msg.angular.z += daz
-        elif key_events[pygame.K_k]:
-            self.msg.angular.z -= daz
-
-        if key_events[pygame.K_z]:
-            self.msg.angular.x += dax
-        elif key_events[pygame.K_x]:
-            self.msg.angular.x -= dax
-
-        if key_events[pygame.K_c]:
-            self.msg.angular.y += day
-        elif key_events[pygame.K_v]:
-            self.msg.angular.y -= day
-
-    def _draw(self):
-        BaseKeyboardController._draw(self)
+    def draw(self):
+        BaseKeyboardController.draw(self)
         width = float(self.background.get_rect().width)
 
         self._draw_x = width / 2
@@ -57,15 +62,15 @@ class KeyboardController(BaseKeyboardController):
         old_draw_y = self._draw_y
         self._draw_x = width / 4
         self._draw_text("Linear vel", 30)
-        self._draw_text("X (d/a) : %.3f" % self.msg.linear.x)
-        self._draw_text("Y (w/s) : %.3f" % self.msg.linear.y)
-        self._draw_text("Z (up/down) : %.3f" % self.msg.linear.z)
+        self._draw_text("X (q/e) : %.3f" % self.msg.linear.x)
+        self._draw_text("Y (a/d) : %.3f" % self.msg.linear.y)
+        self._draw_text("Z (w/s) : %.3f" % self.msg.linear.z)
 
         self._draw_y = old_draw_y # On the side
         self._draw_x = width * 3 / 4
         self._draw_text("Angular vel", 30)
-        self._draw_text("X (z/x): %.3f" % self.msg.angular.x)
-        self._draw_text("Y (c/v): %.3f" % self.msg.angular.y)
+        self._draw_text("X (u/o): %.3f" % self.msg.angular.x)
+        self._draw_text("Y (j/l): %.3f" % self.msg.angular.y)
         self._draw_text("Z (i/k) : %.3f" % self.msg.angular.z)
 
 

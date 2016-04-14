@@ -6,15 +6,16 @@ import pygame
 import rospy, tf
 from geometry_msgs.msg import Twist, Pose, Quaternion
 from gazebo_msgs.msg import ModelStates
+from std_srvs.srv import Empty
 
 
 class BaseKeyboardController:
     def __init__(self):
-        self._gui_init()
-        self._rospy_init()
+        self.gui_init()
+        self.rospy_init()
         rospy.loginfo(rospy.get_name() + ' -- Initialization complete')
 
-    def _gui_init(self):
+    def gui_init(self):
         pygame.init()
         self.screen = pygame.display.set_mode([400, 500])
         self.clock = pygame.time.Clock()
@@ -40,16 +41,23 @@ class BaseKeyboardController:
         self.screen.blit(background, (0, 0))
         pygame.display.flip()
 
-    def _rospy_init(self, rate=100):
+    def rospy_init(self, rate=100):
+        rospy.init_node('keyboard_controller', anonymous=True)
+
         self.model_states = rospy.Subscriber(
             '/gazebo/model_states',
             ModelStates,
             self.get_modelstates,
             queue_size=10)
-        rospy.init_node('keyboard_controller', anonymous=True)
+        rospy.wait_for_service("/gazebo/reset_world")
+        self.gz_reset = rospy.ServiceProxy("/gazebo/reset_world", Empty)
+
         self.quad_pose = Pose()
         self.quad_twist = Twist()
         self.rate = rospy.Rate(rate) # in Hz
+
+        # Needs to be overridden by child class
+        self.msg = None
 
     def get_modelstates(self, data):
         quad_id = None
@@ -63,24 +71,28 @@ class BaseKeyboardController:
         self.quad_twist = data.twist[quad_id]
 
     def run(self):
+        pygame.event.post(pygame.event.Event(pygame.KEYUP, key=pygame.K_0))
         while not rospy.is_shutdown():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
-            self._event(pygame.key.get_pressed())
-            self._draw()
-            self.screen.blit(self.background, (0, 0))
-            pygame.display.flip()
+            self.event_handler(pygame.key.get_pressed())
+            self.draw_now()
 
             self.publisher.publish(self.msg)
-            self._sleep()
+            self.sleep()
 
-    def _event(self, key_events):
+    def event_handler(self, key_events):
         raise NotImplementedError
 
-    def _draw(self):
+    def draw_now(self):
+        self.draw()
+        self.screen.blit(self.background, (0, 0))
+        pygame.display.flip()
+
+    def draw(self):
         self.background = pygame.Surface(self.screen.get_size())
         self.background = self.background.convert()
         self.background.fill((250, 250, 250))
@@ -147,7 +159,7 @@ class BaseKeyboardController:
         # Quaternions in TF are normally SXYZ form
         return [q.w, q.x, q.y, q.z]
 
-    def _sleep(self):
+    def sleep(self):
         self.rate.sleep()
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@
   <!-- ################################################################### -->
   <arg name="args" default="" />
   <arg name="keyboard_control" default="false" />
-  <arg name="use_twist" default="false" />
+  <arg name="use_twist" default="true" />
 
   <arg name="world" default="$(find hector_gazebo_worlds)/worlds/rolling_landscape_120m.world" if="$(arg keyboard_control)" />
   <arg name="gazebo_gui" default="true" if="$(arg keyboard_control)" />
@@ -76,11 +76,11 @@
   <!-- Choose motors -->
   <arg name="motors" default="robbe_2827-34_epp1045" />
   <rosparam command="load" file="$(find hector_quadrotor_model)/param/$(arg motors).yaml" />
+  <rosparam command="load" file="$(find hector_quadrotor_model)/param/quadrotor_aerodynamics.yaml" />
 
   <group if="$(arg use_twist)">
     <rosparam file="$(find rl_env)/src/Env/HectorQuad/controller.yaml" />
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="controller/twist"/>
-    <rosparam command="load" file="$(find hector_quadrotor_model)/param/quadrotor_aerodynamics.yaml" />
   </group>
 
   <!-- ################################################################### -->
@@ -91,6 +91,10 @@
 
   <!-- ################################################################### -->
   <!-- Controllers -->
-  <node name="keyboard_controller" pkg="hector_keyboard_controller" type="keyboard_motors.py" required="true" unless="$(arg use_twist)" />
-  <node name="keyboard_controller" pkg="hector_keyboard_controller" type="keyboard_twist.py" required="true" if="$(arg use_twist)" />
+  <node name="keyboard_controller" pkg="hector_keyboard_controller"
+        type="keyboard_motors.py" required="true" output="screen"
+        unless="$(arg use_twist)" />
+  <node name="keyboard_controller" pkg="hector_keyboard_controller"
+        type="keyboard_twist.py" required="true" output="screen"
+        if="$(arg use_twist)" />
 </launch>
