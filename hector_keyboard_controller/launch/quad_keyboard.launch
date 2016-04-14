@@ -3,14 +3,14 @@
   <!-- ################################################################### -->
   <arg name="args" default="" />
   <arg name="keyboard_control" default="false" />
-  <arg name="use_twist" default="true" />
+  <arg name="use_twist" default="false" />
 
-    <arg name="world" default="$(find hector_gazebo_worlds)/worlds/rolling_landscape_120m.world" if="$(arg keyboard_control)" />
-    <arg name="gazebo_gui" default="true" if="$(arg keyboard_control)" />
-    <arg name="rviz_gui" default="false" if="$(arg keyboard_control)" />
-    <arg name="world" default="$(find rl_env)/src/Env/HectorQuad/quad.world" unless="$(arg keyboard_control)" />
-    <arg name="gazebo_gui" default="false" unless="$(arg keyboard_control)" />
-    <arg name="rviz_gui" default="true" unless="$(arg keyboard_control)" />
+  <arg name="world" default="$(find hector_gazebo_worlds)/worlds/rolling_landscape_120m.world" if="$(arg keyboard_control)" />
+  <arg name="gazebo_gui" default="true" if="$(arg keyboard_control)" />
+  <arg name="rviz_gui" default="false" if="$(arg keyboard_control)" />
+  <arg name="world" default="$(find rl_env)/src/Env/HectorQuad/quad.world" unless="$(arg keyboard_control)" />
+  <arg name="gazebo_gui" default="false" unless="$(arg keyboard_control)" />
+  <arg name="rviz_gui" default="true" unless="$(arg keyboard_control)" />
 
 
   <param name="/use_sim_time" value="true" />
@@ -73,25 +73,15 @@
   <param name="controller/state_topic" value="" />
   <param name="controller/imu_topic" value="" />
 
-  <group if="$(arg use_twist)">
-    <rosparam file="$(find rl_env)/src/Env/HectorQuad/controller.yaml" />
-    <!-- This node needs to be created in HectorEnv as otherwise we cannot
-    control when the controller will begin working. -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="controller/twist"/>
-    <rosparam command="load" file="$(find hector_quadrotor_model)/param/quadrotor_aerodynamics.yaml" />   
-    <node name="keyboard_controller" pkg="hector_keyboard_controller"
-    type="keyboard.py" required="true" />
- 
-  </group>
-
-  <group unless="$(arg use_twist)">
-    <rosparam file="$(find hector_quadrotor_model)/param/robbe_2827-34_epp1045.yaml" command="load"/>
-    <node name="keyboard_controller" pkg="hector_keyboard_controller" type="keyboard_motors.py" required="true" />
-  </group>
-
   <!-- Choose motors -->
   <arg name="motors" default="robbe_2827-34_epp1045" />
   <rosparam command="load" file="$(find hector_quadrotor_model)/param/$(arg motors).yaml" />
+
+  <group if="$(arg use_twist)">
+    <rosparam file="$(find rl_env)/src/Env/HectorQuad/controller.yaml" />
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="controller/twist"/>
+    <rosparam command="load" file="$(find hector_quadrotor_model)/param/quadrotor_aerodynamics.yaml" />
+  </group>
 
   <!-- ################################################################### -->
   <!-- Start rviz visualization with preset config -->
@@ -101,7 +91,6 @@
 
   <!-- ################################################################### -->
   <!-- Controllers -->
-  <arg name="agent" default="pegasus" />
-  <arg name="env" default="hectorquad" />
-
+  <node name="keyboard_controller" pkg="hector_keyboard_controller" type="keyboard_motors.py" required="true" unless="$(arg use_twist)" />
+  <node name="keyboard_controller" pkg="hector_keyboard_controller" type="keyboard_twist.py" required="true" if="$(arg use_twist)" />
 </launch>
