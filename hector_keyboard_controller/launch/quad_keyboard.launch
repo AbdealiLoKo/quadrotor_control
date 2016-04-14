@@ -2,16 +2,11 @@
 <launch>
   <!-- ################################################################### -->
   <arg name="args" default="" />
-  <arg name="keyboard_control" default="false" />
   <arg name="use_twist" default="true" />
 
-  <arg name="world" default="$(find hector_gazebo_worlds)/worlds/rolling_landscape_120m.world" if="$(arg keyboard_control)" />
-  <arg name="gazebo_gui" default="true" if="$(arg keyboard_control)" />
-  <arg name="rviz_gui" default="false" if="$(arg keyboard_control)" />
-  <arg name="world" default="$(find rl_env)/src/Env/HectorQuad/quad.world" unless="$(arg keyboard_control)" />
-  <arg name="gazebo_gui" default="false" unless="$(arg keyboard_control)" />
-  <arg name="rviz_gui" default="true" unless="$(arg keyboard_control)" />
-
+  <arg name="world" default="$(find hector_gazebo_worlds)/worlds/rolling_landscape_120m.world" />
+  <arg name="gazebo_gui" default="false" />
+  <arg name="rviz_gui" default="true" />
 
   <param name="/use_sim_time" value="true" />
 
@@ -20,7 +15,7 @@
 
   <!-- Start gazebo gui - if asked for it -->
   <group if="$(arg gazebo_gui)">
-    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="true" output="screen"/>
   </group>
 
   <!-- ################################################################### -->
