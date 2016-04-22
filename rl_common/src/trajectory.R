@@ -1,37 +1,17 @@
 library('dtw')
 
-n_dim_state = 8
+n_dim_state = 7
 n_dim_action = 4
 n_dim_kalman_state = n_dim_state + n_dim_action
 n_dim_kalman_observed = n_dim_kalman_state
 
-### Get observed trajectories from string
+### Get observed trajectories from file
 observed_trajectories = list(
-"0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,    0.5, 0.0, 0.0, 0.0;
-1.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0,    1.0, 0.0, 0.0, 0.0;
-2.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0,    0.5, 0.0, 0.0, 0.0;
-3.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0,    0.0, 0.0, 0.0, 0.0;
-4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,    0.0, 0.0, 0.0, 0.0",
-
-"0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,    0.5, 0.0, 0.0, 0.0;
-1.2, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0,    1.0, 0.0, 0.0, 0.0;
-2.2, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0,    0.5, 0.0, 0.0, 0.0;
-3.2, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0,    0.0, 0.0, 0.0, 0.0;
-4.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,    0.0, 0.0, 0.0, 0.0",
-
-"0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,    0.5, 0.0, 0.0, 0.0;
-0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0,    0.5, 0.0, 0.0, 0.0;
-1.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0,    1.0, 0.0, 0.0, 0.0;
-2.0, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0,    0.5, 0.0, 0.0, 0.0;
-2.9, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0,    0.0, 0.0, 0.0, 0.0;
-4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,    0.0, 0.0, 0.0, 0.0")
-
+  "trajectory_circle/1", "trajectory_circle/2", "trajectory_circle/3",
+  "trajectory_circle/4", "trajectory_circle/5"
+)
 observed_trajectories = lapply(observed_trajectories, function(x) {
-  as.matrix(read.table(
-    text=gsub(';', '', x),
-    sep=',',
-    colClasses=rep("numeric", n_dim_kalman_state)
-  ))
+  as.matrix(read.table(x))
 })
 
 ### Compute other variables required
@@ -80,4 +60,4 @@ while(n) {
 }
 n
 hidden_trajectory
-
+write.table(hidden_trajectory, file="trajectory_circle_out", row.names=FALSE, col.names=FALSE)
