@@ -765,7 +765,7 @@ The $\epsilon_i$ would be different for $\omega$ as compared to the others becau
       \includegraphics[width=\textwidth]{checkpoint_circle_wind.png}
       \caption{With large stochasticity - wind with uniform sum distribution limited to $5 m/s$}
   \end{subfigure}
-  \caption{Quad-rotor simulation moving in a circular trajectory with the checkpoint technique. The red marker denotes the current targeted checkpoint and the blue markers are all the checkpoints in the trajectory.}
+  \caption{Quad-rotor simulation moving in a circular trajectory with the checkpoint technique. The markers show all the checkpoints in the trajectory.}
 \end{figure}
 
 \subsection*{Challenges in the checkpoint method}
@@ -826,7 +826,7 @@ In pursuit, the complete trajectory function with time is known. Here, the targe
       \includegraphics[width=\textwidth]{pursuit_circle_wind.png}
       \caption{With large stochasticity - wind with uniform sum distribution limited to $5 m/s$}
   \end{subfigure}
-  \caption{Quad-rotor simulation moving in a circular trajectory with the pursuit technique. The red marker and arrow denote the current position and velocity of the target.}
+  \caption{Quad-rotor simulation moving in a circular trajectory with the pursuit technique. The marker and arrow denote the current position and velocity of the target.}
 \end{figure}
 
 \subsection*{Challenges in the pursuit methods}
@@ -854,7 +854,12 @@ Due to the fact that the target trajectory is continuous and changes with every 
 \subsection{Accuracy}
 The accuracy of the trajectory being followed is an important aspect which needs to be considered. To compare accuracy, it needs to be quantified. One method of computing accuracy is to find the deviation of the actual position of the quad-rotor to the expected position at every time.
 
-Consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. The expected trajectory would make the quad-rotor be at a distance of $r$ at all times from the center. The distance of the quad-rotor from the origin is measured and compared to the radius of the circle being followed.
+Consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. The expected trajectory would make the quad-rotor be at a distance of $r$ at all times from the center. The distance of the quad-rotor from the origin is measured and compared to the radius of the circle being followed and plotted. This plot can be seen in Figure \ref{fig:TrajectoryComparison}.
+
+\subsection{Smoothness of the trajectory}
+There are two metrics' to consider smoothness. One is the smoothness of the spatial function of the trajectory. For example, whether the trajectory has extra edges while the original trajectory does not. The other metric to consider smoothness is related to time, the smoothness of the agent's motion on the trajectory and whether the velocity and acceleration is the expected value.
+
+Once again consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. Plotting the deviation from the expected radius over time, and finding the peaks gives a method of computing smoothness. This can be seen in Figure \ref{fig:TrajectoryComparison}. The plot for the checkpoint based method is not smooth as it has numerous steep peaks when compared to the rest.
 
 \begin{figure}[H]
   \centering
@@ -862,11 +867,6 @@ Consider the experiment of a circular trajectory with a radius $r$ centered at $
     \caption{Comparison of accuracy in trajectory control techniques following a 2D circular path with and without wind.}
     \label{fig:TrajectoryComparison}
 \end{figure}
-
-\subsection{Smoothness of the trajectory}
-There are two metrics' to consider smoothness. One is the smoothness of the spatial function of the trajectory. For example, whether the trajectory has extra edges while the original trajectory does not. The other metric to consider smoothness is related to time, the smoothness of the agent's motion on the trajectory and whether the velocity and acceleration is the expected value.
-
-Once again consider the experiment of a circular trajectory with a radius $r$ centered at $(0,0,0)$ on the XY plane. Plotting the deviation from the expected radius over time, and finding the peaks gives a method of computing smoothness. This can be seen in Figure \ref{fig:TrajectoryComparison}. The plot for the checkpoint based method is not smooth as it has numerous steep peaks when compared to the rest.
 
 The smoothness of velocity method to measure smoothness can also be found in the circular trajectory experiment. Here, the magnitude of the velocity (speed) is plotted and the variation is analyzed. It is seen that the checkpoint's method decelerates the agent when the checkpoint is close by and accelerates after it passes the checkpoint. This is not seen in pursuit as the target there is at a nearly constant distance from the agent based on the time lead.
 
