@@ -32,8 +32,12 @@ add_executable(env
   src/Trajectory/Trajectory.cpp
   src/Trajectory/Waypoints.cpp
   src/Trajectory/WaypointsCircle.cpp
+  src/Trajectory/WaypointsHelix.cpp
+  src/Trajectory/WaypointsFile.cpp
   src/Trajectory/Pursuit.cpp
   src/Trajectory/PursuitCircle.cpp
+  src/Trajectory/PurePursuit.cpp
+  src/Trajectory/PurePursuitCircle.cpp
 )
 
 add_library(env_hectorquad_world

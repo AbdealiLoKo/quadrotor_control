@@ -123,6 +123,18 @@ const std::vector<float> &HectorQuad::sensation() {
     sqrt(prev_vel.linear.x * prev_vel.linear.x
       + prev_vel.linear.y * prev_vel.linear.y);
 
+  // Sample state space as part of trajectory
+  double prob = (double)rand()/RAND_MAX;
+  if (prob > THRESHOLD_PROBABILITY) {
+    std::ofstream myfile;
+    myfile.open ("quadrotor_trajectory.txt", std::ios::app);
+    myfile << current.pose.position.x << " " << current.pose.position.y << " "
+           << current.pose.position.z << " " << current.twist.linear.x << " "
+           << current.twist.linear.y << " " << current.twist.linear.z << " "
+           << current.twist.angular.z << std::endl;
+    myfile.close();
+  }
+
   if (cur_step > 10000) {
     std::ofstream myfile;
     myfile.open ("quadrotor_data.txt", std::ios::app);
@@ -236,15 +248,30 @@ void HectorQuad::reset() {
   reset_syscommand.data = "reset";
   syscommand.publish(reset_syscommand);
 
-  if (TRAJECTORY == WAYPOINTS_CIRCLE) {
-    trajectory = new WaypointsCircle();
-    trajectory->reset();
-  } else if (TRAJECTORY == CHECKPOINTS_CIRCLE) {
-    trajectory = new WaypointsCircle(true);
-    trajectory->reset();
-  } else if (TRAJECTORY == PURSUIT_CIRCLE) {
-    trajectory = new PursuitCircle();
-    trajectory->reset();
+  switch(TRAJECTORY) {
+    case WAYPOINTS_CIRCLE:
+      trajectory = new WaypointsCircle();
+      trajectory->reset();
+      break;
+    case CHECKPOINTS_CIRCLE:
+      trajectory = new WaypointsCircle(true);
+      trajectory->reset();
+      break;
+    case WAYPOINTS_HELIX:
+      trajectory = new WaypointsHelix();
+      trajectory->reset();
+      break;
+    case WAYPOINTS_FILE:
+      trajectory = new WaypointsFile("out");
+      trajectory->reset();
+      break;
+    case PURSUIT_CIRCLE:
+      trajectory = new PursuitCircle();
+      trajectory->reset();
+      break;
+    case PURE_PURSUIT_CIRCLE:
+      trajectory = new PurePursuitCircle(0.5);
+      break;
   }
 
   curr = 1;

@@ -24,7 +24,10 @@
 // Trajectories
 #include <rl_env/trajectory/Trajectory.h>
 #include <rl_env/trajectory/WaypointsCircle.h>
+#include <rl_env/trajectory/WaypointsHelix.h>
+#include <rl_env/trajectory/WaypointsFile.h>
 #include <rl_env/trajectory/PursuitCircle.h>
+#include <rl_env/trajectory/PurePursuitCircle.h>
 
 // Services
 #include <rl_common/RLRunSim.h>
@@ -32,14 +35,23 @@
 // Possible trajectories and algos
 #define NO_TRAJECTORY -1
 #define WAYPOINTS_CIRCLE 10
+#define WAYPOINTS_HELIX 11
+#define WAYPOINTS_FILE 12
 #define CHECKPOINTS_CIRCLE 20
 #define PURSUIT_CIRCLE 30
+#define PURE_PURSUIT_CIRCLE 31
 
 // Trajectory can from the above list
-#define TRAJECTORY NO_TRAJECTORY
+#define TRAJECTORY PURE_PURSUIT_CIRCLE
 
-#define TRAIN_PEGASUS true
+#define TRAIN_PEGASUS false
 #define USE_WIND false
+
+// Threshold Probability of considering dataset for the trajectory
+// Using for Apprenticeship based method
+// This is done to get a real world implementation where the states
+// may not be available during the trajectory.
+#define THRESHOLD_PROBABILITY 0.5
 
 class HectorQuad: public Environment {
 public:
@@ -78,8 +90,6 @@ protected:
 
   float reward();
   void get_trajectory(long long time_in_steps = -1);
-  int form_waypoints(int k);
-  int pure_pursuit_circle(int k);
 };
 
 #endif
