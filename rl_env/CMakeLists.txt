@@ -8,7 +8,7 @@ else()
 endif()
 
 find_package(catkin REQUIRED COMPONENTS roscpp std_msgs tf gazebo_msgs std_srvs
-             rl_common)
+             rl_common eigen_conversions)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(gazebo REQUIRED)
@@ -19,7 +19,7 @@ include_directories(include ${catkin_INCLUDE_DIRS}
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES env_hectorquad_world
-  CATKIN_DEPENDS roscpp std_msgs tf rl_common gazebo_msgs std_srvs
+  CATKIN_DEPENDS roscpp std_msgs tf rl_common gazebo_msgs std_srvs eigen_conversions
   DEPENDS Eigen gazebo
 )
 

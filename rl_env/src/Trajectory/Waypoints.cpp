@@ -1,4 +1,6 @@
 #include <rl_env/trajectory/Waypoints.h>
+#include <Eigen/Geometry>
+#include <eigen_conversions/eigen_msg.h>
 
 Waypoints::Waypoints(bool _use_checkpoints /*= false*/) {
   time_to_get_to_position = 1000;
@@ -79,6 +81,7 @@ gazebo_msgs::ModelState Waypoints::current_target(
         current_point += 1;
         assert(current_point < points.size());
       }
+      visualize_plane(plane_point, derivative);
     }
 
     target.pose.position = points[current_point];
@@ -144,6 +147,69 @@ void Waypoints::visualize_points() {
   visualization_publisher.publish(viz_points);
 }
 
+void Waypoints::visualize_plane(geometry_msgs::Point target, geometry_msgs::Vector3 vec) {
+  // Demo from http://wiki.ros.org/rviz/Tutorials/Markers%3A%20Points%20and%20Lines
+  visualization_msgs::Marker viz_points, viz_points2;
+  double plane_size = 0.6;
+
+  viz_points.header.frame_id = "/world";
+  viz_points.header.stamp = ros::Time::now();
+  viz_points.ns = "target_plane";
+  viz_points.pose.orientation.w = 1.0;
+  viz_points.action = visualization_msgs::Marker::ADD;
+  viz_points.type = visualization_msgs::Marker::LINE_STRIP;
+
+  // Size of points
+  viz_points.scale.x = 0.2;
+  viz_points.scale.y = 0.2;
+
+  // Green color
+  viz_points.color.r = 0.0f;
+  viz_points.color.g = 1.0f;
+  viz_points.color.b = 0.0f;
+  viz_points.color.a = 1.0f;
+
+  geometry_msgs::Point p1, p2, p3, p4;
+  p1 = p2 = p3 = p4 = target;
+
+  // Default plane
+  Eigen::Vector3d A(0, 0, 1);
+  Eigen::Vector3d B;
+  tf::vectorMsgToEigen(vec, B);
+
+  Eigen::Matrix3d R;
+  Eigen::Vector3d p, temp;
+
+  // Find the rotation matrix
+  R = Eigen::Quaterniond().setFromTwoVectors(A, B);
+
+  // Transform points around the target
+  // Rotation step
+  p = R * Eigen::Vector3d(plane_size, plane_size, 0);
+  tf::pointMsgToEigen(p1, temp);
+  // Translation
+  tf::pointEigenToMsg(p+temp, p1);
+
+  p = R * Eigen::Vector3d(-plane_size, plane_size, 0);
+  tf::pointMsgToEigen(p2, temp);
+  tf::pointEigenToMsg(p+temp, p2);
+
+  p = R * Eigen::Vector3d(-plane_size, -plane_size, 0);
+  tf::pointMsgToEigen(p3, temp);
+  tf::pointEigenToMsg(p+temp, p3);
+
+  p = R * Eigen::Vector3d(plane_size, -plane_size, 0);
+  tf::pointMsgToEigen(p4, temp);
+  tf::pointEigenToMsg(p+temp, p4);
+
+  viz_points.points.push_back(p1);
+  viz_points.points.push_back(p2);
+  viz_points.points.push_back(p3);
+  viz_points.points.push_back(p4);
+  viz_points.points.push_back(p1);
+  visualization_publisher.publish(viz_points);
+}
+
 void Waypoints::visualize_target(geometry_msgs::Point target) {
   // Demo from http://wiki.ros.org/rviz/Tutorials/Markers%3A%20Points%20and%20Lines
   visualization_msgs::Marker viz_points;
@@ -159,7 +225,7 @@ void Waypoints::visualize_target(geometry_msgs::Point target) {
   viz_points.scale.x = 0.2;
   viz_points.scale.y = 0.2;
 
-  // Green color
+  // Red color
   viz_points.color.r = 1.0f;
   viz_points.color.g = 0.0f;
   viz_points.color.b = 0.0f;
