@@ -270,7 +270,8 @@ void HectorQuad::reset() {
       trajectory->reset();
       break;
     case PURE_PURSUIT_CIRCLE:
-      trajectory = new PurePursuitCircle(0.5);
+      trajectory = new PurePursuitCircle(1);
+      trajectory->reset();
       break;
   }
 
