@@ -5,11 +5,13 @@ n_dim_action = 4
 n_dim_kalman_state = n_dim_state + n_dim_action
 n_dim_kalman_observed = n_dim_kalman_state
 
+folder = "trajectory_circle"
+
 ### Get observed trajectories from file
-observed_trajectories = list(
-  "trajectory_circle/1", "trajectory_circle/2", "trajectory_circle/3",
-  "trajectory_circle/4", "trajectory_circle/5"
-)
+observed_trajectories = list.files(folder)
+observed_trajectories = lapply(observed_trajectories, function(x) {
+	paste(folder, "/", x, sep="")
+})
 observed_trajectories = lapply(observed_trajectories, function(x) {
   as.matrix(read.table(x))
 })
@@ -41,7 +43,7 @@ get_time_warped_series = function (series1, series2) {
   }
   #print(p1)
   #print(p2)
-  dtwPlot(d)
+  # dtwPlot(d)
   return(new_mapping)
 }
 #### Run iterations
@@ -60,4 +62,4 @@ while(n) {
 }
 n
 hidden_trajectory
-write.table(hidden_trajectory, file="trajectory_circle_out", row.names=FALSE, col.names=FALSE)
+write.table(hidden_trajectory, file=paste(folder, "out", sep="_"), row.names=FALSE, col.names=FALSE)
