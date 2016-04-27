@@ -37,6 +37,7 @@ public:
   gazebo_msgs::ModelState current_target(long long timestamp,
                                          gazebo_msgs::ModelState state);
   void visualize_points();
+  void visualize_plane(geometry_msgs::Point plane_point, geometry_msgs::Vector3 vec);
   void visualize_target(geometry_msgs::Point target);
 
   // Internal functions
@@ -44,6 +45,7 @@ public:
                         geometry_msgs::Point point1,
                         geometry_msgs::Point point2);
   gazebo_msgs::ModelState default_target();
+  double distance_points(geometry_msgs::Point p1, geometry_msgs::Point p2);
 };
 
 #endif

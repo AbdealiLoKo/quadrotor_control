@@ -3,6 +3,7 @@
 PurePursuit::PurePursuit(double l) {
   lookahead = l;
 
+  viz_points_size = 0.2;
   // Visualize
   ros::NodeHandle nh;
   visualization_publisher = nh.advertise<visualization_msgs::Marker>("visualization_marker", 10);
@@ -17,7 +18,7 @@ void PurePursuit::reset() {
 
 gazebo_msgs::ModelState PurePursuit::current_target(long long timestamp,
   gazebo_msgs::ModelState model_state) {
-  geometry_msgs::Point p1 = points[current_point-1];
+  geometry_msgs::Point p1 = points[current_point];
   geometry_msgs::Point p2 = points[current_point];
   geometry_msgs::Point current = model_state.pose.position;
   geometry_msgs::Vector3 direction;
@@ -179,8 +180,8 @@ void PurePursuit::visualize_points() {
   viz_points.type = visualization_msgs::Marker::POINTS;
 
   // Size of points
-  viz_points.scale.x = 0.2;
-  viz_points.scale.y = 0.2;
+  viz_points.scale.x = viz_points_size;
+  viz_points.scale.y = viz_points_size;
 
   // Green color
   viz_points.color.r = 0.0f;

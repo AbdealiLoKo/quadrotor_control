@@ -9,7 +9,7 @@ PurePursuit(lookahead) {
   dir3_pos = 0;
   axes = "xyz";
   points_per_loop = 32;
-  num_loops = 100;
+  num_loops = 1;
 }
 
 void PurePursuitCircle::create_waypoints() {

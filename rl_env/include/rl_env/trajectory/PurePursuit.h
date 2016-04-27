@@ -16,10 +16,11 @@ class PurePursuit: public Trajectory {
  * Always lock on to a target at a distance LOOKAHEAD
  * from the current position
 */
-public:
+ public:
   double lookahead;
   std::vector<geometry_msgs::Point> points;
   long current_point;
+  double viz_points_size;
 
   geometry_msgs::Point initial_position, old_target_for_viz;
   ros::Publisher visualization_publisher;
