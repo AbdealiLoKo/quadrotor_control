@@ -28,6 +28,7 @@
 #include <rl_env/trajectory/WaypointsFile.h>
 #include <rl_env/trajectory/PursuitCircle.h>
 #include <rl_env/trajectory/PurePursuitCircle.h>
+#include <rl_env/trajectory/PurePursuitFile.h>
 
 // Services
 #include <rl_common/RLRunSim.h>
@@ -40,18 +41,22 @@
 #define CHECKPOINTS_CIRCLE 20
 #define PURSUIT_CIRCLE 30
 #define PURE_PURSUIT_CIRCLE 31
+#define PURE_PURSUIT_FILE 32
 
 // Trajectory can from the above list
 #define TRAJECTORY PURE_PURSUIT_CIRCLE
 
 #define TRAIN_PEGASUS false
-#define USE_WIND false
+#define USE_WIND true
+#define USE_RANDOM_SEED false
 
 // Threshold Probability of considering dataset for the trajectory
 // Using for Apprenticeship based method
 // This is done to get a real world implementation where the states
 // may not be available during the trajectory.
 #define THRESHOLD_PROBABILITY 0.5
+
+const double MAX_WIND=5;
 
 class HectorQuad: public Environment {
 public:

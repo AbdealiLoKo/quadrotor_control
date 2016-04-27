@@ -66,6 +66,15 @@ HectorQuad::HectorQuad()
   ros::service::waitForService("/shutdown", -1);
   shutdown = node.serviceClient<std_srvs::Empty>("/shutdown");
 
+  // Delete logging files
+  std::ofstream myfile;
+
+  myfile.open ("quadrotor_trajectory.txt", std::ios::trunc);
+  myfile.close();
+
+  myfile.open ("quadrotor_data.txt", std::ios::trunc);
+  myfile.close();
+
   reset();
 }
 
@@ -83,17 +92,17 @@ const std::vector<float> &HectorQuad::sensation() {
 
   // Set wind for next turn
   if (USE_WIND) {
-    double max_wind = 5;
-    wind_vel.x += ((double)rand()/RAND_MAX - 0.5) * 2*max_wind * 0.01;
-    wind_vel.y += ((double)rand()/RAND_MAX - 0.5) * 2*max_wind * 0.01;
-    wind_vel.z += ((double)rand()/RAND_MAX - 0.5) * 2*max_wind * 0.01;
+    wind_vel.x += ((double)rand()/RAND_MAX - 0.5) * 2 * MAX_WIND * 0.01;
+    wind_vel.y += ((double)rand()/RAND_MAX - 0.5) * 2 * MAX_WIND * 0.01;
+    wind_vel.z += ((double)rand()/RAND_MAX - 0.5) * 2 * MAX_WIND * 0.01;
     // truncate wind
-    wind_vel.x = std::max(wind_vel.x, -max_wind);
-    wind_vel.x = std::min(wind_vel.x, max_wind);
-    wind_vel.y = std::max(wind_vel.y, -max_wind);
-    wind_vel.y = std::min(wind_vel.y, max_wind);
-    wind_vel.z = std::max(wind_vel.z, -max_wind);
-    wind_vel.z = std::min(wind_vel.z, max_wind);
+    wind_vel.x = std::max(wind_vel.x, -MAX_WIND);
+    wind_vel.x = std::min(wind_vel.x, MAX_WIND);
+    wind_vel.y = std::max(wind_vel.y, -MAX_WIND);
+    wind_vel.y = std::min(wind_vel.y, MAX_WIND);
+    wind_vel.z = std::max(wind_vel.z, -MAX_WIND);
+    wind_vel.z = std::min(wind_vel.z, MAX_WIND);
+    // std::cout<<"Wind"<<wind_vel.x<<" "<<wind_vel.y<<" "<<wind_vel.z<<std::endl;
     wind.publish(wind_vel);
   }
 
@@ -125,7 +134,7 @@ const std::vector<float> &HectorQuad::sensation() {
 
   // Sample state space as part of trajectory
   double prob = (double)rand()/RAND_MAX;
-  if (prob > THRESHOLD_PROBABILITY) {
+  if (prob < THRESHOLD_PROBABILITY) {
     std::ofstream myfile;
     myfile.open ("quadrotor_trajectory.txt", std::ios::app);
     myfile << current.pose.position.x << " " << current.pose.position.y << " "
@@ -248,6 +257,18 @@ void HectorQuad::reset() {
   reset_syscommand.data = "reset";
   syscommand.publish(reset_syscommand);
 
+  if (USE_WIND) {
+    // Whether to use new random seed for execution
+    if (USE_RANDOM_SEED) {
+      srand(time(NULL));
+    }
+    wind_vel.x = ((double)rand()/RAND_MAX - 0.5) * 2 * MAX_WIND;
+    wind_vel.y = ((double)rand()/RAND_MAX - 0.5) * 2 * MAX_WIND;
+    wind_vel.z = ((double)rand()/RAND_MAX - 0.5) * 2 * MAX_WIND;
+    std::cout<<"Wind "<<wind_vel.x<<" "<<wind_vel.y<<" "<<wind_vel.z<<std::endl;
+    wind.publish(wind_vel);
+  }
+
   switch(TRAJECTORY) {
     case WAYPOINTS_CIRCLE:
       trajectory = new WaypointsCircle();
@@ -270,7 +291,11 @@ void HectorQuad::reset() {
       trajectory->reset();
       break;
     case PURE_PURSUIT_CIRCLE:
-      trajectory = new PurePursuitCircle(1);
+      trajectory = new PurePursuitCircle(0.5);
+      trajectory->reset();
+      break;   
+    case PURE_PURSUIT_FILE:
+      trajectory = new PurePursuitFile("out", 0.5);
       trajectory->reset();
       break;
   }

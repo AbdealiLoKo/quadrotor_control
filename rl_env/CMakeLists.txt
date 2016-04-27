@@ -38,6 +38,7 @@ add_executable(env
   src/Trajectory/PursuitCircle.cpp
   src/Trajectory/PurePursuit.cpp
   src/Trajectory/PurePursuitCircle.cpp
+  src/Trajectory/PurePursuitFile.cpp
 )
 
 add_library(env_hectorquad_world
