@@ -1,0 +1,15 @@
+# Latex
+/*.toc
+/*.aux
+/*.lof
+/*.lot
+/*.log
+/*.out
+
+# Bibtex
+/*.bbl
+/*.blg
+
+# Output
+/*.pdf
+/*.dvi

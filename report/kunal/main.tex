@@ -1,0 +1,910 @@
+%\documentclass[PhD]{iitmdiss}
+%\documentclass[MS]{iitmdiss}
+%\documentclass[MTech]{iitmdiss}
+\documentclass[hidelinks,BTech]{iitmdiss}
+\usepackage{times}
+\usepackage{t1enc}
+\usepackage{graphicx}
+\usepackage{epstopdf}
+\usepackage{hyperref} % hyperlinks for references.
+\usepackage{amsmath} % easier math formulae, align, subequations \ldots
+\usepackage{xcolor}
+\usepackage{amsfonts}
+\usepackage{subcaption}
+\usepackage{float}
+
+\newcommand\todo[1]{\textcolor{red}{{\bf TODO}: #1}}
+
+\begin{document}
+
+\graphicspath{{images/}	}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Title page
+
+\title{Reinforcement and Apprenticeship Learning for Autonomous control of Quadrotor}
+
+\author{Kunal Grover}
+
+\date{April 2016}
+\department{Mechanical Engineering}
+
+%\nocite{*}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Certificate
+\certificate
+
+\vspace*{0.5in}
+
+\noindent This is to certify that this thesis, submitted by {\bf Kunal Grover}, to the Indian Institute of Technology, Madras, for the award of the degree of {\bf B. Tech.}, is a bona fide record of the research work done by them under our supervision. The contents of this thesis, in full or in parts, have not been submitted to any other Institute or University for the award of any degree or diploma.
+
+\vspace*{1.5in}
+
+\begin{singlespacing}
+
+\begin{minipage}[t]{0.45\textwidth}
+  {\bf Prof. Balaraman Ravindran} \\
+  Research Guide \\
+  Associate Professor \\
+  Dept. of Computer Science \\
+  and Engineering \\
+  IIT-Madras, 600 036
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+  {\bf Prof. Somashekhar S} \\
+  Research Guide \\
+  Associate Professor \\
+  Dept. of Mechanical Engineering \\
+  IIT-Madras, 600 036
+\end{minipage}
+
+\end{singlespacing}
+
+\vspace*{0.25in}
+\noindent Place: Chennai\\
+Date: \todo{4 April 2016}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Acknowledgements
+\acknowledgements
+
+I would like to thank my university Indian Institute of Technology, Madras for giving me the opportunity to work on this project. My guides, Prof Ravindran and Prof Somashekhar guided me and helped em throughout the project, right from the identification of the project topic to helping mould approaches and identifying new directions to work in when a line of thought had to be abandoned.
+
+I'd also like to thank Abdeali Kothari who has worked with me during the project. With various intriguing conversations on concept ideas, planning, learning methodologies, coding practices, and simulation design it's been great working with him. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Abstract
+
+\abstract
+
+\noindent KEYWORDS: \hspace*{0.5em} \parbox[t]{4.4in}{Quad-rotor Control; Payload control; Reinforcement Learning; Policy Search; PEGASUS.}
+
+\vspace*{24pt}
+
+\noindent Autonomous quad-rotor flight is a problem which is challenging because of the complex dynamics and noise involved. A method to control quad-rotors is described by applying policy search from reinforcement learning. First a simulation is set-up training the quad-rotor using gazebo and ROS. The simulated model is used to learn position control like hovering in place, moving to a specific location, and also controlling the final yaw. Once a stable position control is achieved the quad-rotor learns to move in various trajectories and paths using a trajectory control technique. Finally, a payload is attached to the quad-rotor and the quad-rotor learns to move the payload using position and trajectory control.
+
+\pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Table of contents etc.
+
+\begin{singlespace}
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{TABLE OF CONTENTS}
+\tableofcontents
+% \thispagestyle{empty}
+
+% \listoftables
+% \addcontentsline{toc}{chapter}{LIST OF TABLES}
+
+\listoffigures
+\addcontentsline{toc}{chapter}{LIST OF FIGURES}
+\end{singlespace}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Abbreviations
+% \abbreviations
+
+% \noindent
+% \begin{tabbing}
+% xxxxxxxxxxx \= xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \kill
+% \textbf{IITM}   \> Indian Institute of Technology, Madras \\
+% \textbf{RTFM} \> Read the Fine Manual \\
+% \end{tabbing}
+
+% \pagebreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Notation
+
+% \chapter*{\centerline{NOTATION}}
+% \addcontentsline{toc}{chapter}{NOTATION}
+
+% \begin{singlespace}
+% \begin{tabbing}
+% xxxxxxxxxxx \= xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx \kill
+% \textbf{$r$}  \> Radius, $m$ \\
+% \textbf{$\alpha$}  \> Angle of thesis in degrees \\
+% \textbf{$\beta$}   \> Flight path in degrees \\
+% \end{tabbing}
+% \end{singlespace}
+
+% \pagebreak
+\clearpage
+
+% The main text will follow from this point so set the page numbering
+% to arabic from here on.
+\pagenumbering{arabic}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Introduction.
+
+\chapter{Introduction}
+\section{Motivation}
+Quadrotor UAVs have successfully been used both in commercial applications in recent years and there has been significant progress in the design of robust control software. Autonomous quadrotor control is considered to be a difficult task in the domain of control systems due to the non-linearity of the system and large number of actions and states. There is an increased interest in employing quadrotors in real world domains with autonomous control. Development of a flight control system for UAVs can be very complex due to the unavailability of the complete dynamics model of the system. 
+
+
+We aim to implement a controller which doesn't require any knowledge of the dynamics. Reinforcement Learning aims at controlling the agent by just modelling it's interaction with the environment, without observing actions of an expert system or having a complete model of the environment. We aim at exploring the use of Reinforcement Learning in the field of quadrotor control. It helps us abstract the problem of controlling a certain quadrotor as a system where we learn the system and it's interaction with the environment. This way, we can model the irregularities in the control system or the mechanical systems without any complex modelling. 
+
+Further, the autonomous quadrotor system is used to carry payloads. The dynamics for the system becomes really complex due to the presence of joints and their interactions with the system. The joints may be rigid or non-rigid. The problem here changes from controlling the motion of the quadrotor to controlling the motion of the payload. 
+
+Another idea explored is to use a similar abstraction of the system such that the system changes minimally with change in external parameters such as wind, external payload etc. and also for re-using or transferring the knowledge that is acquired in this case. 
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.5\textwidth]{quadrotor.jpg}
+    \caption{Picture of a quad-rotor flying.}
+\end{figure}
+
+
+\section{Project description}
+The project's goals can be summarised as follows:
+\begin{itemize}
+	\item {Low level Quadrotor control: This can be explained as reaching a state from the current state. It is termed as low level control since we have imparted to the system no knowledge of what model the system should follow, and it directly interacts with the hardware of the system. It acts in order to ensure that the stability of the system is maintained as well.}
+	\item {High level control or Trajectory tracking: Here, the system actually uses the low level controller that is learnt using Reinforcement Learning, and on top of that implements a control system to achieve a trajectory in the best possible way.}
+	\item {Further, we explored adding a payload to the system coupled with a set of one or more joints. Here the focus shifted from using a controller for achieving a certain quadrotor trajectory or position, to doing the same for the payload. This becomes an interesting application commercially as well.}
+	\item {Apprenticeship based learning: In cases where specifying the system's trajectory is complicated, but it is easy for an expert to perform the same, we employ Apprenticeship based learning. The aim is to learn through observing an expert's multiple demonstrations and finding the optimal control for the same.}
+\end{itemize}
+
+\chapter{Reinforcement Learning}
+\section {The Reinforcement Learning problem}
+Reinforcement Learning is the computational approach of learning from interaction. The problem is defined as a closed-loop problem where the actions taken by the learner influence its later inputs. The learner(agent) has to discover which actions achieve the highest payoffs(reward) with its interaction with the environment. 
+
+The rewards considered might not be the immediate rewards but also include subsequent rewards. A simple example of Reinforcement Learning would be how babies learn to walk. Their action influences how well they would be able to walk further, and rewards are received in this case, say for example as a punishment that would be falling. It is essential to note that as mentioned above, the reward received might not correspond to the immediate action, but to wrong actions taken in the past during the course of walking.
+
+Some of the fundamentals and nomenclature in the field of Reinforcement Learning are as follows:
+\begin{itemize}
+\item{Agent: The learner represents the agent, and has the capability of taking actions from a given action space $A$}
+\item{State: The state is the representation of the agent on the basis of which an action is taken. It is represented by a State space $S$}
+\item{Policy: It represents the learner's way of taking an action based on the perceived state of the environment. The policy may be represented as a simple lookup table or some function approximation in most of the cases. Policies may be stochastic in nature.
+The policy can be represented by: $\pi: S\rightarrow A$}
+
+\item{Reward signal defines the goal of a reinforcement learning problem. It is a way of communicating to the learner/agent, about how good the action taken by the agent is. The agent has the capability to alter the reward only through its action taken. The agent always tries to maximize the reward received in the long run.}
+\item{Value function specifies how good the rewards are in the long run. Value of a state is represented as the expectation of the total reward that the agent accumulates from the starting state.  $V^{\pi} (s) = E[R|s,\pi]$}
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.6\textwidth]{RL.png}
+    \caption{Representation of RL system}
+\end{figure}
+
+\section {Markov Decision Process}
+A Markov Decision Process (MDP) is based on a Markov Chain ie only the current state influences the next state. The transition matrix depends on the action taken by the decision maker (agent) at each time step. The determining feature of a Markov chain is that:
+\begin{equation}
+\Pr(X_{n+1}=x\mid X_1=x_1, X_2=x_2, \ldots, X_n=x_n) = \Pr(X_{n+1}=x\mid X_n=x_n)
+\end{equation}
+A Markov decision process is represented by a tuple:
+\begin{equation}
+[S, A, P_a(s,s'), R_a(s,s'), \gamma]
+\end{equation}
+where\\
+$S$ is a finite set of states,\\
+$A$ is a finite set of actions,\\
+$P_a(s,s') = \Pr(s_{t+1}=s' \mid s_t=s, a_t=a)$ is the probability that action $a$ in state $s$ at time $t$ will lead to state $s'$ at time $t+1$,\\
+$R_a(s,s')$ is the immediate reward (or expected immediate reward) received after transition to state $s'$ from state $s$, and\\
+$\gamma \in [0,1]$ is the discount factor, which represents the difference in importance between future rewards and present rewards.
+
+
+\section{Quadrotor dynamics}
+Quadrotors are complex systems with respect to dynamics and control. Haivng six degrees of freedom (three translational and three rotational) and only four independent inputs (rotor speeds), quadrotors are severely underactuated. The quadrotor motors are used to control the altitude, pitch, roll, and yaw of the quadrotor, which in turn can represent the 6 degree motion of the system.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{Quadrotor_fbd.png}
+    \caption{Free body diagram of quadrotor}
+\end{figure}
+
+Combining the revolutions per minute (rpm) of the 4 rotors makes it possible for the quad-rotor to turn, and move in various ways.
+% Quadrotor motion can be achieved in 2 configurations which are represented here:
+%\begin{figure}[H]
+%  \centering
+%    \includegraphics[width=0.5\textwidth]{quadrotor_rotors_names.png}
+%    \caption{Two configurations}
+%\end{figure}
+
+%Both the quadrotor configurations are nearly identical with differences in controlling the quadrotor. The X configuration proves to be better in terms of stability and faster response to the control system. Hence, we have used X configuration for our system, and will be discussing control for the same.
+
+\subsection{Quadrotor motion}
+Quadrotor motion can be analyzed by considering 3 independent motions. Although, all these motions have interdependent controls, an understanding can be reached for the control needed for the quadrotor.
+
+{\bf Altitude (z)}: To change altitude (in the positive z direction), equal thrust is applied to all the rotors. The moment of the quadrotor is balanced by giving equal thrusts to opposite motors but having 2 motors spin in 1 direction, and other 2 in the opposite one. The same principles hold during hovering of the quadrotor.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.6\textwidth]{Quadrotor_altitude.png}
+    \caption{The configuration of the 4 rotors of a quad-rotor to change altitude.}
+\end{figure}
+
+{\bf Yaw}: For changing the yaw, the thrust is applied to the rotors causing an unbalanced moment. It is done by increasing speed of one pair of opposite rotors and decreasing speed of the other pair by the same amount. Thus the total thrust on the quadrotor remains constant and the only motion occuring is the yaw motion.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.6\textwidth]{Quadrotor_yaw.png}
+    \caption{The configuration of the 4 rotors of a quad-rotor to change yaw.}
+\end{figure}
+
+{\bf Pitch and Roll}: For pitch and roll, the opposite pair of motors responsible for maintaining the stability of the quadrotor have to change velocities. One of the thrusts is reduced while the other one is increased which causes the quadrotor to move in a certain direction. Both pitch and roll motions are completely identical by symmetry.
+\begin{figure}[H]
+  \centering
+    \begin{subfigure}[c]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{Quadrotor_roll.png}
+        \caption{}
+    \end{subfigure}
+    \quad
+    \begin{subfigure}[c]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{Quadrotor_pitch.png}
+        \caption{}
+    \end{subfigure}
+    \caption{The configuration of the 4 rotors of a quad-rotor to change roll and pitch.}
+\end{figure}
+
+%\subsection{Dynamics model}
+%The quadrotor dynamics have been documented by Samir Bouabdallah and Roland Siegwart for the OS4 project \cite{QuadrotorDynamics}. This modelling is used in the Hector Quadrotor package.
+%
+%In the paper, each part of the quad-rotor is modelled, starting from the motors. The motor is taken to be a simple DC motor where the thrust $T$ is proportional to the vertical force acting on all the blade elements. The horizontal force (called Hub Force $H$ is found by calculating the resultant horizontal force and the drag $Q$. is found using a similar method.
+%
+%Once the basic linear forces have been accounted for, the angular forces are found. The angular forces include the Rolling moments, Pitching moments, and Yawing moments. They go on to find the dynamic equation of the BLDC rotors also, as this would contribute to the moments to a small extent. This is found using a simple first order transfer function - to recreate the dynamics the propeller would achieve between the set-point required and the actual speed.
+%
+%Using these individual forces, the net force on the quad-rotor can be calculated. This gives a set of equations defining the moments and forces (See equation 7 in Samir Bouabdallah and Roland Siegwart's work \cite{QuadrotorDynamics}). Using this, it is now possible to define the the transition function as:
+%
+%\begin{equation} \begin{split}
+%  f(\bar{S}, \bar{U}) = \left\{
+%    \begin{array}{c}
+%      \dot{\phi} \\
+%      \dot{\theta} \dot{\psi} a_{1} + \dot{\theta} a_{2} \omega_{r} + b_{1} U_{2} \\
+%      \dot{\theta} \\
+%      \dot{\phi} \dot{\psi} a_{1} + \dot{\phi} a_{4} \omega_{r} + b_{2} U_{3} \\
+%      \dot{\psi} \\
+%      \dot{\theta} \dot{\phi} a_{5} + b_{3} U_{4} \\
+%      \dot{z} \\
+%      g  - (\cos{\phi} \cos{\theta})\frac{U_{1}}{m} \\
+%      \dot{x} \\
+%      u_{x} \frac{U_{1}}{m} \\
+%      \dot{y} \\
+%      u_{y} \frac{U_{1}}{m}
+%    \end{array}
+%  \right\}
+%\end{split} \end{equation}
+%
+%Where $\bar{U}$ is the action which is a 4 dimensional vector (1 action per rotor). The constants $m$, $a_{i}$, and $b_{i}$ are system parameters that can be calculated from properties like moment of inertia, mass, etc. $u_{j}$ is the projection from Spherical co-ordinates to Cartesian of a unit vector in the $j$ dimension in Cartesian co-ordinates.
+%
+%This model is useful, as it helps to formulate the best policy class that can be used for this system in the case of PEGASUS.
+
+
+\chapter{Simulation}
+
+\section{Gazebo and ROS}
+The Simulation framework is implemented in Robot Operating system \cite{ROS} with physics simulator Gazebo\cite{Gazebo}. 
+
+Robot Operating System is a collection of software frameworks for robot software development, with services such as hardware abstraction and low-level device control. ROS is a commonly used platform for simulating different robot platforms.
+
+Gazebo provides a robust high performance physics engine, with plugins for simulation of various systems. Gazebo provides a multi-robot simulation environment with kinematic and dynamic simulation. Gazebo is capable of simulating gravity, contact forces, joints and frictions but ignores aerodynamics and propulsion systems which are important factors to consider for a quadrotor due to gazebo being slow with fluid systems and hence simulating air flow is complicated.
+
+\section{Loosely coupled and modular setup}
+ROS allows easy decoupling of various modules called "nodes" and they communicate among themselves messages using "topics". Each node can subscribe to multiple topics and each node can publish multiple topics. Thus we are able to obtain an efficient method of abstraction to implement a Reinforcement Learning framework where the agent and environment have independent modules with independent properties, and also that the agent is not directly under control of the environment.
+
+ROS and Gazebo provide an easy method to control different parts of the simulation, and it is capable of directly being transferred to a hardware too. Another advantage from this setup was adding multiple re-usable controllers to the system.
+
+\section{Hector Quadrotor}
+Hector Quadrotor \cite{HectorQuadrotor} is a ROS package that implements dynamics for a quadrotor. It also has a generic quadrotor model which can be modified according to the specifications to be used. It is created by Team Hector for Urban Search and Rescue (USAR) applications, TU Darmstadt. Additionally, it gives an easy method to import a quadrotor model using the COLLADA format while the collision model is modeled as a .stl mesh.
+
+Hector quadrotor is able to deal with issues in Gazebo, and can deal with motor and propeller dynamics, aerodynamics, external disturbances (e.g. wind), and noisy sensor signals and state estimation in an integrated fashion. The state estimation is done using an Extended Kalman filter implementation taking inputs from various on-board sensors on the quadrotor. The propellers are modelled as discs as a trade-off between visual accuracy, collision detection and dynamics modeling. At the same time, they implement propeller dynamics to keep the model as close to real-world as possible.
+
+Sensors in the system implement an error mode like the Gauss Markov error model. Common sensors like IMU, barometric, ultrasonic, GPS and compass have been implemented in the package. Wind is not implemented in the package environment, and we have modelled in our system.
+
+\begin{figure}[H]
+  \centering
+    \begin{subfigure}[c]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{quadrotor_sim.png}
+    \end{subfigure}
+    \begin{subfigure}[c]{0.45\textwidth}
+      \centering
+        \includegraphics[width=\textwidth]{quadrotor_sim2.png}
+    \end{subfigure}
+    \caption{Quad-rotor simulated by Hector Quadra
+    otor using ROS and gazebo.}
+\end{figure}
+
+The dynamics of the quad-rotor are taken from Samir Bouabdallah's work \cite{QuadrotorDynamics}. It includes the flight dynamics, motor dynamics, and thrust calculations required for the system. 
+
+A set of basic controllers are used in our system. These controllers are abstractions of the dynamics model of the system and can be controller using simple inputs such as torque, position or velocity. We used a simple velocity based system for achieving most of the controls.
+
+\section{Reinforcement Learning framework}
+Hester T. and Stone P. made a ROS package for their paper on TEXPLORE \cite{Texplore}. The rl-texplore-ros-pkg\footnote{https://github.com/toddhester/rl-texplore-ros-pkg} provides a ROS-topic based isolated service implementing several popular RL-algorithms such as Q-Learning, SARSA etc. As mentioned above, it provided us a loosely coupled environment agent system. However, the package had a few limitations for our system:
+\begin{itemize}
+	\item The algorithms and the environment implemented was for grid-world like state spaces with a small state space and action space. Our system comprises of continuous states and actions.
+	\item  The system didn't integrate gazebo into the environment since the models used didn't require physics simulations.
+\end{itemize}
+
+We created our own package \footnote{https://github.com/AbdealiJK/quadrotor\_control}, which depends on hector\_quadrotor and uses Gazebo physics engine. The state space in our system is represented by the position and orientation of the quadrotor, and the action space is a continuous set of actions that can be taken by the quadrotor.
+
+This modified package is able to communicate with gazebo as part of the environment and can use the models of the gazebo simulator and converts it into a state. It also has the ability to run gazebo in finite time steps, pausing the simulator between them.
+
+\subsection*{Agent}
+The agent is a ROS node which implements from the abstract class provided in the texplore package \texttt{Agent}. The agent contains a Policy which is updated based on the reward received from the environment. It implements three functions:
+\begin{itemize}
+	\item \texttt{first\_action}: Represents the action at initiation of the episode.
+	\item \texttt{next\_action}: Represents the action at the next time step of the episode.
+	\item \texttt{last\_action}: Represents the action at end of the episode. 
+\end{itemize} 
+The Agent transmits the action using the RLAction message on the topic \texttt{rl\_agent/rl\_action} and this is read by the environment.
+
+\subsection*{Environment}
+The environment is a ROS node which implements from the abstract class provided in texplore package \texttt{Environment}. It implements the functions:
+\begin{itemize}
+	\item \texttt{sensation}: Represents the state or the observation from the environment that the agent gets from the environment. It may comprise of inputs directly from sensors or processed in some way.
+	\item \texttt{apply}:  Takes in the action given by an agent through the message and applies it to the environment. 
+	\item \texttt{terminal}: The terminal function represents the end of an episode if the environment has reached the desired state. 
+	\item  \texttt{reset}: Used to restart the episode. 
+\end{itemize} 
+
+The environment transmits the state information using the RLEnv message on the topic \texttt{rl\_env/rl\_state\_reward}. It contains the state information, the scalar reward and information whether the terminal state has been reached.
+
+An environment named Hector Quad-rotor has been implemented which passes the action from the agent to the gazebo environment as a twist state. The sensation function is also implemented in such a way as to wait for gazebo to complete a transition step and return back the observable state from this. For all this a random seed can be set in gazebo to create the repeatable scenarios required by PEGASUS.
+
+
+\section{Wind implementation}
+The wind system needs to be implemented as a continuous system to mimic real environment. The current wind in any direction is given by a zero mean distribution implemented using a uniform distribution. To keep the wind continuous, the random variable sampled from the uniform distribution is added to the current velocity of the wind.
+\begin{equation}
+\begin{array}{c}
+V_{wx} = V_{wx} + K * x_x\\
+V_{wy} = V_{wy} + K * x_y\\
+V_{wz} = V_{wz} + K * x_z\\	
+\end{array}
+\end{equation}
+where $x_x, x_y and x_z$ represent random variables sampled from a uniform distribution from $[min\_wind\_speed, max\_wind\_speed]$ and K represents a parameter to control the maximum change in wind speed in a time step.
+
+It can be seen that the expectation of $V_{wx}, V_{wy}$ and $V_{wz}$ is average of $min\_wind\_speed$ and $max\_wind\_speed$.
+
+\section{Quadrotor specifications}
+The major model parameters used for the simulations are specified here:
+
+\textbf{Mass} = $1.477 kg$
+
+\textbf{Inertia}(in $kgm^2$)
+
+$I_{xx} = 0.01152 \qquad I_{xy} = 0.0 \qquad I_{xz} = 0.0$
+
+$I_{yy} = 0.01152 \qquad I_{yz} = 0.0 \qquad I_{zz} = 0.0218$
+
+\section{Modelling quadrotor payload system}
+The quadrotor payload system is modelled using a single link that connects the quadrotor to the payload. The allowed motion relative to the quadrotor for the payload is a hinge like motion. Two joints form part of the system, one joint between the quadrotor and the link to the payload, and the other between the link and the payload. Since Gazebo doesn't have an option to specify ball joints, for a complex joint multiple links would be required.
+
+The payload is set up as a uniform solid cube box of side $0.2m$ and mass $0.2kg$. The connecting link is also a solid box of dimensions $0.02m X 0.02m X 0.3m$ and mass $0.01kg$. All the joints have a certain limit of motion as $\pm 1 radians$.
+
+\section{Pegasus implementation}
+Our package also implements Pegasus. Here we briefly have explained the implementation. The \texttt{Pegasus} agent is implemented from the above mentioned Agent class, and implements the methods \texttt{first\_action, next\_action and last\_action}.
+
+The requirement for finding the optimal policy is that we need the gradient of the policy class at the current policy. 
+
+Each of the parameters is changed by a value of $+ and -\epsilon$, and an entire episode is run for multiple times. The reason for running it multiple times is due to the stochasticity in the system. Gradient with respect to each of the parameters is calculated using the 3 point rule, i.e.
+\begin{equation}
+\nabla_{n_i} \pi(\theta) =  \dfrac {\pi(\theta+\epsilon*n_i)-\pi(\theta-\epsilon*n_i)}  {2 * \epsilon}
+\end{equation}
+
+The policy is not updated while finding the gradient for each of the parameters, and is updated after running for $2*N$ episodes where N is the number of parameters. The update rule is given by: 
+\begin{equation}
+\pi(n_i) = \pi(n_i) + \nabla_{n_i} \pi(\theta) * K \quad \forall n_i \in N
+\end{equation}
+where K is the policy update parameter, and can be changed to adjust the rate of learning the policy.
+
+\chapter{Position control}
+
+\section{Quadrotor control system}
+Position control is implemented by using the abstraction of the quadrotor motion given by the global velocities for motion. The control system is implemented as a on-policy control system, where the system gets better during each iteration and the new policy is used to run the system.
+
+The PEGASUS implementation is done for "stable" states ie states where the quadrotor can go and hover/stay. The state is comprised of the linear velocities, position and the angular yaw position and velocity of the quadrotor, since these can completely define the stable parts of quadrotor flight. 
+The state vector is:
+
+\begin{equation}
+  State(S) = [\triangle{x}, \triangle{y}, \triangle{z}, \triangle{\omega}, \dot{x}, \dot{y}, \dot{z}, \dot{\omega}]
+\end{equation}
+where $\triangle{x}$, $\triangle{y}$, $\triangle{z}$ and $\triangle{\omega}$ represent the relative position of the quadrotor from the current position. The policy used is due to the reason that the control policy should be dependent only on the relative position from the target.  
+
+Estimation of the position and velocities of the quadrotor is done using on-board sensors such as IMU, altimeter, LIDARs etc. 
+
+\subsection*{Action} The action is abstracted out as a set of velocities of the quadrotor in the local frame of the quadrotor.
+
+The action used in our implementation are the abstracted velocities after the velocity control. The action vector is:
+\begin{equation}
+  Action = a = [\dot{x}, \dot{y}, \dot{z}, \dot{\omega}]
+\end{equation}
+
+\subsection*{Policy}
+The policy class used for the PEGASUS $\pi: S \rightarrow A$ is written as:
+
+\begin{equation}
+  Policy = \pi(s) = \left\{
+    \begin{array}{c}
+      c_1 \times x + c_2 \times \dot{x} \\
+      c_3 \times y + c_4 \times \dot{y} \\
+      c_5 \times z + c_6 \times \dot{z} \\
+      c_7 \times \omega + c_8 \times \dot{\omega} \\
+    \end{array}
+  \right\}
+\end{equation}
+
+\subsection*{Reward}
+The reward used is the L1 norm of the deviation from the target. The reward is negative, and so the maximum reward that the quad-rotor can achieve is zero. 
+\begin{equation}
+  Reward = r(s) = - |x - x_0| - |y - y_0| - |z - z_0| - K \times |\omega - \omega_0|
+\end{equation}
+
+\section{Payload control}
+Further we explore at controlling the position of a payload. The payload is suspended on the quadrotor with certain degree of motion allowed at the joint, allowing some relative motion between the two.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.4\textwidth]{payload_sim.png}
+    \caption{Quadrotor with an additional payload.}
+\end{figure}
+
+\section{Learning time optimal policy}
+A discounted reward is used to find the return of the policy using Pegasus. The discount rate specifies the trade off between reaching  
+
+\begin{equation}
+  Reward = r(s) = - |x - x_0| - |y - y_0| - |z - z_0| - K \times |\omega - \omega_0|
+\end{equation}
+
+%The state vector used in PEGASUS is similar to the one used for the quad-rotor, but it uses the position and velocities of the payload rather than that of the quad-rotor. Also, the target state that needs to be achieved is the payload's state, not the quad-rotor's state. This minimal change is because the abstracted space is easy to work with and easy to change.
+%
+%The action is still the action of the quad-rotor. There is no action that can be done directly on the payload as the joint is not actuated. Hence, the only variables that are controllable are the velocities (linear and angular) of the quad-rotor. It is interesting to note that when using the above reward and policy class the payload moves in a smooth trajectory without much deviation from the intended behaviour. This is without any state information of the quad-rotor. This is probably because the state information of the quad-rotor is highly correlated to the state of the payload. If more joints need to be added (like a chain for example), this would not hold true and a better policy would need to be considered.
+%
+%With 3 chain links, although the policy class used was sub optimal, the value function of the payload's policy converged to a better policy than the original one without the payload (a policy with lower value). Hence, the policy was fine tuned to this payload. If the joint angles are known using an angular position sensor, the policy found can be made even more precise as the state representation will be better.
+%
+%\begin{figure}[H]
+%  \centering
+%    \includegraphics[width=0.8\textwidth]{payload_position_control_time.png}
+%    \caption{Value of best policy with each iteration of PEGASUS to move to a given target position $(x, y, z, \omega) = (5, 5, 5, 60\protect^{\circ})$. The payload is attached with a chain consisting 3 links and the initial policy is the optimal policy without the payload.}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%    \includegraphics[width=0.6\textwidth]{payload_position_control.png}
+%    \caption{Payload moving using the trained policy by PEGASUS to move from one position (x, y, z, $\protect\omega$) to another.}
+%\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Trajectory control}
+We use the basic controller that we set up to control the quadrotor's trajectory. A trajectory is set up as a set of stable states that the quadrotor has to go through. A simple representation of a trajectory is represented in this image where the marked points may be critical "checkpoints" or just guiding points for the motion needed.
+
+
+\section{Checkpoints based trajectory control}
+The quadrotor needs to go through a set of ordered checkpoints that define the trajectory. The checkpoints are considered as crossed if the quadrotor has moved "close enough" to the checkpoint. As soon as the quadrotor reaches a checkpoint, its target is set to the following checkpoint. This sort of method is essential in a case where checkpoints and closeness to them have a real world meaning, for example the system needs to be in a certain range to allow the payload to be removed.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.35\textwidth]{trajectory.png}
+    \caption{Sample checkpoint based trajectory. This trajectory was generated using a simple drawing tool. Trajectories can be generated with mathematical representations as in our packages, or using CAD software.}
+\end{figure}
+
+\subsection*{Representation}
+The format representation of a quadrotor having crossed the checkpoint if its position is within a spatial neighbourhood of the checkpoint can be written as:
+\begin{equation} \begin{split}
+  |x - x_c| &< \epsilon_x \\
+  |y - y_c| &< \epsilon_y \\
+  |z - z_c| &< \epsilon_z \\
+  |\omega - \omega_c| &< \epsilon_\omega
+\end{split} \end{equation}
+where $\epsilon_x$, $\epsilon_y$, $\epsilon_z$ and $\epsilon_\omega$ are the real world ranges that need to be considered and the vector
+\begin{equation}
+  [x_c, y_c, z_y, \omega_c]
+\end{equation}
+represents the checkpoint comprising the desired position and orientation of the quadrotor.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.9\textwidth]{Checkpoint_trajectory.png}
+     \caption{Shows checkpoints for a certain trajectory. The targetis set as the next checkpoint once the quadrotor passes an $\epsilon$ neighbourhood of the current checkpoint.}
+\end{figure}
+
+	
+\subsection*{Issues}
+The checkpoint method ensures that the quadrotor has to follow certain checkpoints in order, and if the quadrotor misses a checkpoint by greater than the $\epsilon$ distance and the projection of the current position on the trajectory is closer to the next checkpoint, the quadrotor still tries to go to the older checkpoint.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.5\textwidth]{Checkpoint_trajectory_miss.png}
+     \caption{Schematic shows that on missing the region of the current checkpoint, the quadrotor tries to again reach the point which isn't suitable for being on the trajectory.}
+\end{figure}
+
+
+Another drawback of this system is that the overall path isn't time optimal, the quadrotor's aim is to reach the next checkpoint in the best possible way. The motion is expected to have acceleration while far from checkpoint and deceleration when near the next checkpoint.
+
+%%%%%%%%%%%%%%%%
+
+\section{Pursuit based trajectory control}
+
+The aim here is to consider the complete trajectory function with time. The target is changed at every step with the expected position of the quadrotor. The target is actually defined by where the quadrotor is expected to move to.
+
+Although the control is much more smoother with respect to the checkpoints method, it is a complex task to design the pursuit trajectory in a real world system. Incorrectly estimating the lead time of the trajectory can lead to the system being much off the trajectory. Additionally, there is no driving force in this method to reinstate the system back to the desired trajectory.
+
+%%%%%%%%%%%%%%%%
+\section{Waypoints based method}
+Waypoint method also uses a set of points for defining the trajectory, and as the name suggests, it doesn't rely on the quadrotor moving through those points. It gives guiding points for controlling the motion of the system without restricting the motion in case there is a deviation in the motion. 
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.9\textwidth]{Waypoints_trajectory.png}
+    \caption{Using the waypoint technique for control, the quadrotor isn't close to the actual position of the waypoint but passing the plane through the waypoint allows the waypoint to be shifted to the next one}
+\end{figure}
+
+\subsection{Implementation}
+The quadrotor has gone through a waypoint, if it has passed through the plane of the waypoint normal to the line joining the previous and current waypoint. Here, although the quadrotor policy still tries to make it move towards the next point in the trajectory, being off the trajectory doesn't affect it's future motion and it keeps going towards the next point. 
+
+At the same time, this error isn't additive and hence the deviations in trajectory during reaching a waypoint can be ignored. This gives overall a smoother position control over the trajectory it is trying to follow.
+
+The waypoint method still faces the issues faced by checkpoint method of unstable motion, i.e. the quadrotor would accelerate and decelerate each time depending on how far it is from the waypoint.
+
+To some extent, this can be solved by using a plane at a distance of $\epsilon$ from the waypoint plane and parallel to it, where the waypoint gets shifted to the next one. This will ensure that though the quadrotor is trying to reach the waypoint plane, it stops trying to reach it as soon as it reaches the dummy plane, and then tries to reach the next waypoint plane.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=\textwidth]{Waypoints_epsilon.png}
+    \caption{Using an $\epsilon$ shifted plane parallel to the waypoint plane, helps maintain a smoother motion for the system.}
+\end{figure}
+
+\subsection{Results}
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=\textwidth]{Waypoints_plane.png}
+    \caption{Plane based representation for waypoints method. Red marker represents the waypoint the quadrotor is trying to reach, and the green square represents the plane that needs to be crossed to switch to the next waypoint. The blue markers represent the entire trajectory that needs to be followed}
+\end{figure}
+
+Impact of using an $\epsilon$ shifted plane as the waypoint plane can be seen from the figure below. A longer $\epsilon$ distance would lead to a much more stable trajectory with lesser variations in speed. The first figure shows Waypoints method($\epsilon=0$), the trajectory achieved is much better in terms of the motion with respect to the trajectory, but the epsilon shifted method results in a much more "loose" trajectory achieved i.e. the total error with respect to the target trajectory is higher. 
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Waypoints.png}
+      \caption{Waypoints method}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Waypoints_0_9.png}
+      \caption{Waypoints with a shifted $\epsilon$ plane}
+  \end{subfigure}
+  \caption{Quadrotor simulation moving in a circular trajectory with the waypoint technique.}
+\end{figure}
+
+\subsection{Smoothness of motion}
+Using the $\epsilon$ plane solves the problem of rapid change in speeds of the quadrotor and achieves an overall smoother motion. Both checkpoints based method and the waypoints method have very unstable and jerky motions.
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Waypoints_speed.png}
+      \caption{Speed(in m/s) for waypoints based trajectory}
+  \end{subfigure}
+  \quad
+  \begin{subfigure}[t]{0.48\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Checkpoint_speed.png}
+      \caption{Speed(in m/s) for checkpoints based trajectory}
+  \end{subfigure}
+  \caption{Variation of speed for waypoint and checkpoint trajectories.}
+\end{figure}
+As seen from the figure above, both checkpoints and waypoints based method face the problem of variation of speed while following a trajectory. The speed falls to zero at times and again increases during the course of motion of the quadrotor. The near-zero speeds are reached as the quadrotor is near the checkpoint or the waypoint plane.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.8\textwidth]{Waypoints_speed_0_9.png}
+    \caption{Speed(in m/s) for waypoints based trajectory with an epsilon plane.}
+\end{figure}
+As seen from the figure above, there are some variations in the speed of the quadrotor during the motion, however, the speed never falls to zero, and the motion is much more stable. This can be made further stable by taking a maximum speed for the quadrotor as the lower limit of speed in the graph. That would give a perfectly smooth motion for the quadrotor.
+
+\subsection{Effect of wind}
+Wind used in our system causes certain effects on both the waypoints and the epsilon plane based waypoints based methods. The general behaviour remains the same, the waypoints method is better at achieving the trajectory in the presence of wind and epsilon plane based method is able to achieve a much more stable trajectory for the quadrotor.
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.45\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Waypoints_wind.png}
+      \caption{Waypoints method}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.49\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Waypoints_0_9_wind.png}
+      \caption{Waypoints with a shifted $\epsilon$ plane}
+  \end{subfigure}
+  \caption{Effect of wind on Quadrotor simulation moving in a circular trajectory with the waypoint technique.}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%
+\section{ Pure Pursuit}
+Pure Pursuit algorithm comes from control theory domain, where the setpoint is always a point on the trajectory at a lookahead distance. The lookahead distance represents how far along the path should the system consider while moving ahead. The motion velocity and direction are dependent on the path and the lookahead distance. The setpoint in this system is always moving as the system moves.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.5\textwidth]{Pure_Pursuit_path.png}
+    \caption{The figure shows the impact of different lookahead distances on the trajectory.}
+\end{figure}
+
+In case of Pure Pursuit, the current position of the system is projected on the trajectory that it needs to follow, and the setpoint is set at lookahead distance on the trajectory. The direction of motion of the system is towards the setpoint. 
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.5\textwidth]{Pure_Pursuit.png}
+    \caption{Pure Pursuit technique representation. The target is dynamically generated and moves on the trajectory depending on the position of the quadrotor.}
+\end{figure}
+
+\subsection{Advantages and limitations}
+This system solves some of the problems of the above mentioned path tracking algorithms.
+\begin{itemize}
+	\item The motion during the pursuit trajectory is much more stable, since the setpoint always moves with the motion of the system. There is no acceleration or deceleration observed during the course of the motion.
+	\item Able to control how fast/slow the system should move using the lookahead distance parameter. 
+	\item The motion is time-optimal, since the original motion for reaching the setpoint is time-optimal. The speed of the motion can be easily controlled by the lookahead distance parameter.
+	\item The controller always tries to get the system back on the desired trajectory, though the motion may be oscillatory in some cases. 
+\end{itemize}
+
+
+However, it introduces some issues in the system, the parameter Lookahead distance needs to be optimized for the trajectory selected, and to follow the trajectory, might need to be different for different segments. Setting the Lookahead parameter incorrectly might cause the motion to be highly deviated, even with an optimal control system for reaching a checkpoint. 
+For example, a curve with a big radius of curvature can be covered with a higher lookahead though a sharp turn needs a very small lookahead distance in order to follow the path.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.3\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Pure_Pursuit_short.png}
+      \caption{Short lookahead distance}
+  \end{subfigure}
+\qquad
+  \begin{subfigure}[t]{0.3\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Pure_Pursuit_long.png}
+      \caption{Large lookahead distance}
+  \end{subfigure}
+  \caption{Comparison of motion using Pure Pursuit algorithm with different lookahead distances.}
+\end{figure}
+
+As represented by the schematic, a shorter lookahead distance leads to being closer to the path, but the motion can be jerky, and a longer lookahead leads to a stable and smooth path, but the time taken to reach the path is more. Additionally, the lookahead distance also defines the speed of the quadrotor, so a shorter lookahead is going to be a slower motion with a lot more of acceleration-deceleration.
+
+
+\subsection{Implementation}
+Implementation of Pure Pursuit in case of a quadrotor doesn't need the complexity of finding the arc to move the quadrotor in, due to the fact that the quadrotor can move in the XY plane without any change in orientation of the system. Hence the control becomes extremely simple.
+
+The implementation for the Pure Pursuit system is done by projecting the current position of the quadrotor on the desired trajectory. This is done in order to easily find out the target point without mathematical complexity of solving for the lookahead point. The target point is chosen as point on the trajectory at lookahead distance from the current position of the projection point. Finally the quadrotor's velocity is set using our PEGASUS based controller.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.5\textwidth]{Pure_Pursuit_implementation.png}
+    \caption{Implementation of Pure Pursuit algorithm}
+\end{figure}
+
+\subsection{Results}
+Using different lookahead distances, we can vary both the speed of motion of the quadrotor and the "correctness" of the system on the trajectory.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{Pure_Pursuit_0_5.png}
+    \caption{Pure Pursuit with lookahead=0.5}
+\end{figure}
+A short lookahead distance leads to the motion followed being much closer to the original trajectory, and the motion is slower.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{Pure_Pursuit_1.png}
+    \caption{Pure Pursuit with lookahead=1}
+\end{figure}
+On the other hand, a long lookahead distance used would compromise on the motion of the quadrotor but at the same time would help to achieve the motion much faster.
+
+\subsection{Stable motion using Pure Pursuit}
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{Pure_Pursuit_speed_0_5.png}
+      \caption{Short lookahead distance = 0.5}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.48\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Pure_Pursuit_speed_1.png}
+      \caption{Large lookahead distance = 1}
+  \end{subfigure}
+  \caption{Speed(in m/s) of motion of quadrotor following Pure Pursuit trajectory tracking. Scale is same as for Waypoints/Checkpoints case.}
+\end{figure}
+It can be seen that the motion in this case is much more stable as compared to waypoint and checkpoint methods due to the fact that the target changes dynamically and based on the current position. The speed of the quadrotor is governed by the lookahead distance. Using a shorter lookahead distance, slower speeds are achieved, while using a longer lookahead, the speed is faster.
+
+\subsection{Payload control}
+As mentioned in the chapter on Position control, the focus is here on controlling the Position and orientation of the Payload and not the Quadrotor. 
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{Pure_Pursuit_payload.png}
+    \caption{Trajectory control for payload}
+\end{figure}
+
+The PurePursuit algorithm proved to be much better than any other algorithms in the case of Payload and trajectories, and we report the results of only the PurePursuit case. 
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{Pure_Pursuit_1_payload_0_1.png}
+      \caption{Payload mass=0.1kg, Lookahead=1m}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.48\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Pure_Pursuit_0_5_payload_0_25.png}
+      \caption{Payload mass=0.25kg, Lookahead=0.5m}
+  \end{subfigure}
+  \caption{Payload trajectory control using Pure Pursuit.}
+\end{figure}
+It can be observed that although the trajectory is followed very closely due to the short lookahead distance, a lot of perturbations are introduced due to the motion of the payload relative to the quadrotor. If the weight of the payload is increased further, the oscillations increase drastically.
+
+The actual comparisons can be seen in the speed variation of the 2 cases below.
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Pure_Pursuit_speed_payload_0_1.png}
+      \caption{Payload mass=0.1	kg}
+  \end{subfigure}  \begin{subfigure}[t]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{Pure_Pursuit_speed_payload_0_25.png}
+      \caption{Payload mass=0.25kg}
+  \end{subfigure}
+  \caption{Speed variation in payload trajectory control using Pure Pursuit. Lookahead distance used=0.5m}
+\end{figure}	
+\subsection {Effect of wind}
+Shorter lookahead distances are much better at countering the wind effect. As seen in the figure, the initial distance from the centre of the circle to the circumference is highly deviated since no trajectory checkpoints are employed here, and simply the controller tries to reach the target. The motion is affected by the wind and the deviation can be reduced by specifying multiple checkpoints. 
+
+Further, it can be noticed that the system with shorter lookahead distance is likely to be easily affected by changes in wind speeds due to lower inertia of motion. Hence, again with respect to stability of the system, a larger lookahead system is preferred.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Pure_Pursuit_0_5_payload_0_1_wind.png}
+      \caption{Lookahead distance=0.5m}
+  \end{subfigure}  \begin{subfigure}[t]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{Pure_Pursuit_1_payload_0_1_wind.png}
+      \caption{Lookahead distance=1m}
+  \end{subfigure}
+  \caption{Payload trajectory control using Pure Pursuit with effect of wind. Both the figures are comparable since identical seeds were used to get the wind.}
+\end{figure}	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Apprenticeship learning}
+ The PEGASUS controller system in incapable of reaching "unstable" states as there is no easy way to define those states. Unstable trajectories comprise of cases such as flips, loops, rolls etc. Apprenticeship based learning involves having an "expert" showing the system how to achieve a certain trajectory. During this the contribution of the "expert" is not to teach the system i.e. it doesn't really give any information to the system. The system is expected to learn by observing the actions of the expert. 
+ 
+ It is assumed that the expert is actually a sub-optimal policy, given the fact that he or she can't repeat his actions exactly multiple times. The job of the system is to use these sub-optimal policies followed by the expert, and use them to find the optimal policy for achieving the motion.
+
+\section{Collecting observations}
+The trajectories are sampled using sampling for a number trajectories using a threshold probability of capturing the state information. The state is considered for the trajectory if a random variable sampled from a uniform distribution is greater than the threshold probability. The number of observations considered depends on the complexity of the trajectory, the amount of threshold considered for taking the input data. 
+\begin{equation}
+	x_P \geq P_t 	
+\end{equation}
+where $x_P \sim \tilde U\in[0,1]$ and $P_t$ is the threshold probability of considering the state. This is done for the following reasons:
+\begin{itemize}
+	\item The simulator system is much better than the real world system in prediction of state information. In case of real world environment, uncertainties can lead to a few states being incorrectly measured, or getting false data of the states. So under-sampling the observed trajectories tries to address the issues. 
+	\item It is an effort to find the optimal trajectory over the given sub-optimal trajectories. Reducing $P_t$ requires the number of trajectories sampled to increase and the amount of over-fitting on any particular trajectory is bound to decrease. 
+	\item It helps to much better mimic the real world scenario for getting/storing data from the system, where the time between two observations will never be the same. There can be further stochasticity in transmission of data, wireless systems can have dropped signals etc.
+\end{itemize}
+
+
+\section{System modelling}
+The state for apprenticeship learning is comprised of the absolute position, orientation and velocities of the system:
+\begin{equation}
+	State[s] = [x,y,z,\omega, \dot x, \dot y, \dot z, \dot \omega]
+\end{equation}
+The given M demonstrations by an expert are represented by: 
+\begin{equation}
+y^m = [s^m_1, s^m_2, ..... , s^m_n]	
+\end{equation}
+where $m \in [1, M]$ is the index of the trajectory and $s$ represents each of the states in the trajectory from time indices 1 to n. The hidden trajectory is given by:
+\begin{equation}
+	z = [s^*_1, s^*_2, ....... , s^*_T]
+\end{equation}
+where $T$ represents the length of the hidden trajectory. The hidden model assumes that the demonstrations are a non-linear function of set of observations of the hidden trajectory, i.e.
+\begin{equation}
+  y_{t}^{k} = h(x_{\tau_t^k}) + {\omega}_{t}^{(y)}, \qquad \omega_t^{(y)} \sim \mathcal{N} (0, \Sigma^{(y)})
+\end{equation}
+where $\tau_t^k$ is the time step in the intended trajectory mapped to the observed trajectory at time step $t$. These time indices $\tau_t^k$ are not known and need to be found.   
+
+\section{Hidden trajectory}
+The hidden trajectory is assumed to be a Markov chain from which the observed trajectory is sampled as explained by the equations above. All the observed trajectories have different time sampling indices due to the stochasticity involved. Hence, we try to combine these various trajectories to estimate the hidden trajectory.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.7\textwidth]{timewarp.png}
+    \caption{Demonstrated trajectory's time warped to align with the time dimension of the intended trajectory.}
+\end{figure}
+
+\subsection{Estimating the hidden trajectory}
+The estimation of the hidden trajectory can be done by considering the non-linear model of the quadrotor system. The model as explained in the quadrotor dynamics is complicated, and the use of the model challenges the purpose of Reinforcement Learning. 
+
+Our implementation is totally a model-free system, and the estimation step is a mean calculation step for the system. Besides being extremely simple in implementation, it also is very quick computationally, and the results obtained were satisfactory.
+
+
+\subsection{Dynamic Time warping to calculate the time series of the hidden trajectory}
+The different observed trajectories don't have corresponding matching time steps, hence we use dynamic time warping to compare the different sequences of observations spatially. DTW tries to warp time based similar sequences based on their closeness in space. By trial and error, slantedband windowing was the best suited for our use case the best. 
+
+\subsection{Finding the optimal trajectory}
+The optimal trajectory is computed by maximizing the joint probability distribution of the observed trajectories and the time indices by marginalizing over the hidden trajectory. This can be represented by:
+\begin{equation} 
+  \max_{\tau, \Sigma^{(\cdot)}} \log \mathbb{P}(\mathbf{y}, \tau ; \Sigma^{(\cdot)})
+\end{equation}
+where $\tau$ represents the time indices and $\Sigma^{(\cdot)}$ represents the covariances of the system.
+
+Due to the complexity in computing the above likelihood, the solution is found in an iterative manner using Expectation Maximization. The time series is used as a latent variable for calculating the likelihood, and then DTW is used to re-calculate the time series.
+
+\subsection{Implementation}
+The steps followed for estimating the hidden trajectory are given as follows:
+\begin{itemize}
+	\item Assume the number of time indices to consider as the hidden trajectory's length. We have used the hidden trajectory length as $2*(average(length-of-observed-trajectory))$.
+	\item Our implementation just has the state vector as representation of the trajectory due to the fact that our PEGASUS based controller is capable of reaching a certain state. In the absence of such a controller, both the states and actions can be included as part of both the observations and the hidden trajectory.
+	\item An initial assumption is considered for the time indices of each of the observed trajectories. The hidden trajectory is calculated from these observed trajectories then. The hidden trajectory is calculated as the average of the states at a current time step. This gives an initial estimate for the hidden trajectory. In EM terms, this is the Estimation step.
+	\item Each of the observed trajectories is used to apply a DTW warping with hidden trajectory to estimate the time indices for the observed trajectories. This represents the Maximization step.
+	\item The above two steps are repeated until a stable hidden trajectory is found from the observed trajectories.
+	\item Finally the states from the hidden trajectory are used to run the quadrotor system.
+\end{itemize}
+
+\section{Controlling using trajectory}
+The system predicts the next $s'$ that the quadrotor needs to be in given the current $s$. The mapping for the predictor is from $S: \rightarrow S$. To follow the trajectory in a perfectly optimal fashion, a controller such as Differential Dynamic Programming controller can be used as the state and action information between two given states can be predicted in that case.
+
+We have implemented the original PEGASUS controller with trajectory control methods, due to its capability of going to the final state $s'$ from the original state. The trajectory tracking sequence ensures that the quadrotor is on the correct trajectory. This has given satisfactory results with the system.
+
+\section{Results}
+The results here represent circle trajectory sampled using 6 trajectories with probability of data collection as 0.5. The system considered is quadrotor with payload of 0.1kg. The wind in these trajectories is continuously changing leading to small to large variations in the trajectory followed and the stability of the quadrotor-payload system. 
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=\textwidth]{Apprenticeship_hidden_trajectory.png}
+    \caption{Hidden trajectory found using observations for a circular trajectory.The dotted trajectory represents the learnt trajectory.}
+\end{figure}
+
+The optimality of the hidden trajectory can be observed by finding the circular error ie $radius^2 - (distance-from-centre)^2$. In all the cases, the average error is close to the observed average error.
+\begin{figure}[H]
+  \centering
+    \includegraphics[width=0.5\textwidth]{Apprenticeship_optimality_graph.png}
+    \caption{Average circle error for observed and hidden trajectories.}
+\end{figure}	
+
+The control using the hidden trajectory, as expected from the average error graph, is pretty stable. The trajectory controller used was Pure Pursuit controller with a lookahead distance of 0.5m. In the stochastic case involving wind in the system, the trajectory is affected, but due to the smooth trajectory and the Pure Pursuit controller, most of these vibrations are curbed.
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth}
+  \includegraphics[width=\textwidth]{Apprenticeship_Pure_Pursuit_0_5_payload_0_1.png}
+      \caption{No wind}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.48\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{Apprenticeship_Pure_Pursuit_0_5_payload_0_1_wind_5.png}
+      \caption{With wind}
+  \end{subfigure}
+  \caption{Using trajectory learnt using sampled observations to control motion of quadrotor.}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography.
+
+\begin{singlespace}
+  \pagebreak
+  \clearpage
+  \phantomsection
+  \addcontentsline{toc}{chapter}{References}
+  \bibliography{refs}
+\end{singlespace}
+
+\end{document}
