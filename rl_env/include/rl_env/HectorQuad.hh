@@ -23,12 +23,14 @@
 
 // Trajectories
 #include <rl_env/trajectory/Trajectory.h>
-#include <rl_env/trajectory/WaypointsCircle.h>
-#include <rl_env/trajectory/WaypointsHelix.h>
+#include <rl_env/trajectory/WaypointsPoints.h>
 #include <rl_env/trajectory/WaypointsFile.h>
 #include <rl_env/trajectory/PursuitCircle.h>
-#include <rl_env/trajectory/PurePursuitCircle.h>
 #include <rl_env/trajectory/PurePursuitFile.h>
+#include <rl_env/trajectory/PurePursuitPoints.h>
+
+// Point generators
+#include <rl_env/points/Points.h>
 
 // Services
 #include <rl_common/RLRunSim.h>
@@ -36,18 +38,27 @@
 // Possible trajectories and algos
 #define NO_TRAJECTORY -1
 #define WAYPOINTS_CIRCLE 10
-#define WAYPOINTS_HELIX 11
-#define WAYPOINTS_FILE 12
+#define WAYPOINTS_RECTANGLE 11
+#define WAYPOINTS_HELIX 12
+#define WAYPOINTS_FILE 13
+
 #define CHECKPOINTS_CIRCLE 20
+#define CHECKPOINTS_RECTANGLE 22
+#define CHECKPOINTS_HELIX 23
+#define CHECKPOINTS_FILE 24
+
 #define PURSUIT_CIRCLE 30
-#define PURE_PURSUIT_CIRCLE 31
-#define PURE_PURSUIT_FILE 32
+
+#define PURE_PURSUIT_CIRCLE 40
+#define PURE_PURSUIT_RECTANGLE 41
+#define PURE_PURSUIT_HELIX 42
+#define PURE_PURSUIT_FILE 43
 
 // Trajectory can from the above list
 #define TRAJECTORY PURE_PURSUIT_CIRCLE
 
 #define TRAIN_PEGASUS false
-#define USE_WIND true
+#define USE_WIND false
 #define USE_RANDOM_SEED false
 
 // Threshold Probability of considering dataset for the trajectory

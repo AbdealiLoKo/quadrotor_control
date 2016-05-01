@@ -62,12 +62,11 @@ gazebo_msgs::ModelState PurePursuit::current_target(long long timestamp,
         (p2.x - p1.x) * (current.x - p1.x) +
         (p2.y - p1.y) * (current.y - p1.y)
       ) / distance_points(p1, p2);
+      float lambda = projection + lookahead;
 
-      float lambda = lookahead + projection;
-
-      target.pose.position.x = p1.x + lambda * (p2.x - p1.x);
-      target.pose.position.y = p1.y + lambda * (p2.y - p1.y);
-      target.pose.position.z = p1.z + lambda * (p2.z - p1.z);
+      target.pose.position.x = p1.x + lambda * (p2.x - p1.x) / distance_points(p1, p2);
+      target.pose.position.y = p1.y + lambda * (p2.y - p1.y) / distance_points(p1, p2);
+      target.pose.position.z = p1.z + lambda * (p2.z - p1.z) / distance_points(p1, p2);
 
       direction.x = p2.x - p1.x;
       direction.y = p2.y - p1.y;

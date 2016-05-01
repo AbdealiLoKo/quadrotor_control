@@ -77,9 +77,8 @@ gazebo_msgs::ModelState Waypoints::current_target(
       // Move to next point if plane was passed. We check this by checking if
       // both the last waypoint and current position are on the same side of the
       // plane.
-      if ( cur_side * old_side <= 0 ) {
+      if ( cur_side * old_side <= 0 && current_point != points.size()-1 ) {
         current_point += 1;
-        assert(current_point < points.size());
       }
       visualize_plane(plane_point, derivative);
     }

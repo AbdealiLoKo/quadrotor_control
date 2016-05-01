@@ -30,14 +30,15 @@ add_executable(env
 
   # Trajectories
   src/Trajectory/Trajectory.cpp
+  src/Trajectory/PointsBase.cpp
+  src/Trajectory/PointsCircle.cpp
+  src/Trajectory/PointsRectangle.cpp
+  src/Trajectory/PointsHelix.cpp
   src/Trajectory/Waypoints.cpp
-  src/Trajectory/WaypointsCircle.cpp
-  src/Trajectory/WaypointsHelix.cpp
   src/Trajectory/WaypointsFile.cpp
   src/Trajectory/Pursuit.cpp
   src/Trajectory/PursuitCircle.cpp
   src/Trajectory/PurePursuit.cpp
-  src/Trajectory/PurePursuitCircle.cpp
   src/Trajectory/PurePursuitFile.cpp
 )
 

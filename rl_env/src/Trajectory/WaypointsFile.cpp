@@ -3,6 +3,7 @@
 WaypointsFile::WaypointsFile(std::string file, bool _use_checkpoints /*= false*/) :
 Waypoints(_use_checkpoints) {
   filename=file;
+  epsilon_plane=0.9;
 }
 
 void WaypointsFile::create_waypoints() {
@@ -13,9 +14,9 @@ void WaypointsFile::create_waypoints() {
   while(std::getline(file, line)) {
     k += 1;
 
-    // Use only 1/100 of the states since in a dense trajectory
+    // Use only 1/20 of the states since in a dense trajectory
     // the quadrotor gets decelerated too quickly.
-    if (k%100 != 0) {
+    if (k%20 != 0) {
       continue;
     }
 

@@ -271,15 +271,19 @@ void HectorQuad::reset() {
 
   switch(TRAJECTORY) {
     case WAYPOINTS_CIRCLE:
-      trajectory = new WaypointsCircle();
+      trajectory = new WaypointsPoints<PointsCircle>();
       trajectory->reset();
       break;
     case CHECKPOINTS_CIRCLE:
-      trajectory = new WaypointsCircle(true);
+      trajectory = new WaypointsPoints<PointsCircle>(true);
       trajectory->reset();
       break;
     case WAYPOINTS_HELIX:
-      trajectory = new WaypointsHelix();
+      trajectory = new WaypointsPoints<PointsHelix>();
+      trajectory->reset();
+      break;
+    case WAYPOINTS_RECTANGLE:
+      trajectory = new WaypointsPoints<PointsRectangle>();
       trajectory->reset();
       break;
     case WAYPOINTS_FILE:
@@ -291,9 +295,17 @@ void HectorQuad::reset() {
       trajectory->reset();
       break;
     case PURE_PURSUIT_CIRCLE:
-      trajectory = new PurePursuitCircle(0.5);
+      trajectory = new PurePursuitPoints<PointsCircle>(0.5);
       trajectory->reset();
-      break;   
+      break;
+    case PURE_PURSUIT_HELIX:
+      trajectory = new PurePursuitPoints<PointsHelix>(0.5);
+      trajectory->reset();
+      break;
+    case PURE_PURSUIT_RECTANGLE:
+      trajectory = new PurePursuitPoints<PointsRectangle>(1.5);
+      trajectory->reset();
+      break;
     case PURE_PURSUIT_FILE:
       trajectory = new PurePursuitFile("out", 0.5);
       trajectory->reset();
