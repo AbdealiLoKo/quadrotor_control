@@ -1,18 +1,19 @@
 #include <rl_env/points/PointsHelix.h>
 
-PointsHelix::PointsHelix() {
+PointsHelix::PointsHelix() :
+ PointsBase() {
   dir1_radius = 5;
   dir2_radius = 5;
   dir1_center = 0;
   dir2_center = 0;
   dir3_pos = 0;
   axes = "xyz";
-  points_per_loop = 32;
-  num_loops = 3;
+  points_per_loop = 20;
+  num_loops = 2;
 }
 
 std::vector<geometry_msgs::Point> PointsHelix::get_points() {
-  for (int i = 0; i < num_loops; ++i) {
+ for (int i = 0; i < points_per_loop * num_loops; ++i) {
     double dir1_val = dir1_center + dir1_radius * sin(2 * M_PI / points_per_loop * i);
     double dir2_val = dir2_center + dir2_radius * cos(2 * M_PI / points_per_loop * i);
     double dir3_val = (2 * M_PI / points_per_loop * i);
@@ -26,4 +27,5 @@ std::vector<geometry_msgs::Point> PointsHelix::get_points() {
     // geo_point.point.z = 5;
     // viz_points.publish(geo_point);
   }
+  return Points;
 }
