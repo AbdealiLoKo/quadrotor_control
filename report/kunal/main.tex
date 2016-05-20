@@ -25,7 +25,7 @@
 
 \author{Kunal Grover}
 
-\date{April 2016}
+\date{May 2016}
 \department{MECHANICAL ENGINEERING}
 
 %\nocite{*}
@@ -53,7 +53,7 @@
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.45\textwidth}
-  {\bf Somashekhar S. Hiremant} \\
+  {\bf Somashekhar S. Hiremath} \\
   Research Guide \\
   Associate Professor \\
   Dept. of Mechanical Engineering \\
@@ -64,14 +64,14 @@
 
 \vspace*{0.25in}
 \noindent Place: Chennai\\
-Date: 3 May 2016
+Date: 13 May 2016
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Acknowledgements
 \acknowledgements
 
-I would like to thank my university Indian Institute of Technology, Madras for giving me the opportunity to work on this project. My guides, Prof. Ravindran and Prof. Somashekhar guided me and helped em throughout the project, right from the identification of the project topic to helping mould approaches and identifying new directions to work in when a line of thought had to be abandoned.
+I would like to thank my university Indian Institute of Technology, Madras for giving me the opportunity to work on this project. My guides, Prof. Ravindran and Prof. Somashekhar guided me and helped me throughout the project, right from the identification of the project topic to helping mould approaches and identifying new directions to work in when a line of thought had to be abandoned.
 
 I'd also like to thank Abdeali Kothari who has worked with me during the project. With various intriguing conversations on concept ideas, planning, learning methodologies, coding practices, and simulation design it's been great working with him. 
 
@@ -84,7 +84,7 @@ I'd also like to thank Abdeali Kothari who has worked with me during the project
 
 \vspace*{24pt}
 
-\noindent Autonomous quadrotor flight is a problem which is challenging because of the complex dynamics, non-linearity, model requirement and noise involved. By considering the quadrotor system as a Partially Observed Markov Decision Process(POMDP), a method to control quadrotors is described by using a policy gradient method such as PEGASUS controller which does not need any model information. Using this model capable of doing position control, we employ several trajectory methods and compare based on stability and accuracy. A payload is added to the system and the quadrotor now learns how to handle the payload's position and oscillations caused due to the relative motion and dynamics of the quadrotor payload system. The control is modelled as a higher level control over the quadrotor, and hence transferring it to another multi-rotor system becomes an easy task. Further, we employ apprenticeship based learning on the system to avoid giving the trajectory information altogether, rather, the quadrotor tries to learn by observing how an expert performs a trajectory and tries to mimic the same using its own control system.
+\noindent Au tonomous quadrotor flight is a problem which is challenging because of the complex dynamics, non-linearity, model requirement and noise involved. By considering the quadrotor system as a Partially Observed Markov Decision Process(POMDP), a method to control quadrotors is described by using a policy gradient method such as PEGASUS controller which does not need any model information. Using this model capable of doing position control, we employ several trajectory methods and compare based on stability and accuracy. A payload is added to the system and the quadrotor now learns how to handle the payload's position and oscillations caused due to the relative motion and dynamics of the quadrotor payload system. The control is modelled as a higher level control over the quadrotor, and hence transferring it to another multi-rotor system becomes an easy task. Further, we employ apprenticeship based learning on the system to avoid giving the trajectory information altogether, rather, the quadrotor tries to learn by observing how an expert performs a trajectory and tries to mimic the same using its own control system.
 
 \pagebreak
 
@@ -937,6 +937,45 @@ It can be seen that the motion in this case is much more stable as compared to w
   \caption{Different trajectories using Pure Pursuit.}
 \end{figure}
 
+\subsection*{Learning Lookahead distance}
+Reinforcement Learning can be applied to calculating the Lookahead distance dynamically. We use a PEGASUS like approach, to find the value of the policy. Here the limitation is that the rewards are indeterminate, since we don't know how far does lookahead parameter affect the future. However, the total sum of rewards can be used for a policy of the lookahead. The lookahead needs to be smaller near a sharp turn, and high when the curve is smooth.
+
+The state is taken as the angle between vectors to the next two checkpoints. The reward is calculated for the entire trajectory as the sum of individual rewards at every time step. The action for the problem is the lookahead distance.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.3\textwidth}
+  \includegraphics[width=\textwidth]{PurePursuit_low.png}
+      \caption{Small angle between vectors.}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.35\textwidth}
+    \centering
+      \includegraphics[width=\textwidth]{PurePursuit_high.png}
+      \caption{High angle between two vectors.}
+  \end{subfigure}
+    \caption{State to be used for learning lookahead policy.}
+\end{figure}
+
+The policy is represented as:
+\begin{equation}
+lookahead = k * (\pi/2-theta) + \phi
+\end{equation}
+The parameter $\phi$ is important to allow the speed to not drop to zero when theta is nearly $\pi/2$.
+
+The results can be seen in case of a rectangular trajectory.
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[t]{0.45\textwidth}
+  \includegraphics[width=\textwidth]{Pure_Pursuit_rect.png}
+      \caption{Rectangle trajectory with constant lookahead.}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.43\textwidth}
+      \includegraphics[width=\textwidth]{1.png}
+      \caption{Policy based lookahead.}
+  \end{subfigure}
+    \caption{Using policy based lookahead for Pure Pursuit in rectangular trajectory.}
+\end{figure}
+
 
 \subsection*{Payload control}
 As mentioned in the chapter on Position control, the focus is here on controlling the Position and orientation of the Payload and not the Quadrotor. 
@@ -993,6 +1032,7 @@ Further, it can be noticed that the system with shorter lookahead distance is li
   \end{subfigure}
   \caption{Payload trajectory control using Pure Pursuit with effect of wind. Both the figures are comparable since identical seeds were used to get the wind.}
 \end{figure}	
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Apprenticeship learning}
